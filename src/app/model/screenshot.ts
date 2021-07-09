@@ -12,6 +12,6 @@ export class Screenshot {
   game_name: string;
 
   getUrl(): string {
-    return "/screenshots/"+this.game_id+"_"+this.id.toString(16).padStart(8,'0');
+    return "https://delicious-fruit.sfo3.cdn.digitaloceanspaces.com/"+this.game_id+"_"+this.id.toString(16).padStart(8,'0');
   }
 }
