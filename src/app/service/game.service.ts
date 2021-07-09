@@ -11,6 +11,9 @@ import { map, tap } from 'rxjs/operators';
 import { GameSearchParams } from '../game-search-params';
 import { User } from '../model/user';
 import { Moment } from 'moment';
+import { environment } from '../../environments/environment';
+
+const Environment = environment;
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -23,8 +26,6 @@ export class GameListResponse {
 
 @Injectable()
 export class GameService {
-  private gamesUrl = '/api/games';
-
   constructor(
     private http: HttpClient
   ) { }
@@ -54,7 +55,7 @@ export class GameService {
     if (params.ownerUserId) p = p.append("ownerUserId", ""+params.ownerUserId);
 
     return this.http.get<Game[]>(
-      this.gamesUrl, 
+      Environment.apiUrl + '/games', 
       {params: p, observe: 'response'}
     ).pipe(map(response => ({
         games:response.body,
@@ -64,11 +65,11 @@ export class GameService {
   }
 
   getGame(id: string): Observable<Game> {
-    return this.http.get<Game>(`${this.gamesUrl}/${id}`);
+    return this.http.get<Game>(`${Environment.apiUrl}/games/${id}`);
   }
 
   updateGame(game: Game): Observable<any> {
-    return this.http.patch<Game>(`${this.gamesUrl}/${game.id}`,game);
+    return this.http.patch<Game>(`${Environment.apiUrl}/games/${game.id}`,game);
   }
 
   addScreenshot(gameId: number, description: string, file: File): Observable<any> {
@@ -76,7 +77,7 @@ export class GameService {
     formData.append("description",description);
     formData.append("screenshot",file);
     return this.http.post<Screenshot>(
-      `${this.gamesUrl}/${gameId}/screenshots`,
+      `${Environment.apiUrl}/games/${gameId}/screenshots`,
       formData);
   }
 
@@ -84,48 +85,48 @@ export class GameService {
     let p = new HttpParams();
     p = p.append("page", page.toString());
     p = p.append("limit", limit.toString());
-    return this.http.get<Review[]>(`/api/reviews`,{params: p});
+    return this.http.get<Review[]>(`${Environment.apiUrl}/reviews`,{params: p});
   }
 
   getReview(id: number): Observable<Review> {
-    return this.http.get<Review>(`/api/reviews/${id}`);
+    return this.http.get<Review>(`${Environment.apiUrl}/reviews/${id}`);
   }
 
   getReviewsForGame(gameId: number): Observable<Review[]> {
     let params = new HttpParams();
     params = params.append("textReviewsFirst", "true");
-    return this.http.get<Review[]>(`/api/games/${gameId}/reviews`,{params});
+    return this.http.get<Review[]>(`${Environment.apiUrl}/games/${gameId}/reviews`,{params});
   }
 
   getReviewsForUserGame(gameId: number, userId: number): Observable<Review[]> {
     let params = new HttpParams();
     params = params.append("byUserId", ""+userId);
     params = params.append("includeOwnerReview", "true");
-    return this.http.get<Review[]>(`/api/games/${gameId}/reviews`,{params});
+    return this.http.get<Review[]>(`${Environment.apiUrl}/games/${gameId}/reviews`,{params});
   }
 
   getScreenshotsForGame(gameId: number): Observable<Screenshot[]> {
     let params = new HttpParams();
     params = params.append("approved", "1"); //forced for non admins on server
-    return this.http.get<Screenshot[]>(`/api/games/${gameId}/screenshots`,
+    return this.http.get<Screenshot[]>(`${Environment.apiUrl}/games/${gameId}/screenshots`,
       {params});
   }
 
   getUser(userId: number): Observable<PublicUser> {
-    return this.http.get<PublicUser>(`/api/users/${userId}`);
+    return this.http.get<PublicUser>(`${Environment.apiUrl}/users/${userId}`);
   }
 
   getReviewsForUser(userId: number): Observable<Review[]> {
-    return this.http.get<Review[]>(`/api/users/${userId}/reviews`);
+    return this.http.get<Review[]>(`${Environment.apiUrl}/users/${userId}/reviews`);
   }
 
   getListsForUserGame(userId: number, gameId: number): Observable<List[]> {
-    return this.http.get<List[]>(`/api/users/${userId}/games/${gameId}/lists`);
+    return this.http.get<List[]>(`${Environment.apiUrl}/users/${userId}/games/${gameId}/lists`);
   }
 
   updateList(userId: number, gameId: number, 
       listId: number, value: boolean): Observable<List[]> {
-    const url = `/api/lists/${listId}`;
+    const url = `${Environment.apiUrl}/lists/${listId}`;
     return this.http.post<List[]>(url,{
       userId: userId,
       gameId: gameId,
@@ -136,71 +137,71 @@ export class GameService {
   getTagsForGame(gameId: number, userId?: number): Observable<Tag[]> {
     let params = new HttpParams();
     if (userId) params = params.append("uid", ""+userId);
-    return this.http.get<Tag[]>(`/api/games/${gameId}/tags`,{params});
+    return this.http.get<Tag[]>(`${Environment.apiUrl}/games/${gameId}/tags`,{params});
   }
 
   submitReview(gameId: number, review: Review): Observable<any> {
-    return this.http.put<Review>(`/api/games/${gameId}/reviews`,review);
+    return this.http.put<Review>(`${Environment.apiUrl}/games/${gameId}/reviews`,review);
   }
 
   likeReview(reviewId, userId: number): Observable<any> {
-    return this.http.put(`/api/reviews/${reviewId}/likes/${userId}`,{})
+    return this.http.put(`${Environment.apiUrl}/reviews/${reviewId}/likes/${userId}`,{})
   }
 
   unlikeReview(reviewId, userId: number): Observable<any> {
-    return this.http.delete(`/api/reviews/${reviewId}/likes/${userId}`)
+    return this.http.delete(`${Environment.apiUrl}/reviews/${reviewId}/likes/${userId}`)
   }
 
   isLiked(reviewId, userId: number): Observable<any> {
-    return this.http.get(`/api/reviews/${reviewId}/likes/${userId}`)
+    return this.http.get(`${Environment.apiUrl}/reviews/${reviewId}/likes/${userId}`)
   }
 
   getNews(): Observable<any> {
-    return this.http.get(`/api/news`)
+    return this.http.get(`${Environment.apiUrl}/news`)
   }
 
   getTagSuggestions(q: string): Observable<any> {
     let params = new HttpParams();
     params = params.append("q", q);
-    return this.http.get<Tag[]>(`/api/tags/`,{params});
+    return this.http.get<Tag[]>(`${Environment.apiUrl}/tags/`,{params});
   }
 
   getTag(tagId: number): Observable<Tag> {
-    return this.http.get<Tag>(`/api/tags/${tagId}`)
+    return this.http.get<Tag>(`${Environment.apiUrl}/tags/${tagId}`)
   }
 
   getTagByName(tagName: string): Observable<Tag> {
     let params = new HttpParams();
     params = params.append("name", tagName);
-    return this.http.get<Tag[]>(`/api/tags`,{params})
+    return this.http.get<Tag[]>(`${Environment.apiUrl}/tags`,{params})
       .pipe(map(tags => tags.length==1?tags[0]:null));
   }
 
   setTags(gameId, tagIds: number[]): Observable<any> {
-    return this.http.post(`/api/games/${gameId}/tags`,tagIds)
+    return this.http.post(`${Environment.apiUrl}/games/${gameId}/tags`,tagIds)
   }
 
   addTag(tag: Tag): Observable<Tag> {
-    return this.http.post<Tag>(`/api/tags`,tag)
+    return this.http.post<Tag>(`${Environment.apiUrl}/tags`,tag)
   }
 
   addNews(news: any): Observable<any> {
-    return this.http.post<any>(`/api/news`,news)
+    return this.http.post<any>(`${Environment.apiUrl}/news`,news)
   }
 
   addGame(game: Game): Observable<Game> {
-    return this.http.post<Game>(`/api/games`,game)
+    return this.http.post<Game>(`${Environment.apiUrl}/games`,game)
   }
 
   getUsers(name?: string): Observable<User[]> {
     let params = new HttpParams()
     if (name) params = params.append('name', name);
-    return this.http.get<User[]>(`/api/users`,
+    return this.http.get<User[]>(`${Environment.apiUrl}/users`,
     {params})
   }
 
   updatePermission(uid: number, name: string, until: Moment) {
-    return this.http.patch<any>(`/api/users/${uid}/permissions/${name}`,{
+    return this.http.patch<any>(`${Environment.apiUrl}/users/${uid}/permissions/${name}`,{
       revoked_until: until.toISOString()
     })
   }
