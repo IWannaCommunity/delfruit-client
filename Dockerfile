@@ -1,7 +1,7 @@
 ### STAGE 1: Build ###
 
 # We label our stage as ‘builder’
-FROM node:12-alpine as builder
+FROM node:12.18.4-alpine3.12 as builder
 
 COPY package.json package-lock.json ./
 
@@ -15,20 +15,20 @@ COPY . .
 
 ## Build the angular app in production mode and store the artifacts in dist folder
 
+RUN npm cache clean --force
+
+ARG CAPTCHA_KEY="default"
+ARG API_URL="/api"
+
+RUN apk --no-cache add sd --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
+RUN sd "\{\{\{CAPTCHA_KEY\}\}\}" $CAPTCHA_KEY ./src/environments/environment.prod.ts
+RUN sd "\{\{\{API_URL\}\}\}" $API_URL ./src/environments/environment.prod.ts
+
 RUN npm run ng build -- --prod --output-path=dist
 
 
 ### STAGE 2: Setup ###
 
-FROM nginx:1.15.10-alpine
+FROM alpine:3.11.11
 
-## Copy our default nginx config
-COPY nginx/default.conf /etc/nginx/conf.d/
-
-## Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
-
-## From ‘builder’ stage copy over the artifacts in dist folder to default nginx public folder
-COPY --from=builder /ng-app/dist /usr/share/nginx/html
-
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=builder /ng-app/dist /app/
