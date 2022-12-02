@@ -16,27 +16,27 @@ function HomeGames() {
 							<ChevronDownIcon className="mr-1 ml-2 h-8 w-5"/>
 						</button>
 					</div>
-					<div className="bg-white" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+					<div className="bg-white" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
 						<div className="py-1" role="none">
-							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabindex="-1" id="sort-item-1">RECENT</a>
-							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabindex="-1" id="sort-item-2">MOST LIKED</a>
-							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabindex="-1" id="sort-item-3">DIFFICULTY</a>
+							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabIndex="-1" id="sort-item-1">RECENT</a>
+							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabIndex="-1" id="sort-item-2">MOST LIKED</a>
+							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabIndex="-1" id="sort-item-3">DIFFICULTY</a>
 						</div>
 					</div>
 				</div>
 				<h2>GENRE</h2>
 				<div className="relative inline-block text-left">
 					<div>
-						<button type="button" className="inline-flex w-full justify-start rounded-md border-t-2 border-x-2 border-b-4 border-gray-400 bg-white text-gray-400 shadow-sm px-2" id="menu-button" aria-expanded="true" aria-haspopup="true">
+						<button type="button" className="inline-flex justify-start rounded-md border-t-2 border-x-2 border-b-4 border-gray-400 bg-white text-gray-400 shadow-sm px-2" id="menu-button" aria-expanded="true" aria-haspopup="true">
 							ALL
 							<ChevronDownIcon className="mr-1 ml-2 h-8 w-5"/>
 						</button>
 					</div>
-					<div className="bg-white" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+					<div className="bg-white" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabIndex="-1">
 						<div className="py-1" role="none">
-							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabindex="-1" id="sort-item-1">ADVENTURE</a>
-							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabindex="-1" id="sort-item-2">AVOIDANCE</a>
-							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabindex="-1" id="sort-item-3">NEEDLE</a>
+							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabIndex="-1" id="sort-item-1">ADVENTURE</a>
+							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabIndex="-1" id="sort-item-2">AVOIDANCE</a>
+							<a href="#" className="text-gray-400 block px-4 py-2" role="menuitem" tabIndex="-1" id="sort-item-3">NEEDLE</a>
 						</div>
 					</div>
 				</div>

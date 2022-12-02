@@ -5,7 +5,12 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {	
+		backgroundImage: {
+			'footer-bg': "url('/images/GaidenBG.png')",
+			'news-bg': "url('/images/NewsReelBG.png')"
+		}
+	},
 	container: {
 		center: true
 	}

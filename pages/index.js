@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import HomeNews from "../components/Home/HomeNews";
 import HotPicks from "../components/Home/HotPicks";
 import HomeGames from "../components/Home/HomeGames";
+import Footer from "../components/Footer";
 
 export default function Home() {
   return (
@@ -19,6 +20,8 @@ export default function Home() {
 	  <HotPicks />
 	  
 	  <HomeGames />
+	  
+	  <Footer />
 	  
     </div>
   )

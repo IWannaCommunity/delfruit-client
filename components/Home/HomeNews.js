@@ -1,6 +1,6 @@
 function HomeNews() {
 	return (
-		<nav className="bg-black flex flex-col h-96 justify-center items-center">
+		<nav className="bg-black bg-news-bg flex flex-col h-96 justify-center items-center">
 			<div className="overflow-auto bg-[#232123] text-white font-bold px-5 rounded-t-lg p-2 w-4/12 h-10 flex justify-end">
 				New Delfruit Redesign!
 			</div>
