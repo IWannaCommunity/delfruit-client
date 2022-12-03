@@ -21,7 +21,7 @@ function Header() {
 					</div>
 				</div>
 				<div className="flex ml-20 mr-10 pl-20 input-group items-stretch w-full">
-					<input type="search" className="form-control relative flex block w-full border rounded-l-lg pr-40 mr-0.5 ml-20 pl-5 py-2 font-bold" placeholder="Search"/>
+					<input type="search" className="form-control w-full border rounded-l-lg pr-40 mr-0.5 ml-20 pl-5 py-2 font-bold" placeholder="Search"/>
 					<button className="relative flex block w-12 bg-white rounded-r-lg px-1.5 items-center">
 						<SearchIcon stroke="#D63636" width={30} />
 					</button>

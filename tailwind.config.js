@@ -9,6 +9,9 @@ module.exports = {
 		backgroundImage: {
 			'footer-bg': "url('/images/GaidenBG.png')",
 			'news-bg': "url('/images/NewsReelBG.png')"
+		},
+		screens: {
+			"3xl": "2000px"
 		}
 	},
 	container: {
