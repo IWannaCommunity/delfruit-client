@@ -1,4 +1,5 @@
 import Image from "next/image";
+import GamePreview from "./GamePreview";
 
 function HotPicks() {
 	return (
@@ -8,12 +9,12 @@ function HotPicks() {
 				<hr/>
 			</div>
 			<div className="flex justify-center items-center space-x-10 my-5">
-				<Image src="/images/SmallBlackArrowButton-Pre.png" className="cursor-pointer" width={70} height={70}/>
-				<Image src="/images/GameThumbnailCard.png" className="cursor-pointer" width={375} height={198}/>
-				<Image src="/images/GameThumbnailCard.png" className="cursor-pointer" width={375} height={198}/>
-				<Image src="/images/GameThumbnailCard.png" className="cursor-pointer" width={375} height={198}/>
-				<Image src="/images/GameThumbnailCard.png" className="cursor-pointer" width={375} height={198}/>
-				<Image src="/images/SmallBlackArrowButton-Next.png" className="cursor-pointer" width={70} height={70}/>
+				<Image src="/images/SmallBlackArrowButton-Pre.png" className="cursor-pointer" width={60} height={60}/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="375" h="198"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="375" h="198"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="375" h="198"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="375" h="198"/>
+				<Image src="/images/SmallBlackArrowButton-Next.png" className="cursor-pointer" width={60} height={60}/>
 			</div>
 		</nav>
 	);

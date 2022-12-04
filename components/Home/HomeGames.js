@@ -1,4 +1,4 @@
-import Image from "next/image";
+import GamePreview from "./GamePreview";
 
 function HomeGames() {
 	return (
@@ -28,18 +28,18 @@ function HomeGames() {
 				<input id="steps-range" type="range" min="0" max="100" value="50" step="0.1" className="w-40 h-2 mt-4 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"/>
 			</div>
 			<div className="flex-wrap px-10 xl:px-32 my-10 sm:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:flex justify-center items-center gap-10">
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
-				<Image src="/images/GameThumbnailCard.png" layout="responsive" className="cursor-pointer" width={1920} height={1080}/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="1920" h="1080"/>
 			</div>
 		</nav>
 	);
