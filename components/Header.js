@@ -6,8 +6,10 @@ function Header() {
 	return (
 		<nav className="flex py-2 bg-[#D63636]">
 			<header className="flex justify-between items-center h-auto">
-				<div className="mx-20 px-20 py-6">
-					<Image className="absolute py-14 mx-20 rounded-b-full top-0 px-10 bg-white cursor-pointer" src="/images/cherry.gif" width={50} height={50}/>
+				<div className="mx-20 px-20 py-6 group">
+					<div className="absolute py-12 group-hover:py-[50px] mx-20 rounded-b-full top-0 px-10 bg-white cursor-pointer">
+						<Image src="/images/cherry.gif" className="absolute top-5 group-hover:top-4 right-4" width={48} height={55}/>
+					</div>					
 				</div>
 				<div className="flex font-semibold text-2xl mx-20 space-x-5 h-auto">
 					<HeaderItem title='GAMES'/>

@@ -7,3 +7,16 @@
 		@apply text-gray-200;
 	}
 }
+
+/* Multi-range sliders */
+input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  -webkit-appearance: none;
+  @apply bg-black;
+  @apply cursor-pointer;
+
+  /* @apply w-6 h-6 appearance-none pointer-events-auto; */
+}
