@@ -13,10 +13,10 @@ function HotPicks() {
 				<div className="rounded-full bg-white hover:bg-black w-14 h-14 cursor-pointer group">
 					<ChevronLeftIcon className="mx-auto pt-2 fill-black group-hover:fill-white" width={45} height={45}/>
 				</div>
-				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="37" h="23"/>
-				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="37" h="23"/>
-				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="37" h="23"/>
-				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="37" h="23"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="374" h="198"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="374" h="198"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="374" h="198"/>
+				<GamePreview title='I wanna be the Blank' image="/images/Game_without_screenshots.png" w="374" h="198"/>
 				<div className="rounded-full bg-white hover:bg-black w-14 h-14 cursor-pointer group">
 					<ChevronRightIcon className="mx-auto pt-2 fill-black group-hover:fill-white" width={45} height={45}/>
 				</div>

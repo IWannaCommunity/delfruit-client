@@ -26,13 +26,13 @@ function HomeNews() {
 						</div>
 					</div>
 				</div>
-				<div className="flex flex-row space-x-5 absolute top-[23rem]">
-					<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
-					<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
-					<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
-					<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
-					<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
-				</div>
+			</div>
+			<div className="flex flex-row space-x-5 absolute top-[23rem]">
+				<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
+				<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
+				<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
+				<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
+				<div className="cursor-pointer w-3 h-3 rounded-full bg-white"/>
 			</div>
 			<div className="rounded-full bg-[#B1B1B1] border-[#E4E4E4] border-4 bg-opacity-20 border-opacity-50 hover:bg-[#D63636] hover:bg-opacity-50 w-14 h-14 cursor-pointer group">
 				<ChevronRightIcon className="mx-auto pt-2 fill-[#E4E4E4] opacity-50 group-hover:fill-white group-hover:opacity-80" width={40} height={40}/>
