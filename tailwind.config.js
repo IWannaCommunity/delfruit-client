@@ -17,7 +17,33 @@ module.exports = {
 	},
 	container: {
 		center: true
+	},
+	fontFamily: {
+		sans: ['Prompt', 'sans-serif']
+	},
+	fontSize: {
+		'lg': ['18px', {
+			lineHeight: '27px'
+		}],
+		'2xl': ['24px', {
+			lineHeight: '36px'
+		}],
+		'xl': ['20px', {
+			lineHeight: '30px'
+		}],
+		'header': ['32px', {
+			lineHeight: '48px'
+		}],
+		'4xl': ['36px', {
+			lineHeight: '54px'
+		}]
 	}
   },
-  plugins: [require('@tailwindcss/forms')],
+  variants: {
+    fill: ['hover', 'focus']
+  },
+  plugins: [
+	require('@tailwindcss/forms'),
+	require('@tailwindcss/typography')
+  ],
 }

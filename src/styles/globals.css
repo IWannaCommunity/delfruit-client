@@ -1,10 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
 	Header {
-		@apply text-gray-200;
+		@apply text-[#E4E4E4];
 	}
 }
 
@@ -15,8 +17,6 @@ input[type="range"]::-webkit-slider-thumb {
   @apply h-5;
   @apply rounded-full;
   @apply appearance-none;
-  @apply bg-black;
+  @apply bg-[#232123];
   @apply cursor-pointer;
-
-  /* @apply w-6 h-6 appearance-none pointer-events-auto; */
 }
