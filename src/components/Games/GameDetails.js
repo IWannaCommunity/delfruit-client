@@ -3,7 +3,7 @@ import { UploadIcon } from "@heroicons/react/outline";
 
 const GameDetails = ({title,date,creator,rating,difficulty}) => {
 	return (
-		<nav className="text-[#232123]">
+		<nav className="text-[#232123] bg-[#F9F9F9]">
 			<div className="relative flex-col mx-40 my-10">
 				<h2 className="absolute top-0 left-0 text-header font-medium mb-4">{title}</h2>
 				<div className="absolute top-3 right-0 flex-row space-x-5 text-xl">
@@ -117,8 +117,8 @@ const GameDetails = ({title,date,creator,rating,difficulty}) => {
 					</div>
 					<div className="relative m-auto pt-10 justify-center items-center flex flex-row gap-5">
 						<Image className="rounded-lg drop-shadow-[0_10px_8px_rgba(0,0,0,0.50)]" src="/images/ShowcasedImage-Test.png" width={203} height={154}/>
-						<Image className="rounded-lg" src="/images/ShowcasedImage-Test.png" width={203} height={154}/>
-						<Image className="rounded-lg" src="/images/ShowcasedImage-Test.png" width={203} height={154}/>
+						<Image className="rounded-lg hover:border-[#F9F9F9] hover:border-4 hover:drop-shadow-[0_10px_8px_rgba(0,0,0,0.50)]" src="/images/screenshot2.png" width={203} height={154}/>
+						<Image className="rounded-lg hover:border-[#F9F9F9] hover:border-4 hover:drop-shadow-[0_10px_8px_rgba(0,0,0,0.50)]" src="/images/screenshot3.png" width={203} height={154}/>
 					</div>
 				</div>				
 			</div>

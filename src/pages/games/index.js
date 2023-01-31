@@ -11,7 +11,7 @@ const GamePage = () => {
 	const router = useRouter();
 	
 	return (
-		<div>
+		<div className="bg-[#F9F9F9]">
 		
 			<Head>
 				<title>Delfruit 2</title>

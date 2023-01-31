@@ -3,7 +3,7 @@ import RangeSlider from "../MultiRangeSlider/RangeSlider";
 
 const HomeGames = () => {
 	return (
-		<nav className="relative py-10">
+		<nav className="relative py-10 bg-[#F9F9F9]">
 			<div className="mx-32">
 				<h2 className="text-header font-medium text-[#232123]">FANGAMES</h2>
 				<hr/>

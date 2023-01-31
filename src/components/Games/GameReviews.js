@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const GameReviews = ({count}) => {
 	return (
-		<nav className="text-[#232123]">
+		<nav className="text-[#232123] bg-[#F9F9F9]">
 			<div className="relative flex-col mx-40 my-10">
 				<h2 className="absolute top-0 left-0 text-header font-medium mb-4">REVIEWS</h2>
 				<div className="absolute top-3 right-0 text-xl">

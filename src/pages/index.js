@@ -7,10 +7,11 @@ import Footer from "../components/Footer";
 
 export default function Home() {
   return (
-    <div>
+    <div className="bg-[#F9F9F9]">
       <Head>
         <title>Delfruit 2</title>
         <link rel="icon" href="/favicon.ico" />
+		
       </Head>
 	  
 	  <Header />
