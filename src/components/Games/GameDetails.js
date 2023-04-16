@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { UploadIcon } from "@heroicons/react/outline";
+import RatingHeart from "./ratingheart"
 
 const GameDetails = ({ title, date, creator, rating, difficulty }) => {
     return (
@@ -18,9 +19,7 @@ const GameDetails = ({ title, date, creator, rating, difficulty }) => {
                         <hr className="mt-2 mx-5" />
                         <div className="mt-5 mx-5 flex flex-row">
                             <div className="flex justify-start space-x-2">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fillRule="evenodd" clipRule="evenodd" d="M12 2.51487C18.6572 -4.48017 35.3016 7.76039 12 23.5C-11.3016 7.76192 5.34282 -4.48017 12 2.51487Z" fill="#D63636" />
-                                </svg>
+                                <RatingHeart filled={true} />
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path fillRule="evenodd" clipRule="evenodd" d="M12 2.51487C18.6572 -4.48017 35.3016 7.76039 12 23.5C-11.3016 7.76192 5.34282 -4.48017 12 2.51487Z" fill="#D63636" />
                                 </svg>
