@@ -40,7 +40,7 @@ const RangeSlider = ({ initialMin, initialMax, min, max, step, gap }) => {
       <div className="flex flex-col w-60 mt-5 group">
         <div className="mb-4">
           <div className="slider relative h-1 rounded-md bg-[#B1B1B1]">
-            <div className="progress absolute h-1 rounded bg-black group-hover:bg-[#D63636]" ref={progressRef}/>
+            <div className="progress absolute h-1 rounded bg-[#232123] group-hover:bg-[#D63636]" ref={progressRef}/>
           </div>
           <div className="range-input relative">
             <input
