@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState } from 'react';
 import Image from "next/image";
 
 const MAX_DISPLAY = 3;
@@ -9,7 +9,7 @@ function changeDisplay() {
     elem.setAttribute("src", src);
 }
 
-export function Reel({ photoUrls, displayElemId }) {
+export function Carousel({ photoUrls, displayElemId }) {
     const [index, setIndex] = useState(0);
     const [photos, setPhotos] = useState(photoUrls);
     var [windowStart, setWindowStart] = useState(0);
