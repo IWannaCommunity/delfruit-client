@@ -35,15 +35,15 @@ const GameDetails = ({ title, date, creator, rating, difficulty }) => {
                         </div>
                         <h2 className="mt-10 mx-5 text-2xl font-medium">Tags:</h2>
                         <hr className="mt-2 mx-5" />
-                        <div className="mx-5 my-10 absolute bottom-0 flex flex-row gap-4">
-                            <div className="flex justify-center items-center rounded-lg bg-[#232123] border h-[50px] w-[300px] cursor-pointer hover:bg-[#D63636] gap-3">
+                        <div className="mx-4 my-10 absolute bottom-0 flex flex-row gap-3">
+                            <div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#232123] border h-[50px] w-[300px] cursor-pointer hover:bg-[#D63636] gap-3">
                                 <DownloadIcon /> <a className="text-[#F9F9F9] text-2xl font-medium">Download</a>
                             </div>
-                            <div className="flex justify-center items-center rounded-lg bg-[#F9F9F9] border-2 border-[#232123] h-[50px] w-[147px] cursor-pointer hover:bg-[#4F89E1] hover:border-[#4F89E1] group gap-3">
+                            <div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#F9F9F9] border-2 border-[#232123] h-[50px] w-[147px] cursor-pointer hover:bg-[#4F89E1] hover:border-[#4F89E1] group gap-3">
 
                                 <ShareIcon /> <a className="text-[#232123] text-2xl font-medium group-hover:text-[#F9F9F9]">Share</a>
                             </div>
-                            <div className="flex justify-center items-center rounded-lg bg-[#F9F9F9] border-2 border-[#232123] h-[50px] w-[147px] cursor-pointer hover:bg-[#1EB475] hover:border-[#1EB475] group gap-3">
+                            <div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#F9F9F9] border-2 border-[#232123] h-[50px] w-[147px] cursor-pointer hover:bg-[#1EB475] hover:border-[#1EB475] group gap-3">
                                 <SaveIcon /> <a className="text-[#232123] text-2xl font-medium group-hover:text-[#F9F9F9]">Save</a>
                             </div>
                         </div>
