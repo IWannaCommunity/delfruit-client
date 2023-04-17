@@ -6,12 +6,12 @@ import Rating from "./rating";
 import Difficulty from "./difficulty";
 import { DownloadIcon, ShareIcon, SaveIcon } from "../icons";
 import Tag from "./tag";
-import { Reel } from "./reel";
+import { Carousel } from "./carousel";
 
 const DISPLAY_CURSCRNSHOT = "displayCurScrnshot";
 
 const GameDetails = ({ title, date, creator, rating, difficulty }) => {
-    const reel_photos = ["/images/ShowcasedImage-Test.png", "/images/screenshot2.png", "/images/screenshot3.png"];
+    const carousel_photos = ["/images/ShowcasedImage-Test.png", "/images/screenshot2.png", "/images/screenshot3.png"];
     return (
         <nav className="text-[#232123] bg-[#F9F9F9]">
             <div className="relative flex-col mx-40 my-10">
@@ -58,7 +58,7 @@ const GameDetails = ({ title, date, creator, rating, difficulty }) => {
                             </div>
                         </div>
                     </div>
-                    <Reel photoUrls={reel_photos} displayElemId={DISPLAY_CURSCRNSHOT} />
+                    <Carousel photoUrls={carousel_photos} displayElemId={DISPLAY_CURSCRNSHOT} />
 
                 </div>
             </div>
