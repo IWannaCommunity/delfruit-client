@@ -1,4 +1,4 @@
-export default function RatingHeart(filled) {
+export default function RatingHeart({ filled }) {
     let color = "#E4E4E4";
     if (filled) {
         color = "#D63636";
