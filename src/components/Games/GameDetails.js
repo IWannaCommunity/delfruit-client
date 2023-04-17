@@ -3,6 +3,7 @@ import { UploadIcon } from "@heroicons/react/outline";
 import Rating from "./rating";
 import Difficulty from "./difficulty";
 import { DownloadIcon, ShareIcon, SaveIcon } from "../icons";
+import Tag from "./tag";
 
 const GameDetails = ({ title, date, creator, rating, difficulty }) => {
     return (
@@ -35,6 +36,9 @@ const GameDetails = ({ title, date, creator, rating, difficulty }) => {
                         </div>
                         <h2 className="mt-10 mx-5 text-2xl font-medium">Tags:</h2>
                         <hr className="mt-2 mx-5" />
+                        <div className="mt-5 mx-5 flex flex-row">
+                            <Tag name="test tag" />
+                        </div>
                         <div className="mx-4 my-10 absolute bottom-0 flex flex-row gap-3">
                             <div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#232123] border h-[50px] w-[300px] cursor-pointer hover:bg-[#D63636] gap-3">
                                 <DownloadIcon /> <a className="text-[#F9F9F9] text-2xl font-medium">Download</a>
