@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { UploadIcon } from "@heroicons/react/outline";
 import Rating from "./rating"
+import Difficulty from "./difficulty"
 
 const GameDetails = ({ title, date, creator, rating, difficulty }) => {
     return (
@@ -26,38 +27,7 @@ const GameDetails = ({ title, date, creator, rating, difficulty }) => {
                         <h2 className="mt-10 mx-5 text-2xl font-medium">Difficulty:</h2>
                         <hr className="mt-2 mx-5" />
                         <div className="mt-5 mx-5 flex flex-row">
-                            <div className="flex justify-start space-x-2">
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#1EB475" />
-                                </svg>
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#1EB475" />
-                                </svg>
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#1EB475" />
-                                </svg>
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#1EB475" />
-                                </svg>
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#1EB475" />
-                                </svg>
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#E4E4E4" />
-                                </svg>
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#E4E4E4" />
-                                </svg>
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#E4E4E4" />
-                                </svg>
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#E4E4E4" />
-                                </svg>
-                                <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0.595152 20.149L11 0.899994L21.4048 20.149C22.1251 21.4815 21.1602 23.1 19.6454 23.1H2.35457C0.839797 23.1 -0.125147 21.4815 0.595152 20.149Z" fill="#E4E4E4" />
-                                </svg>
-                            </div>
+                            <Difficulty value={difficulty} className="flex justify-start space-x-2" />
                             <div className="absolute right-0 mx-10">
                                 <a className="text-xl">{difficulty}%</a>
                             </div>
