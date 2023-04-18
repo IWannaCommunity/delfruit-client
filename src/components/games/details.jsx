@@ -11,7 +11,7 @@ import { Carousel } from "./carousel";
 const DISPLAY_CURSCRNSHOT = "displayCurScrnshot";
 
 const GameDetails = ({ title, date, creator, rating, difficulty }) => {
-    const carousel_photos = ["/images/ShowcasedImage-Test.png", "/images/screenshot2.png", "/images/screenshot3.png"];
+    const carousel_photos = ["/images/ShowcasedImage-Test.png", "/images/screenshot2.png", "/images/screenshot3.png", "/images/screenshot4.png"];
     return (
         <nav className="text-[#232123] bg-[#F9F9F9]">
             <div className="relative flex-col mx-40 my-10">
