@@ -49,7 +49,7 @@ export function Carousel({ photoUrls, displayElemId }) {
             {/*HACK: invokes a shallow copy, but it doesn't look like JS has proper ranges? */}
             {
                 photos.map((url, idx) => {
-                    let cssClass = "!relative rounded-lg drop-shadow-[0_10px_8px_rgba(0,0,0,0.50)] !z-1";
+                    let cssClass = "!relative relative rounded-lg drop-shadow-[0_10px_8px_rgba(0,0,0,0.50)] !z-1 z-1";
                     let arrowVisible = "hidden";
                     if (idx == index) {
                         cssClass = "transition-[border] rounded-[10px] border-2 border-[#232123]";
