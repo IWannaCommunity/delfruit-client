@@ -12,15 +12,16 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@heroicons/react": "^1.0.6",
-    "axios": "^1.2.1",
+    "@heroicons/react": "1.0.6",
+    "axios": "1.2.1",
     "eslint": "8.28.0",
     "eslint-config-next": "13.0.5",
-    "lodash": "^4.17.21",
+    "lodash": "4.17.21",
     "next": "13.0.5",
-    "react": "^18.2.0",
+    "overlayscrollbars": "2.1.1",
+    "react": "18.2.0",
     "react-dom": "18.2.0",
-    "tailwind-scrollbar-hide": "^1.1.7"
+    "tailwind-scrollbar-hide": "1.1.7"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
