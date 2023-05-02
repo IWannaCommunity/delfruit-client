@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { EmojiIcon } from "../icons";
+import { BulletListIcon, EmojiIcon, NumberedListIcon, SpoilerIcon } from "../icons";
 import Picker from '@emoji-mart/react';
 import axios from "axios";
 import { useEffect, useState, useMemo } from "react";
@@ -47,6 +47,16 @@ function removeElementClasses(el, classes) {
     });
 }
 
+function getTextAreaSelection(txtarea) {
+    const start = txtarea.selectionStart;
+    const finish = txtarea.selectionEnd;
+    return txtarea.value.substring(start, finish);
+}
+
+function setTextAreaSelection(txtarea, str) {
+    txtarea.value = txtarea.value.substring(0, txtarea.selectionStart) + str + txtarea.value.substring(txtarea.selectionEnd);
+}
+
 export default function GameReviews({ count }) {
     const EMOJI_DATA_URL = "https://cdn.jsdelivr.net/npm/@emoji-mart/data@1.1.2";
     const [emojiData, setEmojiData] = useState(null);
@@ -78,6 +88,52 @@ export default function GameReviews({ count }) {
         target.classList.toggle("hidden");
     }
 
+    const boldSelectedText = async (_) => {
+        const target = document.getElementById("reviewWritingArea");
+        const selectedText = getTextAreaSelection(target);
+        const newText = "**" + selectedText + "**";
+        setTextAreaSelection(target, newText);
+    }
+
+    const italicizeSelectedText = async (_) => {
+        const target = document.getElementById("reviewWritingArea");
+        const selectedText = getTextAreaSelection(target);
+        const newText = "*" + selectedText + "*";
+        setTextAreaSelection(target, newText);
+    }
+
+    const strikethroughSelectedText = async (_) => {
+        const target = document.getElementById("reviewWritingArea");
+        const selectedText = getTextAreaSelection(target);
+        const newText = "~~" + selectedText + "~~";
+        setTextAreaSelection(target, newText);
+    }
+
+    const hideSelectedText = async (_) => {
+        const target = document.getElementById("reviewWritingArea");
+        const selectedText = getTextAreaSelection(target);
+        const newText = "||" + selectedText + "||";
+        setTextAreaSelection(target, newText);
+    }
+
+    const listSelectedText = async (_) => {
+        const target = document.getElementById("reviewWritingArea");
+        const selectedText = getTextAreaSelection(target);
+        const newText = "* " + selectedText.replace(/(?:\r\n|\r|\n)/g, '\n' + "* ");
+        setTextAreaSelection(target, newText);
+    }
+
+    const numberSelectedText = async (_) => {
+        const target = document.getElementById("reviewWritingArea");
+        const selectedText = getTextAreaSelection(target);
+        const listStr = selectedText.split(/(?:\r\n|\r|\n)/g);
+        let newText = "";
+        forEach(listStr, (val, idx) => {
+            newText += (idx + 1).toString() + ". " + val + '\n';
+        });
+        setTextAreaSelection(target, newText);
+    }
+
     useEffect(() => {
         axios.get(EMOJI_DATA_URL).then((resp) => { setEmojiData(resp.data) });
 
@@ -105,11 +161,19 @@ export default function GameReviews({ count }) {
                 <Image className="cursor-pointer w-[70px] h-[70px] rounded-full border border-[#232123]" />
                 <hr className="mr-6" />
                 <div className="relative">
-                    <textarea className="w-[784px] min-h-[140px] box-border bg-[#F9F9F9] border-2 rounded-[10px] border-solid border-[#232123] flex-none resize-none" placeholder="Share us your thoughts about the game!" onInput={increaseWritingArea} />
+                    <textarea id="reviewWritingArea" className="w-[784px] min-h-[140px] box-border bg-[#F9F9F9] border-2 rounded-[10px] border-solid border-[#232123] flex-none resize-none" placeholder="Share us your thoughts about the game!" onInput={increaseWritingArea} />
                     <div className="absolute bottom-0 w-full h-[30px] border bg-[#232123] border-[#232123] rounded-b-[10px] flex flex-row items-center pl-[24px] pr-[24px]">
                         <button className="pr-[inherit]" onClick={toggleEmojis}> <EmojiIcon color="#F8F8F8" /> </button>
                         <hr className="h-4/5 w-px bg-[#EAEAEA] opacity-20" />
-                        <button className="pl-[inherit] pr-[inherit] not-italic font-bold text-2xl leading-9 flex items-center text-center text-uppercase text-[#F9F9F9]">B</button>
+                        <button className="pl-[inherit] pr-[inherit] not-italic font-bold text-2xl leading-9 flex items-center text-center text-uppercase text-[#F9F9F9] hover:text-[#D63636]" onClick={boldSelectedText}>B</button>
+                        <button className="pl-[inherit] pr-[inherit] italic font-medium text-[24px] leading-9 flex items-center text-center text-[#F9F9F9] hover:text-[#D63636]" onClick={italicizeSelectedText}>i</button>
+                        <button className="pl-[inherit] pr-[inherit] italic font-medium text-[24px] leading-9 flex items-center text-center text-[#F9F9F9] line-through hover:text-[#D63636]" onClick={strikethroughSelectedText}>S</button>
+                        <hr className="h-4/5 w-px bg-[#EAEAEA] opacity-20" />
+                        <button className="pl-[inherit] pr-[inherit] flex-none" onClick={hideSelectedText}> <SpoilerIcon /> </button>
+                        <button className="pl-[inherit] pr-[inherit] flex-none" onClick={listSelectedText}> <BulletListIcon /> </button>
+                        <button className="pl-[inherit] pr-[inherit] flex-none" onClick={numberSelectedText}> <NumberedListIcon /> </button>
+                        <a className="flex flex-row justify-center items-center p-0 gap-2.5 w-[150px] h-[22px]" />
+                        <button className="flex flex-row justify-center items-center p-0 gap-2.5 w-[140px] h-[22px] bg-[#F9F9F9] border-2 rounded-[10px] hover:bg-[#D63636] hover:border-[#D63636]"> Submit Review </button>
                     </div>
                 </div>
                 <div id="emoji-picker-container" className="hidden pl-[24px] float-right absolute bottom-2.5 right-2.5 flex">
