@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { BulletListIcon, EmojiIcon, NumberedListIcon, SpoilerIcon } from "../icons";
+import UserReview from "./userreview";
 import Picker from '@emoji-mart/react';
 import axios from "axios";
 import { useEffect, useState, useMemo } from "react";
@@ -179,6 +180,9 @@ export default function GameReviews({ count }) {
                 <div id="emoji-picker-container" className="hidden pl-[24px] float-right absolute bottom-2.5 right-2.5 flex">
                     {emojiData ? <Picker data={emojiData} emojiVersion={14} /> : <span>emojis loading</span>}
                 </div>
+            </div>
+            <div className="flex flex-col items-center">
+                <UserReview />
             </div>
         </nav>
     );
