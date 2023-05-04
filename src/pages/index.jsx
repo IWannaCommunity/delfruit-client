@@ -1,9 +1,9 @@
 import Head from 'next/head'
-import Header from "../components/Header";
-import HomeNews from "../components/Home/HomeNews";
-import HotPicks from "../components/Home/HotPicks";
-import HomeGames from "../components/Home/HomeGames";
-import Footer from "../components/Footer";
+import Header from "../components/header";
+import HomeNews from "../components/home/news";
+import HotPicks from "../components/home/hotpicks";
+import HomeGames from "../components/home/games";
+import Footer from "../components/footer";
 
 export default function Home() {
   return (

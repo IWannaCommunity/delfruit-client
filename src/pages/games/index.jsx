@@ -1,9 +1,9 @@
 import Head from "next/head";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
-import GameBanner from "../../components/Games/GameBanner";
-import GameDetails from "../../components/Games/GameDetails";
-import GameReviews from "../../components/Games/GameReviews";
+import Header from "../../components/header";
+import Footer from "../../components/footer";
+import GameBanner from "../../components/games/banner";
+import GameDetails from "../../components/games/details";
+import GameReviews from "../../components/games/reviews";
 import { useRouter } from "next/router";
 
 const GamePage = () => {

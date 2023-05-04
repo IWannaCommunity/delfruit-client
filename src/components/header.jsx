@@ -1,5 +1,5 @@
 import Image from "next/image";
-import HeaderItem from "./HeaderItem";
+import HeaderItem from "./headeritem";
 import Link from "next/link";
 
 const Header = () => {

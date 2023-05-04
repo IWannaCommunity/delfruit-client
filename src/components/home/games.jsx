@@ -1,4 +1,4 @@
-import GamePreview from "./GamePreview";
+import GamePreview from "./gamepreview";
 import RangeSlider from "../MultiRangeSlider/RangeSlider";
 
 const HomeGames = () => {
