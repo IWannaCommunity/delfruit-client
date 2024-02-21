@@ -55,7 +55,7 @@ export function Carousel({ photoUrls, displayElemId }) {
                         cssClass = "transition-[border] rounded-[10px] border-2 border-[#232123]";
                         arrowVisible = "none";
                     }
-                    return (<div className="w-[222px] h-[154px] inline-block float-none mx-[0.25%]"><Image className={cssClass} width={203} height={154} src={url} onClick={changeDisplay} idx={idx + windowStart} style={{ zIndex: 1, position: "relative" }} />
+                    return (<div key={idx + windowStart} className="w-[222px] h-[154px] inline-block float-none mx-[0.25%]"><Image className={cssClass} width={203} height={154} src={url} onClick={changeDisplay} idx={idx + windowStart} style={{ zIndex: 1, position: "relative" }} />
                         <CarouselSelectorArrow visible={arrowVisible} /></div>
                     )
                 })
