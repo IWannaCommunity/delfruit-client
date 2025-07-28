@@ -45,6 +45,15 @@ function EditPanel(props: { data: Game }): JSX.Element {
 function GameEntry(props: { details: Game }): JSX.Element {
 	const [showEditPanel, setShowEditPanel] = useState(false);
 
+	async function removeGame(
+		evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+	): Promise<void> {
+		evt.preventDefault();
+
+		const client = new GamesApi(void 0, "http://localhost:4201");
+		await client.deleteGame("", props.details.id);
+	}
+
 	return (
 		<p key={props.details.id}>
 			{props.details.name}
@@ -60,6 +69,9 @@ function GameEntry(props: { details: Game }): JSX.Element {
 				}}
 			>
 				update 🛠
+			</button>
+			<button type="button" onClick={removeGame}>
+				trash 🗑
 			</button>
 			<div>{showEditPanel && <EditPanel data={props.details} />}</div>
 			<div>&nbsp;</div>
