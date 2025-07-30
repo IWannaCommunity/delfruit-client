@@ -25,9 +25,9 @@ const GameDetails = ({ title, date, creator, rating, difficulty, tags }) => {
 				</h2>
 				<div className="absolute top-3 right-0 flex-row space-x-5 text-xl">
 					<a>{date}</a>
-					<a>
+					<>
 						By: <a className="text-[#D63636]">{creator}</a>
-					</a>
+					</>
 				</div>
 				<hr className="relative top-10" />
 				<div className="mt-20 grid grid-cols-2">
