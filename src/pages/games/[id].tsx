@@ -5,8 +5,8 @@ import GameBanner from "../../components/games/banner";
 import GameDetails from "../../components/games/details";
 import GameReviews from "../../components/games/reviews";
 import { useRouter } from "next/router";
-import { Game, GamesApi } from "../../generated/swagger-codegen";
-import { useEffect, useState } from "react";
+import { Game, GamesApi, Rating } from "../../generated/swagger-codegen";
+import { useEffect, useState, useMemo } from "react";
 import { AxiosResponse } from "axios";
 
 const apiClient: GamesApi = new GamesApi(void 0, "http://localhost:4201");
@@ -15,23 +15,33 @@ export default function GamePage() {
 	const router = useRouter();
 	const params = router.query;
 
-	const [details, setDetails] = useState<Game>({
-		name: "",
-		dateCreated: "",
-		authorRaw: "",
+	const [details, setDetails] = useState<{ g: Game; r: Rating }>({
+		g: {
+			name: "",
+			dateCreated: "",
+			authorRaw: "",
+		},
+		r: {
+			rating: -1,
+			difficulty: -1,
+		},
 	});
 
-	useEffect(() => {
+	useMemo(() => {
 		(async () => {
 			const requestedPageId: string = params["id"];
 			const req: AxiosResponse<Game, any> = await apiClient.getGame(
 				requestedPageId,
 			);
-			console.log(req);
-			req.data;
-			return setDetails(req.data);
+
+			const gameId: string = params["id"];
+			const req2: AxiosResponse<Rating, any> = await apiClient.getGameRatings(
+				gameId,
+			);
+
+			return setDetails({ g: req.data, r: req2.data });
 		})();
-	});
+	}, []);
 
 	return (
 		<div className="bg-[#F9F9F9]">
@@ -45,11 +55,11 @@ export default function GamePage() {
 			<GameBanner />
 
 			<GameDetails
-				title={details.name}
-				date={details.dateCreated}
-				creator={details.authorRaw}
-				rating="72"
-				difficulty="42"
+				title={details.g.name}
+				date={details.g.dateCreated}
+				creator={details.g.authorRaw}
+				rating={details.r.rating}
+				difficulty={details.r.difficulty}
 			/>
 
 			<GameReviews count="6" />
