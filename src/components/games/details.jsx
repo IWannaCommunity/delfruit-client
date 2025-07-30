@@ -61,9 +61,8 @@ const GameDetails = ({ title, date, creator, rating, difficulty, tags }) => {
 						<h2 className="mt-10 mx-5 text-2xl font-medium">Tags:</h2>
 						<hr className="mt-2 mx-5" />
 						<div className="mt-5 mx-5 flex flex-row">
-							{tags.map((tag) => (
-								<Tag key={tag.name} name={tag.name} />
-							))}
+							{tags &&
+								tags.map((tag) => <Tag key={tag.name} name={tag.name} />)}
 						</div>
 						<div className="mx-4 my-10 absolute bottom-0 flex flex-row gap-3">
 							<div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#232123] border h-[50px] w-[300px] cursor-pointer hover:bg-[#D63636] gap-3">
