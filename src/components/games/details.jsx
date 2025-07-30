@@ -7,10 +7,33 @@ import Difficulty from "./difficulty";
 import { DownloadIcon, ShareIcon, SaveIcon } from "../icons";
 import Tag from "./tag";
 import { Carousel } from "./carousel";
+import { useRouter } from "next/router";
 
 const DISPLAY_CURSCRNSHOT = "displayCurScrnshot";
 
+const ShareButton = (props) => {
+	const requestWebShare = async () => {
+		return await global.navigator.share({
+			title: props.gamename ?? "Delicious Fruit",
+			url: props.pathname ?? globalThis.window.location.href,
+		});
+	};
+
+	return (
+		<div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#F9F9F9] border-2 border-[#232123] h-[50px] w-[147px] cursor-pointer hover:bg-[#4F89E1] hover:border-[#4F89E1] group gap-3">
+			<ShareIcon />{" "}
+			<button
+				className="text-[#232123] text-2xl font-medium group-hover:text-[#F9F9F9]"
+				onClick={requestWebShare}
+			>
+				Share
+			</button>
+		</div>
+	);
+};
+
 const GameDetails = ({ title, date, creator, rating, difficulty, tags }) => {
+	const router = useRouter();
 	const carousel_photos = [
 		"/images/ShowcasedImage-Test.png",
 		"/images/screenshot2.png",
@@ -69,12 +92,10 @@ const GameDetails = ({ title, date, creator, rating, difficulty, tags }) => {
 								<DownloadIcon />{" "}
 								<a className="text-[#F9F9F9] text-2xl font-medium">Download</a>
 							</div>
-							<div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#F9F9F9] border-2 border-[#232123] h-[50px] w-[147px] cursor-pointer hover:bg-[#4F89E1] hover:border-[#4F89E1] group gap-3">
-								<ShareIcon />{" "}
-								<a className="text-[#232123] text-2xl font-medium group-hover:text-[#F9F9F9]">
-									Share
-								</a>
-							</div>
+							{(globalThis.navigator?.share ||
+								globalThis.navigator?.canShare()) && (
+								<ShareButton pathname={router.pathname} gamename={title} />
+							)}
 							<div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#F9F9F9] border-2 border-[#232123] h-[50px] w-[147px] cursor-pointer hover:bg-[#1EB475] hover:border-[#1EB475] group gap-3">
 								<SaveIcon />{" "}
 								<a className="text-[#232123] text-2xl font-medium group-hover:text-[#F9F9F9]">
