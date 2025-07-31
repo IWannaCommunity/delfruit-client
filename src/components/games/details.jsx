@@ -11,6 +11,17 @@ import { useRouter } from "next/router";
 
 const DISPLAY_CURSCRNSHOT = "displayCurScrnshot";
 
+const DownloadButton = (props) => {
+	return (
+		<div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#232123] border h-[50px] w-[300px] cursor-pointer hover:bg-[#D63636] gap-3">
+			<DownloadIcon />{" "}
+			<a className="text-[#F9F9F9] text-2xl font-medium" href={props.href}>
+				Download
+			</a>
+		</div>
+	);
+};
+
 const ShareButton = (props) => {
 	const requestWebShare = async () => {
 		return await global.navigator.share({
@@ -32,7 +43,15 @@ const ShareButton = (props) => {
 	);
 };
 
-const GameDetails = ({ title, date, creator, rating, difficulty, tags }) => {
+const GameDetails = ({
+	title,
+	date,
+	creator,
+	rating,
+	difficulty,
+	tags,
+	dlUrl,
+}) => {
 	const router = useRouter();
 	const carousel_photos = [
 		"/images/ShowcasedImage-Test.png",
@@ -92,10 +111,7 @@ const GameDetails = ({ title, date, creator, rating, difficulty, tags }) => {
 								tags.map((tag) => <Tag key={tag.name} name={tag.name} />)}
 						</div>
 						<div className="mx-4 my-10 absolute bottom-0 flex flex-row gap-3">
-							<div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#232123] border h-[50px] w-[300px] cursor-pointer hover:bg-[#D63636] gap-3">
-								<DownloadIcon />{" "}
-								<a className="text-[#F9F9F9] text-2xl font-medium">Download</a>
-							</div>
+							{dlUrl && <DownloadButton href={dlUrl} />}
 							{(globalThis.navigator?.share ||
 								globalThis.navigator?.canShare()) && (
 								<ShareButton pathname={router.pathname} gamename={title} />
