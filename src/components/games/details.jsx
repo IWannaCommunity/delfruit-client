@@ -40,6 +40,10 @@ const GameDetails = ({ title, date, creator, rating, difficulty, tags }) => {
 		"/images/screenshot3.png",
 		"/images/screenshot4.png",
 	];
+	// display N/A if rating or difficulty is a sentinel value of -1
+	const display_rating = rating != -1 ? rating.toString() + "%" : "N/A";
+	const display_difficulty =
+		difficulty != -1 ? difficulty.toString() + "%" : "N/A";
 	return (
 		<nav className="text-[#232123] bg-[#F9F9F9]">
 			<div className="relative flex-col mx-40 my-10">
@@ -67,7 +71,7 @@ const GameDetails = ({ title, date, creator, rating, difficulty, tags }) => {
 						<div className="mt-5 mx-5 flex flex-row">
 							<Rating value={rating} className="flex justify-start space-x-2" />
 							<div className="absolute right-0 mx-10">
-								<a className="text-xl">{rating}%</a>
+								<a className="text-xl">{display_rating}</a>
 							</div>
 						</div>
 						<h2 className="mt-10 mx-5 text-2xl font-medium">Difficulty:</h2>
@@ -78,7 +82,7 @@ const GameDetails = ({ title, date, creator, rating, difficulty, tags }) => {
 								className="flex justify-start space-x-2"
 							/>
 							<div className="absolute right-0 mx-10">
-								<a className="text-xl">{difficulty}%</a>
+								<a className="text-xl">{display_difficulty}</a>
 							</div>
 						</div>
 						<h2 className="mt-10 mx-5 text-2xl font-medium">Tags:</h2>
