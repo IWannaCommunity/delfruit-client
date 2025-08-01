@@ -188,7 +188,9 @@ export default function GameReviews({ reviews }) {
 				</select>
 			</div>
 			<div className="flex my-10 justify-center items-center">
-				<Image className="cursor-pointer w-[70px] h-[70px] rounded-full border border-[#232123]" />
+				{/* <Image className="cursor-pointer w-[70px] h-[70px] rounded-full border border-[#232123]" />*/}
+				{/* HACK: gotta fake padding on this one too because tailwind is a bit stupid */}
+				<div className="w-[70px]" />
 				<hr className="mr-6" />
 				<div className="relative">
 					<textarea
