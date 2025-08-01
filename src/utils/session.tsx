@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { SetStateAction } from "react";
+import { ReactNode, SetStateAction, createContext, useContext } from "react";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { Dispatch } from "react";
 import jwt from "jsonwebtoken";
@@ -10,11 +10,22 @@ export interface Session {
 	token: string;
 }
 
-export function useSession(): [
+function useSession(): [
 	Session,
 	Dispatch<SetStateAction<Session | undefined>>,
 ] {
-	const [session, setSession] = useState<Session>(null);
+	try {
+		useState(void 0);
+	} catch (e) {
+		console.log("If you only see this once then it should be ok!");
+		console.error(e);
+		return;
+	}
+	const [session, setSession] = useState<Session>({
+		username: "Guest",
+		admin: false,
+		token: "",
+	});
 	useEffect(() => {
 		const sessionCookie = Cookies.get("session");
 		if (sessionCookie === undefined) {
@@ -30,5 +41,26 @@ export function useSession(): [
 		return;
 	}, []);
 	return [session, setSession];
+}
+
+const SessionContext = createContext<
+	[Session, React.Dispatch<SetStateAction<Session>>] | undefined
+>(void 0);
+
+export function SessionContextProvider(props: {
+	children: ReactNode;
+}): JSX.Element {
+	const [session, setSession] = useSession();
+
+	const SessionContextStore = { session, setSession };
+	return (
+		<SessionContext.Provider value={SessionContextStore}>
+			{props.children}
+		</SessionContext.Provider>
+	);
+}
+
+export function useSessionContext() {
+	return useContext(SessionContext);
 }
 }
