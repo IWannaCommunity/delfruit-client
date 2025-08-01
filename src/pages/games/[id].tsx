@@ -6,10 +6,11 @@ import GameDetails from "../../components/games/details";
 import GameReviews from "../../components/games/reviews";
 import { useRouter } from "next/router";
 import {
-	Game,
-	GamesApi,
-	InlineResponse200,
-	Rating,
+    Game,
+    GamesApi,
+    InlineResponse200,
+    Rating,
+    Review,
 } from "../../generated/swagger-codegen";
 import { useEffect, useState, useMemo } from "react";
 import { AxiosResponse } from "axios";
@@ -17,71 +18,108 @@ import { useAsyncEffect } from "../../utils/session";
 
 const apiClient: GamesApi = new GamesApi(void 0, "http://localhost:4201");
 
+interface GameDetails {
+    g: Game;
+    r: {
+        entries: ReadonlyArray<Rating>;
+        absolute: { rating: number; difficulty: number };
+    };
+    t: ReadonlyArray<{ name: string; id: number }>;
+}
+
 export default function GamePage() {
-	const router = useRouter();
-	const params = router.query;
+    const [hydrated, setHydrated] = useState<Boolean>(false);
 
-	const [details, setDetails] = useState<{
-		g: Game;
-		r: Rating;
-		t: ReadonlyArray<{ name: string; id: number }>;
-	}>({
-		g: {
-			name: "",
-			dateCreated: "",
-			authorRaw: "",
-		},
-		r: {
-			rating: -1,
-			difficulty: -1,
-		},
-		t: [],
-	});
+    const router = useRouter();
+    const params = router.query;
 
-	useMemo(() => {
-		(async () => {
-			const requestedPageId: string = params["id"];
-			const req: AxiosResponse<Game, any> = await apiClient.getGame(
-				requestedPageId,
-			);
+    const [details, setDetails] = useState<GameDetails>({
+        g: {
+            name: "",
+            dateCreated: "",
+            authorRaw: "",
+        },
+        r: {
+            entries: [],
+            absolute: {
+                rating: -1,
+                difficulty: -1,
+            },
+        },
+        t: [],
+    });
 
-			const gameId: string = params["id"];
-			const req2: AxiosResponse<Rating, any> = await apiClient.getGameRatings(
-				gameId,
-			);
+    useEffect(() => {
+        if (router.query && router.query.id) {
+            setHydrated(true);
+        }
+    });
 
-			const req3: AxiosResponse<InlineResponse200, any> =
-				await apiClient.getGameTags(gameId);
-			console.log(req3);
-			req3.data;
+    useMemo(() => {
+        if (!hydrated) {
+            return;
+        }
 
-			return setDetails({ g: req.data, r: req2.data, t: req3.data });
-		})();
-	}, []);
+        (async () => {
+            const gameId: string = params["id"];
 
-	return (
-		<div className="bg-[#F9F9F9]">
-			<Head>
-				<title>Delfruit 2</title>
-				<link rel="icon" href="/favicon.ico" />
-			</Head>
+            // game specific infomation
+            const req: AxiosResponse<Game, any> = await apiClient.getGame(gameId);
 
-			<Header />
+            // reviews
+            const req2: AxiosResponse<Review[], any> = await apiClient.getGameReviews(
+                gameId,
+                void 0,
+                void 0,
+                void 0,
+                0,
+                50,
+            );
 
-			<GameBanner />
+            // absolute game rating
+            const req3: AxiosResponse<Rating, any> = await apiClient.getGameRatings(
+                gameId,
+            );
 
-			<GameDetails
-				title={details.g.name}
-				date={details.g.dateCreated}
-				creator={details.g.authorRaw}
-				rating={details.r.rating}
-				difficulty={details.r.difficulty}
-				tags={details.t}
-			/>
+            const req4: AxiosResponse<InlineResponse200, any> =
+                await apiClient.getGameTags(gameId);
 
-			<GameReviews count="6" />
+            return setDetails({
+                g: req.data,
+                r: { entries: req2.data, absolute: req3.data },
+                t: req4.data,
+            });
+        })();
+    }, [hydrated, router]);
 
-			<Footer />
-		</div>
-	);
+    if (hydrated) {
+        return (
+            <div className="bg-[#F9F9F9]">
+                <Head>
+                    <title>Delfruit 2</title>
+                    <link rel="icon" href="/favicon.ico" />
+                </Head>
+
+                <Header />
+
+                <GameBanner />
+
+                <GameDetails
+                    title={details.g.name}
+                    date={details.g.dateCreated}
+                    creator={details.g.authorRaw}
+                    rating={details.r.absolute.rating}
+                    difficulty={details.r.absolute.difficulty}
+                    tags={details.t}
+                    dlUrl={details.g.url}
+                />
+
+                <GameReviews reviews={details.r.entries} />
+
+                <Footer />
+            </div>
+        );
+    } else {
+        return <></>;
+    }
 }
