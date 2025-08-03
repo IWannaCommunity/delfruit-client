@@ -87,13 +87,17 @@ const GameDetails = ({
 				</div>
 				<hr className="relative top-10" />
 				<div className="mt-20 grid grid-cols-2">
-					<Image
-						id={DISPLAY_CURSCRNSHOT}
-						className="mx-auto rounded-lg drop-shadow-[0_10px_8px_rgba(0,0,0,0.50)]"
-						src="/images/ShowcasedImage-Test.png"
-						width={650}
-						height={494}
-					/>
+					{carousel_photos && carousel_photos.length >= 1 ? (
+						<Image
+							id={DISPLAY_CURSCRNSHOT}
+							className="mx-auto rounded-lg drop-shadow-[0_10px_8px_rgba(0,0,0,0.50)] w-[650px] h-[494px]"
+							src={photos[0] ?? ""}
+							width={650}
+							height={494}
+						/>
+					) : (
+						<div className="w-[650px] h-[494px]" />
+					)}
 					<div className="border w-[86%] h-[139%] rounded-lg bg-[#F9F9F9] drop-shadow-[0_10px_8px_rgba(0,0,0,0.50)] flex flex-col">
 						<h2 className="mt-5 mx-5 text-2xl font-medium">Rating:</h2>
 						<hr className="mt-2 mx-5" />
