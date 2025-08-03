@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import ReactDOM from "react-dom";
 import Image from "next/image";
 import { UploadIcon } from "@heroicons/react/outline";
@@ -63,15 +63,12 @@ const GameDetails = ({
 	difficulty,
 	tags,
 	dlUrl,
+	photos,
 }) => {
 	const [session, setSession] = useSessionContext();
 	const router = useRouter();
-	const carousel_photos = [
-		"/images/ShowcasedImage-Test.png",
-		"/images/screenshot2.png",
-		"/images/screenshot3.png",
-		"/images/screenshot4.png",
-	];
+	const carousel_photos = photos;
+
 	// display N/A if rating or difficulty is a sentinel value of -1
 	const display_rating = rating != -1 ? rating.toString() + "%" : "N/A";
 	const display_difficulty =
