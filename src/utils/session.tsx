@@ -5,6 +5,7 @@ import { Dispatch } from "react";
 import jwt from "jsonwebtoken";
 
 export interface Session {
+	active: boolean;
 	username: string;
 	admin: boolean;
 	token: string;
@@ -22,6 +23,7 @@ function useSession(): [
 		return;
 	}
 	const [session, setSession] = useState<Session>({
+		active: false,
 		username: "Guest",
 		admin: false,
 		token: "",
@@ -36,7 +38,7 @@ function useSession(): [
 		const username = sessionToken["username"];
 		const admin = sessionToken["admin"];
 
-		setSession({ username, admin, token: sessionCookie });
+		setSession({ active: true, username, admin, token: sessionCookie });
 
 		return;
 	}, []);
@@ -52,7 +54,7 @@ export function SessionContextProvider(props: {
 }): JSX.Element {
 	const [session, setSession] = useSession();
 
-	const SessionContextStore = { session, setSession };
+	const SessionContextStore = [session, setSession];
 	return (
 		<SessionContext.Provider value={SessionContextStore}>
 			{props.children}
@@ -60,7 +62,10 @@ export function SessionContextProvider(props: {
 	);
 }
 
-export function useSessionContext() {
+export function useSessionContext(): [
+	Session,
+	Dispatch<SetStateAction<Session>>,
+] {
 	return useContext(SessionContext);
 }
 }
