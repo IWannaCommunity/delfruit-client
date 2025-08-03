@@ -8,6 +8,7 @@ import { DownloadIcon, ShareIcon, SaveIcon } from "../icons";
 import Tag from "./tag";
 import { Carousel } from "./carousel";
 import { useRouter } from "next/router";
+import { useSessionContext } from "../../utils/session";
 
 const DISPLAY_CURSCRNSHOT = "displayCurScrnshot";
 
@@ -43,6 +44,17 @@ const ShareButton = (props) => {
 	);
 };
 
+const SaveButton = (props) => {
+	return (
+		<div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#F9F9F9] border-2 border-[#232123] h-[50px] w-[147px] cursor-pointer hover:bg-[#1EB475] hover:border-[#1EB475] group gap-3">
+			<SaveIcon />{" "}
+			<a className="text-[#232123] text-2xl font-medium group-hover:text-[#F9F9F9]">
+				Save
+			</a>
+		</div>
+	);
+};
+
 const GameDetails = ({
 	title,
 	date,
@@ -52,6 +64,7 @@ const GameDetails = ({
 	tags,
 	dlUrl,
 }) => {
+	const [session, setSession] = useSessionContext();
 	const router = useRouter();
 	const carousel_photos = [
 		"/images/ShowcasedImage-Test.png",
@@ -116,12 +129,7 @@ const GameDetails = ({
 								globalThis.navigator?.canShare()) && (
 								<ShareButton pathname={router.pathname} gamename={title} />
 							)}
-							<div className="box-border flex flex-row justify-center items-center rounded-lg bg-[#F9F9F9] border-2 border-[#232123] h-[50px] w-[147px] cursor-pointer hover:bg-[#1EB475] hover:border-[#1EB475] group gap-3">
-								<SaveIcon />{" "}
-								<a className="text-[#232123] text-2xl font-medium group-hover:text-[#F9F9F9]">
-									Save
-								</a>
-							</div>
+							{session.active && <SaveButton />}
 						</div>
 					</div>
 					<Carousel
