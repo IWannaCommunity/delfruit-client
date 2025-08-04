@@ -38,7 +38,9 @@ const Header = () => {
 							stroke="#E4E4E4"
 						/>
 					</svg>
-					<HeaderItem title="INTRO" />
+					<a href="https://fangam.es/intro">
+						<HeaderItem title="INTRO" />
+					</a>
 					<svg
 						width="12"
 						height="30"
