@@ -54,7 +54,9 @@ const Header = () => {
 							stroke="#E4E4E4"
 						/>
 					</svg>
-					<HeaderItem title="WIKI" />
+					<a href="https://www.iwannawiki.com/">
+						<HeaderItem title="WIKI" />
+					</a>
 					<svg
 						width="12"
 						height="30"
