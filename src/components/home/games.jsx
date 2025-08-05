@@ -2,11 +2,13 @@ import GamePreview from "./gamepreview";
 import RangeSlider from "../MultiRangeSlider/RangeSlider";
 import { useEffect, useState } from "react";
 import { GamesApi } from "../../generated/swagger-codegen";
+import { times } from "lodash";
 
 const apiClient = new GamesApi(void 0, "http://localhost:4201");
 
 function HomeGames() {
 	const [games, setGames] = useState(null);
+	const [page, setPage] = useState(0);
 
 	useEffect(() => {
 		const fetchGames = async () => {
@@ -27,7 +29,7 @@ function HomeGames() {
 				void 0,
 				void 0,
 				void 0,
-				0,
+				page,
 				12,
 			);
 			if (req.status !== 200) {
@@ -37,7 +39,7 @@ function HomeGames() {
 		};
 
 		fetchGames();
-	}, []);
+	}, [page]);
 
 	return (
 		<nav className="relative py-10 bg-[#F9F9F9]">
@@ -114,31 +116,32 @@ function HomeGames() {
 						<path d="M0.946884 8.89281L9.78647 0.0532225L12.7323 3.00114L6.83855 8.89281L12.7323 14.7845L9.78647 17.7324L0.946884 8.89281Z" />
 					</svg>
 				</div>
-				<div className="flex justify-center items-center border-2 rounded-lg bg-[#232123] border-[#232123] w-[50px] h-[50px] cursor-pointer group">
-					<a className="group-hover:text-[#F9F9F9] flex font-semibold text-2xl text-[#F9F9F9]">
-						1
-					</a>
-				</div>
-				<div className="flex justify-center items-center border-2 rounded-lg bg-[#F9F9F9] hover:bg-[#232123] border-[#232123] w-[50px] h-[50px] cursor-pointer group">
-					<a className="group-hover:text-[#F9F9F9] flex font-semibold text-2xl">
-						2
-					</a>
-				</div>
-				<div className="flex justify-center items-center border-2 rounded-lg bg-[#F9F9F9] hover:bg-[#232123] border-[#232123] w-[50px] h-[50px] cursor-pointer group">
-					<a className="group-hover:text-[#F9F9F9] flex font-semibold text-2xl">
-						3
-					</a>
-				</div>
-				<div className="flex justify-center items-center border-2 rounded-lg bg-[#F9F9F9] hover:bg-[#232123] border-[#232123] w-[50px] h-[50px] cursor-pointer group">
-					<a className="group-hover:text-[#F9F9F9] flex font-semibold text-2xl">
-						4
-					</a>
-				</div>
-				<div className="flex justify-center items-center border-2 rounded-lg bg-[#F9F9F9] hover:bg-[#232123] border-[#232123] w-[50px] h-[50px] cursor-pointer group">
-					<a className="group-hover:text-[#F9F9F9] flex font-semibold text-2xl">
-						5
-					</a>
-				</div>
+				{times(5, (idx) => {
+					const changePage = async () => {
+						setPage(idx);
+					};
+
+					const unselectedClasses =
+						"group-hover:text-[#F9F9F9] bg-[#F9F9F9] hover:bg-[#232123] border-[#232123]";
+					const selectedClasses =
+						"text-[#F9F9F9] bg-[#232123] border-[#232123]";
+
+					const extraClasses = [];
+					if (idx === page) {
+						extraClasses.push(selectedClasses);
+					} else {
+						extraClasses.push(unselectedClasses);
+					}
+					const clsName = `flex justify-center items-center border-2 rounded-lg ${extraClasses[0]} w-[50px] h-[50px] cursor-pointer group`;
+					return (
+						<a className={clsName} onClick={changePage}>
+							<div className="group-hover:text-[#F9F9F9] flex font-semibold text-2xl">
+								{idx + 1}
+							</div>
+						</a>
+					);
+				})}
+
 				<div className="flex justify-center items-center border-2 rounded-lg bg-[#F9F9F9] hover:bg-[#232123] border-[#232123] w-[100px] h-[50px] cursor-pointer group">
 					<svg
 						className="group-hover:fill-[#F9F9F9]"
