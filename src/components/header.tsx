@@ -10,38 +10,41 @@ export default function Header(): JSX.Element {
 		<div id="container">
 			<div id="header">
 				<div className="!float-left">
-					<a href="/" style={{ textDecoration: "none" }}>
+					<a className="!no-underline" href="/">
 						<h1>
 							<Image src="/images/cherry.gif" width={21} height={24} />
+							<Whitespace />
 							Delicious Fruit
 						</h1>
 					</a>
 					<br />
 				</div>
-				<div className="text-right">
+				<div className="!text-right">
 					<form>
-						<>Find a fangame:</>
+						<> Find a fangame: </>
 						<input
 							type="text"
 							id="txt_search"
 							name="s"
 							placeholder="name or developer"
-							size={15}
+							size="15"
 						/>
+						<Whitespace />
 						<input className="styled-button-1" type="submit" value="Search" />
-						<a className="styled-button-1 !inline-block !h-[12px]">
+						<Whitespace />
+						<a className="styled-button-1 !inline-block !h-[12px]" href="/">
 							Advanced...
 						</a>
 					</form>
-
 					{!session.active && (
-						<p>
-							<a>Login</a>
-							<a>Register</a>
+						<p className="!mt-[1em]">
+							<a href="/">Login</a>
+							<Whitespace />
+							<a href="/">Register</a>
 						</p>
 					)}
-
-					<div className="!clear-both !text-left">
+				</div>
+				<div className="!clear-both">
 						<a className="navbutton2" href="/">
 							Fangames
 						</a>
@@ -70,11 +73,22 @@ export default function Header(): JSX.Element {
 						</a>
 						<Whitespace />
 						<form className="!float-right">
-							<select id="language"></select>
+							<select id="language" name="locale">
+								<option value="en_US" selected>English</option>
+								<option value="cs_CZ">Čeština</option>
+								<option value="de_DE">Deutsch</option>
+								<option value="fr_FR">Français</option>
+								<option value="ja_JP">日本語</option>
+								<option value="ko_KR">한국어</option>
+								<option value="nl_NL">Nederlands</option>
+								<option value="pt_BR">Português</option>
+								<option value="ru_RU">Русский</option>
+								<option value="zh_CN">中文</option>
+							</select>
+							<Whitespace />
 							<input type="submit" value="Submit" />
 						</form>
 					</div>
-				</div>
 			</div>
 		</div>
 	);
