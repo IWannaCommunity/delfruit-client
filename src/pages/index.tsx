@@ -9,7 +9,9 @@ export default function Home(): JSX.Element {
 				<title>Delicious Fruit</title>
 			</Head>
 			<body>
-				<Header />
+				<div id="container">
+					<Header />
+				</div>
 			</body>
 		</>
 	);
