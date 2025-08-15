@@ -254,6 +254,7 @@ a.styled-button-1 {
 table {
 	border-collapse:collapse;
 	width: 100%;
+	font-size: medium;
 }
 
 table th {
@@ -304,24 +305,24 @@ div.reportDiv {
 #rating.ui-slider-horizontal
 {
 background: #ffffff; /* Old browsers */
-background: -moz-linear-gradient(left, #ffdddd 0%, #ddffdd 100%) !important; /* FireFox 3.6+ */
+background: -moz-linear-gradient(to right, #ffdddd 0%, #ddffdd 100%) !important; /* FireFox 3.6+ */
 background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ffdddd), color-stop(100%,#ddffdd)); /* Chrome, Safari 4+ */
-background: -webkit-linear-gradient(left, #ffdddd 0%,#ddffdd 100%); /* Chrome 10+, Safari 5.1+ */
-background: -o-linear-gradient(left, #ffdddd 0%,#ddffdd 100%); /* Opera 11.10+ */
-background: -ms-linear-gradient(left, #ffdddd 0%,#ddffdd 100%); /* IE 10+ */
-background: linear-gradient(left, #ffdddd 0%,#ddffdd 100%); /* W3C */
+background: -webkit-linear-gradient(to right, #ffdddd 0%,#ddffdd 100%); /* Chrome 10+, Safari 5.1+ */
+background: -o-linear-gradient(to right, #ffdddd 0%,#ddffdd 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(to right, #ffdddd 0%,#ddffdd 100%); /* IE 10+ */
+background: linear-gradient(to right, #ffdddd 0%,#ddffdd 100%); /* W3C */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=’#ffdddd’, endColorstr=’#ddffdd′,GradientType=1 ); /* IE 6-9 */
 }
 
 #difficulty.ui-slider-horizontal
 {
 background: #ffffff; /* Old browsers */
-background: -moz-linear-gradient(left, #ddddff 0%, #ffdddd 100%) !important; /* FireFox 3.6+ */
+background: -moz-linear-gradient(to right, #ddddff 0%, #ffdddd 100%) !important; /* FireFox 3.6+ */
 background: -webkit-gradient(linear, left top, right top, color-stop(0%,#ddddff), color-stop(100%,#ffdddd)); /* Chrome, Safari 4+ */
-background: -webkit-linear-gradient(left, #ddddff 0%,#ffdddd 100%); /* Chrome 10+, Safari 5.1+ */
-background: -o-linear-gradient(left, #ddddff 0%,#ffdddd 100%); /* Opera 11.10+ */
-background: -ms-linear-gradient(left, #ddddff 0%,#ffdddd 100%); /* IE 10+ */
-background: linear-gradient(left, #ddddff 0%,#ffdddd 100%); /* W3C */
+background: -webkit-linear-gradient(to right, #ddddff 0%,#ffdddd 100%); /* Chrome 10+, Safari 5.1+ */
+background: -o-linear-gradient(to right, #ddddff 0%,#ffdddd 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(to right, #ddddff 0%,#ffdddd 100%); /* IE 10+ */
+background: linear-gradient(to right, #ddddff 0%,#ffdddd 100%); /* W3C */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=’#ddddff’, endColorstr=’#ffdddd′,GradientType=1 ); /* IE 6-9 */
 }
 
