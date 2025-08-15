@@ -2,8 +2,8 @@ import Head from "next/head";
 import type { AnyElem } from "../utils/element";
 import Header from "../components/header";
 import News from "../components/home/news";
-import Games from "../components/home/games";
-import Reviews from "../components/home/reviews";
+import GameList from "../components/home/gameList";
+import ReviewList from "../components/home/reviewList";
 
 export default function Home(): JSX.Element {
 	return (
@@ -16,8 +16,8 @@ export default function Home(): JSX.Element {
 					<Header />
 					<div id="content">
 						<News />
-						<Games />
-						<Reviews />
+						<GameList />
+						<ReviewList />
 					</div>
 				</div>
 			</body>
