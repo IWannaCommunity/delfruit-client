@@ -327,7 +327,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=’#ddddff’,
 
 span.stars, span.stars span {
     display: inline-block;
-    background: url(/img/stars.png) 0 0px repeat-x;
+    background: url(../../public/images/stars.png) 0 0px repeat-x;
     width: 170px;
     height: 16px;
 }
@@ -342,7 +342,7 @@ span.stars {
 
 span.hearts, span.hearts span {
     display: inline-block;
-    background: url(/img/hearts.png) 0 0px repeat-x;
+    background: url(../../public/images/hearts.png) 0 0px repeat-x;
     width: 170px;
     height: 16px;
 }
