@@ -3,9 +3,6 @@ import Header from "../../components/header";
 import Whitespace from "../../components/whitespace";
 import "purecss/pure-min.css";
 
-const RFC5322Regex: string =
-	"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)])";
-
 export default function Register(): JSX.Element {
 	return (
 		<>
@@ -43,7 +40,7 @@ export default function Register(): JSX.Element {
 						<li>
 							<span className="font-bold">Be Respectful</span>
 							<Whitespace />- You may not like a game, but do not bash the
-							creator directly, STate what you did/did not like about the game,
+							creator directly. State what you did/did not like about the game,
 							and leave it at that.
 						</li>
 						<li>Do not impersonate another user of the community.</li>
@@ -80,7 +77,7 @@ export default function Register(): JSX.Element {
 								elsewhere throughout the site!
 							</p>
 
-							<div class="pure-control-group">
+							<div className="pure-control-group">
 								<label htmlFor="pass">Password</label>
 								<input
 									className="pure-input-1-3"
@@ -102,7 +99,6 @@ export default function Register(): JSX.Element {
 									required
 									placeholder=""
 									name="pass_confirm"
-									value=""
 								/>
 							</div>
 
@@ -112,7 +108,6 @@ export default function Register(): JSX.Element {
 									className="pure-input-1-3"
 									id="email"
 									type="email"
-									pattern={RFC5322Regex}
 									placeholder=""
 									name="email"
 								/>
@@ -130,7 +125,7 @@ export default function Register(): JSX.Element {
 								type="hidden"
 								id="securityquestion"
 								name="securityquestion"
-								value="1"
+								defaultValue="1"
 							/>
 
 							<div className="pure-control-group">
