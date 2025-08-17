@@ -68,4 +68,3 @@ export function useSessionContext(): [
 ] {
 	return useContext(SessionContext);
 }
-}
