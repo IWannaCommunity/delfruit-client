@@ -168,8 +168,8 @@ div.rating {
 	
 	width: 175px;
 	float: left;
-	text-align:
-	center; padding-top:6px;
+	text-align: center; 
+	padding-top:6px;
 	
 	margin: 0px 4px 13px 4px;
 	
@@ -328,7 +328,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=’#ddddff’,
 
 span.stars, span.stars span {
     display: inline-block;
-    background: url(../../public/images/stars.png) 0 0px repeat-x;
+    background: url('/images/stars.png') 0 0px repeat-x;
     width: 170px;
     height: 16px;
 }
@@ -343,7 +343,7 @@ span.stars {
 
 span.hearts, span.hearts span {
     display: inline-block;
-    background: url(../../public/images/hearts.png) 0 0px repeat-x;
+    background: url('/images/hearts.png') 0 0px repeat-x;
     width: 170px;
     height: 16px;
 }
@@ -449,4 +449,22 @@ input#admin-creator-input {
 
 button#admin-change-creator {
   margin-bottom: 1em;
+}
+
+/* tables */
+table.tablesorter {
+	background-color: #CDCDCD;
+	margin:10px 0pt 15px;
+	width: 100%;
+	text-align: left;
+}
+
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	border: 1px solid #FFF;
+	padding: 4px;
+}
+
+table.tablesorter tbody td {
+	padding: 4px;
+	vertical-align: top;
 }

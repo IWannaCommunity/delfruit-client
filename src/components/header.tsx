@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { AnyElem } from "../utils/element";
 import { useSessionContext } from "../utils/session";
 import Whitespace from "./whitespace";
+import Link from "next/link";
 
 export default function Header(): JSX.Element {
 	const [session, setSession] = useSessionContext();
@@ -11,7 +12,7 @@ export default function Header(): JSX.Element {
 			<div className="!float-left">
 				<a className="!no-underline" href="/">
 					<h1>
-						<Image src="/images/cherry.gif" width={21} height={24} />
+						<Image src="/images/cherry.gif" alt="Delicious Fruit" width={21} height={24} />
 						<Whitespace />
 						Delicious Fruit
 					</h1>
@@ -20,7 +21,7 @@ export default function Header(): JSX.Element {
 			</div>
 			<div className="!text-right">
 				<form>
-					<> Find a fangame: </>
+					<span> Find a fangame: </span>
 					<input
 						type="text"
 						id="txt_search"
@@ -29,7 +30,10 @@ export default function Header(): JSX.Element {
 						size="15"
 					/>
 					<Whitespace />
-					<input className="styled-button-1" type="submit" value="Search" />
+					{/* THIS IS TEMPORARY SO I CAN TEST THE SEARCH PAGE*/}
+					<Link href="/search">
+						<input className="styled-button-1" type="submit" value="Search" />
+					</Link>
 					<Whitespace />
 					<a className="styled-button-1 !inline-block !h-[12px]" href="/">
 						Advanced...
@@ -70,7 +74,7 @@ export default function Header(): JSX.Element {
 				<Whitespace />
 				<form className="!float-right">
 					<select id="language" name="locale">
-						<option value="en_US" selected>
+						<option value="en_US" defaultValue>
 							English
 						</option>
 						{false && (
