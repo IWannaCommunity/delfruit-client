@@ -5,8 +5,8 @@ export default function GameInfo(): JSX.Element {
 	return (
 		<div className="!w-[50%] !float-left">
 			<h1 className="!wrap-break-word">I wanna be the Blank </h1>
-			<h2 id="creator-label" className="!mb-[13px]"> Creator:&nbsp; 
-				<a href="/">TTBB</a>
+			<h2 id="creator-label" className="!mb-[13px]"> 
+				Creator: <a href="/">TTBB</a>
 			</h2>
 			<div className="!w-[380px] !m-auto !h-[80px]">
 				<div className="rating !bg-[#a7d780]">

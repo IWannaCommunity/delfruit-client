@@ -1,31 +1,23 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useRef } from "react";
+import { useInfiniteScroll } from "../utils/infiniteScroll";
 
 /* --------------------------------------------------------
- * Type Definitions
- * --------------------------------------------------------
- * Define the data structure for each game entry.
- */
+ * Types
+ * ------------------------------------------------------ */
 type Game = {
   id: number;
   Game: string;
-  ReleaseDate: string; // stored as "YYYY-MM-DD HH:MM:SS"
+  ReleaseDate: string;
   Difficulty: number;
   Ratings: number;
   RatingCount: number;
 };
 
+type SortConfig = { column: keyof Game; direction: "asc" | "desc" };
+
 /* --------------------------------------------------------
- * Mock Data Generator
- * --------------------------------------------------------
- * - Each game has a randomized release date in format
- *   "YYYY-MM-DD HH:MM:SS".
- * - Difficulty, Ratings, and RatingCount are randomized
- *   for testing infinite scrolling and sorting.
- * - NOTE: Calling math.random() here at module load time
-		 causes a hydration error on reload 
-		 due to a mismatch in values. Ignore this error for now
-		 since it is only here for testing purposes.
- */
+ * Mock Data (NOTE: Math.floor causes hydration error, ignore for testing)
+ * ------------------------------------------------------ */
 const allGames: Game[] = Array.from({ length: 20000 }, (_, i) => {
   const year = 2007 + Math.floor(Math.random() * 20);
   const month = String(1 + Math.floor(Math.random() * 12)).padStart(2, "0");
@@ -46,11 +38,6 @@ const allGames: Game[] = Array.from({ length: 20000 }, (_, i) => {
   };
 });
 
-/* --------------------------------------------------------
- * Table Column Definitions
- * --------------------------------------------------------
- * Key matches data field in `Game`.
- */
 const columns = [
   { key: "Game", label: "Game" },
   { key: "ReleaseDate", label: "Release Date" },
@@ -60,19 +47,8 @@ const columns = [
 ];
 
 /* --------------------------------------------------------
- * Sorting Configuration Type
- * --------------------------------------------------------
- * column = dataset field (keyof Game)
- * direction = "asc" | "desc"
- */
-type SortConfig = { column: keyof Game; direction: "asc" | "desc" };
-
-/* --------------------------------------------------------
- * Date Parsing and Formatting
- * --------------------------------------------------------
- * - Cache timestamps to avoid repeated parsing
- * - Format dates as "MMM DD, YYYY"
- */
+ * Date Helpers - Cache timestamps to avoid repeated parsing
+ * ------------------------------------------------------ */
 const dateCache: Record<string, number> = {};
 const getTimestamp = (dateString: string): number => {
   if (!dateCache[dateString]) {
@@ -81,7 +57,7 @@ const getTimestamp = (dateString: string): number => {
   return dateCache[dateString];
 };
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string): string => {
   const parsed = new Date(dateString.replace(" ", "T"));
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
@@ -91,41 +67,29 @@ const formatDate = (dateString: string) => {
 };
 
 /* --------------------------------------------------------
- * Main Component
- * --------------------------------------------------------
- * Includes:
- * - Responsive layout
- * - Infinite scroll (IntersectionObserver)
- * - Sort caching (LRU-style)
- */
-export default function Search(): JSX.Element {
-  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
-  const [page, setPage] = useState(1);
+ * Sorting/Cache Logic
+ * ------------------------------------------------------ */
+type SortCache = Map<string, Game[]>;
+const MAX_CACHE = 5;
 
-  // Sort cache (LRU)
-  type SortCache = Map<string, Game[]>;
-  const sortCache = useRef<SortCache>(new Map());
-  const MAX_CACHE = 5;
-
-  /* --------------------------------------------------------
-   * Sorting Logic
-   * --------------------------------------------------------
-   * - Memoized sorting of `allGames`.
-   * - Uses `sortCache` to avoid re-sorting the same column/direction.
-   */
-  const sortedAllGames = useMemo(() => {
-    if (!sortConfig) return [...allGames];
+const useSortedGames = (
+  games: Game[],
+  sortConfig: SortConfig | null,
+  sortCache: React.MutableRefObject<SortCache>
+) => {
+  return useMemo(() => {
+    if (!sortConfig) return [...games];
 
     const key = `${sortConfig.column}-${sortConfig.direction}`;
     if (sortCache.current.has(key)) {
-      const result = sortCache.current.get(key)!;
-      sortCache.current.delete(key); // Refresh order
-      sortCache.current.set(key, result);
-      return result;
+      const cached = sortCache.current.get(key)!;
+      sortCache.current.delete(key);
+      sortCache.current.set(key, cached);
+      return cached;
     }
 
     const { column, direction } = sortConfig;
-    const sorted = [...allGames].sort((a, b) => {
+    const sorted = [...games].sort((a, b) => {
       const valA = a[column];
       const valB = b[column];
 
@@ -137,8 +101,8 @@ export default function Search(): JSX.Element {
 
       if (typeof valA === "string" && typeof valB === "string") {
         return direction === "asc"
-          ? (valA as string).localeCompare(valB as string)
-          : (valB as string).localeCompare(valA as string);
+          ? valA.localeCompare(valB)
+          : valB.localeCompare(valA);
       }
 
       return direction === "asc"
@@ -153,22 +117,25 @@ export default function Search(): JSX.Element {
     }
 
     return sorted;
-  }, [sortConfig]);
+  }, [games, sortConfig]);
+};
 
-  /* --------------------------------------------------------
-   * Pagination (infinite scroll)
-   * --------------------------------------------------------
-   */
-  const visibleGames = useMemo(() => {
-    return sortedAllGames.slice(0, page * 20);
-  }, [sortedAllGames, page]);
+/* --------------------------------------------------------
+ * Component
+ * ------------------------------------------------------ */
+export default function Search(): JSX.Element {
+  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+  const [page, setPage] = useState(1);
 
-  /* --------------------------------------------------------
-   * Sorting Handler
-   * --------------------------------------------------------
-   * - Toggles ASC/DESC when clicking same column
-   * - Defaults to ASC when switching columns
-   */
+  const sortCache = useRef<SortCache>(new Map());
+  const sortedAllGames = useSortedGames(allGames, sortConfig, sortCache);
+  const visibleGames = useMemo(
+    () => sortedAllGames.slice(0, page * 20),
+    [sortedAllGames, page]
+  );
+
+  const loaderRef = useInfiniteScroll<HTMLDivElement>(() => setPage((p) => p + 1));
+
   const handleSort = (column: keyof Game) => {
     if (sortConfig?.column === column) {
       setSortConfig({
@@ -178,65 +145,27 @@ export default function Search(): JSX.Element {
     } else {
       setSortConfig({ column, direction: "asc" });
     }
-    setPage(1); // Reset scroll back
+    setPage(1);
   };
 
-  /* --------------------------------------------------------
-   * Header Sorting Icon
-   * --------------------------------------------------------
-   */
   const getSortIcon = (column: keyof Game) => {
     if (sortConfig?.column !== column) return "/images/bg.gif";
-    return sortConfig.direction === "asc" ? "/images/asc.gif" : "/images/desc.gif";
+    return sortConfig.direction === "asc"
+      ? "/images/asc.gif"
+      : "/images/desc.gif";
   };
 
-  /* --------------------------------------------------------
-   * Infinite Scroll (IntersectionObserver)
-   * --------------------------------------------------------
-   */
-  const loaderRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prev) => prev + 1);
-        }
-      },
-      { threshold: 1 }
-    );
-
-    if (loaderRef.current) observer.observe(loaderRef.current);
-    return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
-    };
-  }, []);
-
-  /* --------------------------------------------------------
-   * Render
-   * --------------------------------------------------------
-   */
   return (
-    <div id="content" className="px-4 sm:px-6 lg:px-8">
-      {/* Title */}
+    <div
+      id="content"
+      className="px-4 sm:px-6 lg:px-8 min-h-screen scrollbar-gutter-stable"
+    >
       <h2>Full Fangame List</h2>
 
-      {/* Letter Navigation */}
-      <p>Choose a letter to get fangames starting with that letter:</p>
-      <p className="flex flex-wrap gap-1">
-        {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
-          <React.Fragment key={letter}>
-            <a href="/">{letter}</a>
-          </React.Fragment>
-        ))}
-        <a href="/">ALL</a>
-      </p>
-
-      {/* Search Info */}
       <p className="!font-bold mb-2">
         Showing search results for: [game name here] ({sortedAllGames.length} results)
       </p>
 
-      {/* Responsive Table Wrapper */}
       <div className="overflow-x-auto">
         <table className="tablesorter min-w-[600px] w-full">
           <thead>
