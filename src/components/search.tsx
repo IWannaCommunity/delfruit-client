@@ -33,7 +33,7 @@ const allGames: Game[] = Array.from({ length: 20000 }, (_, i) => {
     Game: `I wanna be the ${String.fromCharCode(65 + (i % 26))}${i}`,
     ReleaseDate,
     Difficulty: (i % 100) + Math.random(),
-    Ratings: (i % 10) + Math.random(),
+    Rating: (i % 10) + Math.random(),
     RatingCount: i,
   };
 });
@@ -42,7 +42,7 @@ const columns = [
   { key: "Game", label: "Game" },
   { key: "ReleaseDate", label: "Release Date" },
   { key: "Difficulty", label: "Difficulty" },
-  { key: "Ratings", label: "Ratings" },
+  { key: "Rating", label: "Rating" },
   { key: "RatingCount", label: "# of Ratings" },
 ];
 
@@ -161,6 +161,17 @@ export default function Search(): JSX.Element {
       className="px-4 sm:px-6 lg:px-8 min-h-screen scrollbar-gutter-stable"
     >
       <h2>Full Fangame List</h2>
+			
+			{/* Letter Navigation */}
+      <p>Choose a letter to get fangames starting with that letter:</p>
+      <p className="flex flex-wrap gap-1">
+        {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
+          <React.Fragment key={letter}>
+            <a href="/">{letter}</a>
+          </React.Fragment>
+        ))}
+        <a href="/">ALL</a>
+      </p>
 
       <p className="!font-bold mb-2">
         Showing search results for: [game name here] ({sortedAllGames.length} results)
@@ -192,7 +203,7 @@ export default function Search(): JSX.Element {
                 </td>
                 <td className="rating">{formatDate(game.ReleaseDate)}</td>
                 <td className="rating">{game.Difficulty.toFixed(1)}</td>
-                <td className="rating">{game.Ratings.toFixed(1)}</td>
+                <td className="rating">{game.Rating.toFixed(1)}</td>
                 <td className="rating">{game.RatingCount}</td>
               </tr>
             ))}
