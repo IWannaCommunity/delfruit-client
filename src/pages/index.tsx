@@ -35,7 +35,8 @@ export default function Home(): JSX.Element {
 					void 0,
 					void 0,
 					void 0,
-					new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+					//new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+					void 0,
 					new Date(Date.now()),
 					void 0,
 					void 0,
