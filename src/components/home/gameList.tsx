@@ -1,6 +1,10 @@
-import Game from "../game";
+import Game, { GameProps } from "../game";
 
-export default function GameList(): JSX.Element {
+type GameListProps = {
+	games: GameProps[];
+};
+
+export default function GameList(props: GameListProps): JSX.Element {
 	return (
 		<div className="!mb-[1em]">
 			<h2>Newest Fangames</h2>
@@ -14,50 +18,44 @@ export default function GameList(): JSX.Element {
 						<th>Rating</th>
 						<th># of Ratings</th>
 					</tr>
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
-					<Game />
+					{props?.games?.map((game, idx) => {
+						return (
+							<Game
+								name={game.name}
+								id={game.id}
+								date={game.date}
+								rating={game.rating}
+								difficulty={game.difficulty}
+								numOfRatings={game.numOfRatings}
+							/>
+						);
+					})}
 				</tbody>
 			</table>
-			<br/>
+			<br />
 			<table>
 				<tbody>
 					<tr>
 						<td className="!text-center">
-							<a className="text-base" href="/">Full List</a>
+							<a className="text-base" href="/">
+								Full List
+							</a>
 						</td>
 						<td className="!text-center">
-							<a className="text-base" href="/">Random Game!</a>
+							<a className="text-base" href="/">
+								Random Game!
+							</a>
 						</td>
 						<td className="!text-center">
-							<a className="text-base" href="/">User List</a>
+							<a className="text-base" href="/">
+								User List
+							</a>
 						</td>
 					</tr>
 				</tbody>
 			</table>
-			<br/>
+			<br />
 		</div>
 	);
 }
+
