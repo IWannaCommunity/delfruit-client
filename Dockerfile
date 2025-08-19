@@ -19,7 +19,7 @@ RUN npm cache clean --force
 
 ARG API_URL="/api"
 
-RUN apk --no-cache add sd --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
+RUN apk --no-cache add sd --repository=http://dl-cdn.alpinelinux.org/alpine/v3.19/community/
 RUN sd --string-mode "http://localhost:4201" "$API_URL" ./src/config.json
 
 RUN npm run build
