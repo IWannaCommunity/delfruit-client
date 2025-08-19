@@ -3,7 +3,7 @@ import type { AnyElem } from "../../utils/element";
 import Header from "../../components/header";
 import Whitespace from "../../components/whitespace";
 import { useSessionContext } from "../../utils/session";
-import { AuthenticationApi } from "../../generated/swagger-codegen";
+import { AuthenticationApi } from "delfruit-swagger-cg-sdk";
 import { FormEvent } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
