@@ -20,7 +20,7 @@ export default function Game(): JSX.Element {
 	const params = router.query;
 
 	useMemo(() => {
-		if (params.id === null) {
+		if (params.id === null || params.id === undefined) {
 			return;
 		}
 
@@ -52,4 +52,3 @@ export default function Game(): JSX.Element {
 		</div>
 	);
 }
-
