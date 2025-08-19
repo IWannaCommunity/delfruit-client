@@ -1,9 +1,6 @@
-const ExcludeAssetsPlugin = require("./exclude-assets.plugin.js");
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: true,
-	rootDir: "/src/",
 	images: {
 		remotePatterns: [
 			{
@@ -13,6 +10,7 @@ const nextConfig = {
 				pathname: "**",
 			},
 		],
+		unoptimized: true,
 	},
 	transpilePackages: ["delfruit-swagger-cg-sdk"],
 	typescript: {
