@@ -1,13 +1,27 @@
-export default function Game(): JSX.Element {
+export type GameProps = {
+	name: string;
+	id: number;
+	date: Date | string;
+	rating: number;
+	difficulty: number;
+	numOfRatings: number;
+};
+
+export default function Game(props: GameProps): JSX.Element {
 	return (
 		<tr>
 			<td>
-				<a className="!max-w-[12em] !break-all" href="/game">I wanna be the Blank</a>
+				<a className="!max-w-[12em] !break-all" href={`/game/${props.id}`}>
+					{props.name}
+				</a>
 			</td>
-			<td className="rating">Aug 13, 2025</td>
-			<td className="rating">100.0</td>
-			<td className="rating">10.0</td>
-			<td className="rating">47</td>
+			<td className="rating">{new Date(props.date).toDateString()}</td>
+			<td className="rating">{props.rating !== -1 ? props.rating : "N/A"}</td>
+			<td className="rating">
+				{props.difficulty !== -1 ? props.difficulty : "N/A"}
+			</td>
+			<td className="rating">{props.numOfRatings}</td>
 		</tr>
 	);
 }
+
