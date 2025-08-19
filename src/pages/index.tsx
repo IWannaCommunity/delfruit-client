@@ -6,11 +6,11 @@ import ReviewList from "../components/home/reviewList";
 import { CompositeApi } from "delfruit-swagger-cg-sdk";
 import { useMemo, useState } from "react";
 import { GameProps } from "../components/game";
+import type { Config } from "../utils/config";
 
-const apiClient: CompositeApi = new CompositeApi(
-	void 0,
-	"http://localhost:4201",
-);
+const CFG: Config = require("../config.json");
+
+const apiClient: CompositeApi = new CompositeApi(void 0, CFG.apiURL.toString());
 
 export default function Home(): JSX.Element {
 	const [games, setGames] = useState<GameProps[]>([]);
