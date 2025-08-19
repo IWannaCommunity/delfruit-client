@@ -7,19 +7,6 @@ import GameReviews from "../../components/game/gameReviews";
 
 export default function Game(): JSX.Element {
 	return (
-		<div>
-			<Head>
-				<title>Delicious Fruit</title>
-			</Head>
-			<div id="container">
-				<Header />
-				<div id="content">
-					<div className="!w-full">
-						<GameInfo />
-					</div>
-					<GameReviews />
-				</div>
-			</div>
-		</div>
+		<></>
 	);
 }
