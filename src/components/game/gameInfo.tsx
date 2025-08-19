@@ -10,9 +10,9 @@ type GameInfoProps = {
 export default function GameInfo(props: GameInfoProps): JSX.Element {
 	return (
 		<div className="!w-[50%] !float-left">
-			<h1 className="!wrap-break-word">I wanna be the Blank </h1>
+			<h1 className="!wrap-break-word">{props.game.name} </h1>
 			<h2 id="creator-label" className="!mb-[13px]">
-				Creator: <a href="/">TTBB</a>
+				Creator: <a href="/">{props.game.author}</a>
 			</h2>
 			<div className="!w-[380px] !m-auto !h-[80px]">
 				<div className="rating !bg-[#a7d780]">
@@ -113,4 +113,3 @@ export default function GameInfo(props: GameInfoProps): JSX.Element {
 		</div>
 	);
 }
-
