@@ -4,10 +4,10 @@
     "module": "commonjs",
     "lib": [
       "dom",
-	  "dom.iterable",
-	  "ES5",
-	  "ES2015",
-	  "ES6"
+      "dom.iterable",
+      "ES5",
+      "ES2015",
+      "ES6"
     ],
     "checkJs": true,
     "jsx": "preserve", /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
@@ -27,6 +27,7 @@
     "incremental": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "isolatedModules": true
   },
   "include": [
