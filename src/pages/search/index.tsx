@@ -1,9 +1,8 @@
 import Head from "next/head";
-import type { AnyElem } from "../utils/element";
 import Header from "../../components/header";
 import Search from "../../components/search";
 
-export default function Game(): JSX.Element {
+export default function SearchPage(): NextPage {
 	return (
 		<div>
 			<Head>

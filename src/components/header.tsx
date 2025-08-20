@@ -3,9 +3,26 @@ import type { AnyElem } from "../utils/element";
 import { useSessionContext } from "../utils/session";
 import Whitespace from "./whitespace";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export default function Header(): JSX.Element {
 	const [session, setSession] = useSessionContext();
+	const router = useRouter();
+  const [search, setSearch] = useState("");
+	
+	useEffect(() => {
+    if (typeof router.query.s === "string") {
+      setSearch(router.query.s);
+    }
+  }, [router.query.s]);
+
+  const handleSearch = () => {
+    router.push({
+      pathname: "/search",
+      query: search ? { s: search } : {}
+    });
+  };
 
 	return (
 		<div id="header">
@@ -20,25 +37,21 @@ export default function Header(): JSX.Element {
 				<br />
 			</div>
 			<div className="!text-right">
-				<form>
-					<span> Find a fangame: </span>
-					<input
-						type="text"
-						id="txt_search"
-						name="s"
-						placeholder="name or developer"
-						size="15"
-					/>
-					<Whitespace />
-					{/* THIS IS TEMPORARY SO I CAN TEST THE SEARCH PAGE*/}
-					<Link href="/search">
-						<input className="styled-button-1" type="submit" value="Search" />
-					</Link>
-					<Whitespace />
-					<a className="styled-button-1 !inline-block !h-[12px]" href="/">
-						Advanced...
-					</a>
-				</form>
+				<span>Find a fangame: </span>
+				<input
+					type="text"
+					placeholder="name or developer"
+					size={15}
+					value={search}
+					onChange={(e) => setSearch(e.target.value)}
+					onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+				/>
+				<button type="submit" className="styled-button-1 !ml-[0.35em]" onClick={handleSearch}>
+					Search
+				</button>
+				<a className="styled-button-1 !inline-block !h-[12px] !ml-[0.35em]" href="/">
+					Advanced...
+				</a>
 				{!session.active && (
 					<p className="!mt-[1em]">
 						<a href="/login">Login</a>

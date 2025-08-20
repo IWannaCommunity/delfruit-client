@@ -1,53 +1,35 @@
-import React, { useState, useMemo, useRef } from "react";
+import { useRouter } from "next/router";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useInfiniteScroll } from "../utils/infiniteScroll";
+import { GamesApi } from "delfruit-swagger-cg-sdk";
+
+const CFG: Config = require("../config.json");
+const GAMES_API_CLIENT: GamesApi = new GamesApi(void 0, CFG.apiURL.toString());
 
 /* --------------------------------------------------------
  * Types
  * ------------------------------------------------------ */
 type Game = {
   id: number;
-  Game: string;
-  ReleaseDate: string;
-  Difficulty: number;
-  Ratings: number;
-  RatingCount: number;
+  name: string;
+  releaseDate: string;
+  difficulty: number;
+  rating: number;
+  ratingCount: number;
 };
 
 type SortConfig = { column: keyof Game; direction: "asc" | "desc" };
 
-/* --------------------------------------------------------
- * Mock Data (NOTE: Math.floor causes hydration error, ignore for testing)
- * ------------------------------------------------------ */
-const allGames: Game[] = Array.from({ length: 20000 }, (_, i) => {
-  const year = 2007 + Math.floor(Math.random() * 20);
-  const month = String(1 + Math.floor(Math.random() * 12)).padStart(2, "0");
-  const day = String(1 + Math.floor(Math.random() * 28)).padStart(2, "0");
-  const hour = String(Math.floor(Math.random() * 24)).padStart(2, "0");
-  const minute = String(Math.floor(Math.random() * 60)).padStart(2, "0");
-  const second = String(Math.floor(Math.random() * 60)).padStart(2, "0");
-
-  const ReleaseDate = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-
-  return {
-    id: i + 1,
-    Game: `I wanna be the ${String.fromCharCode(65 + (i % 26))}${i}`,
-    ReleaseDate,
-    Difficulty: (i % 100) + Math.random(),
-    Rating: (i % 10) + Math.random(),
-    RatingCount: i,
-  };
-});
-
 const columns = [
-  { key: "Game", label: "Game" },
-  { key: "ReleaseDate", label: "Release Date" },
-  { key: "Difficulty", label: "Difficulty" },
-  { key: "Rating", label: "Rating" },
-  { key: "RatingCount", label: "# of Ratings" },
+  { key: "name", label: "Game" },
+  { key: "releaseDate", label: "Release Date" },
+  { key: "difficulty", label: "Difficulty" },
+  { key: "rating", label: "Rating" },
+  { key: "ratingCount", label: "# of Ratings" },
 ];
 
 /* --------------------------------------------------------
- * Date Helpers - Cache timestamps to avoid repeated parsing
+ * Date Formatter
  * ------------------------------------------------------ */
 const dateCache: Record<string, number> = {};
 const getTimestamp = (dateString: string): number => {
@@ -67,7 +49,38 @@ const formatDate = (dateString: string): string => {
 };
 
 /* --------------------------------------------------------
- * Sorting/Cache Logic
+ * Letter Filtering Logic
+ * ------------------------------------------------------ */
+const matchesLetterFilter = (gameName: string, letter: string): boolean => {
+  const lowerName = gameName.toLowerCase().trim();
+  const lowerLetter = letter.toLowerCase();
+	
+	if (lowerLetter === "b") {
+		return (
+			(lowerName.startsWith("i wanna b") && !lowerName.startsWith("i wanna be")) ||
+			lowerName.startsWith("i wanna be the b") ||
+			lowerName.startsWith(lowerLetter)
+		);
+	}
+
+  if (lowerLetter === "i") {
+    return (
+      lowerName.startsWith("i wanna i") ||
+      lowerName.startsWith("i wanna be the i") ||
+      (lowerName.startsWith("i ") && !lowerName.startsWith("i wanna"))
+    );
+  }
+
+  // Normal case
+  return (
+    lowerName.startsWith(`i wanna ${lowerLetter}`) ||
+    lowerName.startsWith(`i wanna be the ${lowerLetter}`) ||
+    lowerName.startsWith(lowerLetter)
+  );
+};
+
+/* --------------------------------------------------------
+ * Sorting/Cache Hook
  * ------------------------------------------------------ */
 type SortCache = Map<string, Game[]>;
 const MAX_CACHE = 5;
@@ -93,7 +106,7 @@ const useSortedGames = (
       const valA = a[column];
       const valB = b[column];
 
-      if (column === "ReleaseDate") {
+      if (column === "releaseDate") {
         const timeA = getTimestamp(valA as string);
         const timeB = getTimestamp(valB as string);
         return direction === "asc" ? timeA - timeB : timeB - timeA;
@@ -110,6 +123,7 @@ const useSortedGames = (
         : (valB as number) - (valA as number);
     });
 
+    // Cache the result
     sortCache.current.set(key, sorted);
     if (sortCache.current.size > MAX_CACHE) {
       const oldestKey = sortCache.current.keys().next().value;
@@ -124,17 +138,92 @@ const useSortedGames = (
  * Component
  * ------------------------------------------------------ */
 export default function Search(): JSX.Element {
+  const [games, setGames] = useState<Game[]>([]);
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [page, setPage] = useState(1);
 
+  const router = useRouter();
+
+  const searchQuery = (router.query.s as string) ?? "";
+  const activeLetter = (router.query.q as string) ?? "";
+
+  const handleLetterNavigation = (letter: string) => {
+    const query: Record<string, string> = {};
+    if (searchQuery.trim()) query.s = searchQuery.trim();
+
+    if (letter !== "ALL") {
+      query.q = letter;
+    } else {
+			query.q = "ALL";
+		}
+    router.push({ pathname: "/search", query });
+  };
+
+  useEffect(() => {
+		if (!router.isReady) return;
+
+		if (!searchQuery.trim() && !activeLetter.trim()) {
+			setGames([]);
+			return;
+		}
+
+		const fetchGames = async () => {
+			const res = await GAMES_API_CLIENT.getGames(
+				undefined, // authorization
+				undefined, // id
+				undefined, // removed
+				searchQuery || undefined, // name
+				undefined, // tags
+				undefined, // author
+				undefined, // ownerUserID
+				undefined, // hasDownload
+				undefined, // createdFrom
+				undefined, // createdTo
+				undefined, // clearedByUserID
+				undefined, // reviewedByUserID
+				undefined, // ratingFrom
+				undefined, // ratingTo
+				undefined, // difficultyFrom
+				undefined, // difficultyTo
+				undefined, // page
+				undefined, // limit
+				undefined, // orderCol
+				undefined  // orderDir
+			);
+
+			let newData: Game[] = (res.data ?? []).map((g: any) => ({
+				id: Number(g.id),
+				name: g.name,
+				releaseDate: g.date_created,
+				difficulty: Number(g.difficulty),
+				rating: Number(g.rating),
+				ratingCount: Number(g.rating_count),
+			}));
+
+			if (activeLetter.trim() && activeLetter !== "ALL") {
+				newData = newData.filter((g) =>
+					matchesLetterFilter(g.name, activeLetter)
+				);
+			}
+
+			setGames(newData);
+			setPage(1);
+		};
+
+		fetchGames();
+	}, [searchQuery, activeLetter, router.isReady]);
+
   const sortCache = useRef<SortCache>(new Map());
-  const sortedAllGames = useSortedGames(allGames, sortConfig, sortCache);
+  const sortedGames = useSortedGames(games, sortConfig, sortCache);
+
   const visibleGames = useMemo(
-    () => sortedAllGames.slice(0, page * 20),
-    [sortedAllGames, page]
+    () => sortedGames.slice(0, page * 20),
+    [sortedGames, page]
   );
 
-  const loaderRef = useInfiniteScroll<HTMLDivElement>(() => setPage((p) => p + 1));
+  const loaderRef = useInfiniteScroll<HTMLDivElement>(() =>
+    setPage((p) => p + 1)
+  );
 
   const handleSort = (column: keyof Game) => {
     if (sortConfig?.column === column) {
@@ -161,20 +250,38 @@ export default function Search(): JSX.Element {
       className="px-4 sm:px-6 lg:px-8 min-h-screen scrollbar-gutter-stable"
     >
       <h2>Full Fangame List</h2>
-			
-			{/* Letter Navigation */}
+
+      {/* Letter Navigation */}
       <p>Choose a letter to get fangames starting with that letter:</p>
       <p className="flex flex-wrap gap-1">
         {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
-          <React.Fragment key={letter}>
-            <a href="/">{letter}</a>
-          </React.Fragment>
+          <span
+            role="button"
+            key={letter}
+            onClick={() => handleLetterNavigation(letter)}
+            className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${
+              activeLetter === letter ? "font-bold" : ""
+            }`}
+          >
+            {letter}
+          </span>
         ))}
-        <a href="/">ALL</a>
+        <span
+          role="button"
+          onClick={() => handleLetterNavigation("ALL")}
+          className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${
+            !activeLetter ? "font-bold" : ""
+          }`}
+        >
+          ALL
+        </span>
       </p>
 
       <p className="!font-bold mb-2">
-        Showing search results for: [game name here] ({sortedAllGames.length} results)
+        Showing search results:
+				<span className="ml-[1em]">{activeLetter && ` Starting with "${activeLetter}"`}</span>
+        <span className="ml-[1em]">{searchQuery && ` Containing "${searchQuery}"`}</span>
+        <span className="ml-[1em]">({sortedGames.length}{" "} {sortedGames.length === 1 ? "result" : "results"})</span>
       </p>
 
       <div className="overflow-x-auto">
@@ -187,7 +294,9 @@ export default function Search(): JSX.Element {
                   className={`cursor-pointer ${
                     sortConfig?.column === key ? "bg-[#8DBDD8]" : "bg-[#E6EEEE]"
                   } bg-right bg-no-repeat`}
-                  style={{ backgroundImage: `url(${getSortIcon(key as keyof Game)})` }}
+                  style={{
+                    backgroundImage: `url(${getSortIcon(key as keyof Game)})`,
+                  }}
                   onClick={() => handleSort(key as keyof Game)}
                 >
                   {label}
@@ -199,12 +308,12 @@ export default function Search(): JSX.Element {
             {visibleGames.map((game) => (
               <tr key={game.id}>
                 <td className="!max-w-[15em] break-words">
-                  <a href="/game">{game.Game}</a>
+                  <a href={`/game/${game.id}`}>{game.name}</a>
                 </td>
-                <td className="rating">{formatDate(game.ReleaseDate)}</td>
-                <td className="rating">{game.Difficulty.toFixed(1)}</td>
-                <td className="rating">{game.Rating.toFixed(1)}</td>
-                <td className="rating">{game.RatingCount}</td>
+                <td className="rating">{formatDate(game.releaseDate)}</td>
+                <td className="rating">{game.difficulty.toFixed(1)}</td>
+                <td className="rating">{game.rating.toFixed(1)}</td>
+                <td className="rating">{game.ratingCount}</td>
               </tr>
             ))}
           </tbody>

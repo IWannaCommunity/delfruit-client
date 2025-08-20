@@ -4,7 +4,7 @@ import News from "../components/home/news";
 import GameList from "../components/home/gameList";
 import ReviewList from "../components/home/reviewList";
 import { CompositeApi, Review, ReviewsApi } from "delfruit-swagger-cg-sdk";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { GameProps } from "../components/game";
 import type { Config } from "../utils/config";
 
@@ -19,11 +19,11 @@ const REVIEWSAPICLIENT: ReviewsApi = new ReviewsApi(
 	CFG.apiURL.toString(),
 );
 
-export default function Home(): JSX.Element {
+export default function Home(): NextPage {
 	const [games, setGames] = useState<GameProps[]>([]);
 	const [reviews, setReviews] = useState<Review[]>([]);
 
-	useMemo(() => {
+	useEffect(() => {
 		if (games.length === 0) {
 			(async () => {
 				let resp = await COMPOSITEAPICLIENT.getGamesWithRatings(
@@ -55,8 +55,8 @@ export default function Home(): JSX.Element {
 						name: game.name,
 						id: game.id,
 						date: game.dateCreated,
-						rating: game.ratings.rating,
-						difficulty: game.ratings.difficulty,
+						rating: game.rating,
+						difficulty: game.difficulty,
 						numOfRatings: game.rating_count,
 					});
 				}
