@@ -15,7 +15,7 @@ type ReviewProps = {
 
 export default function Review(props: ReviewProps): JSX.Element {
     return (
-        <div className={"review" + props.creator ? "owner-review" : ""}>
+        <div className={props.creator ? "owner-review" : "review"}>
             <a href="/">{props.author}</a>
             <Whitespace />
             {props.creator && <span className="!font-bold">[Creator]</span>}
