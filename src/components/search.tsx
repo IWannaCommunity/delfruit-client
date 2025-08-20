@@ -91,6 +91,8 @@ const useSortedGames = (
   sortCache: React.MutableRefObject<SortCache>
 ) => {
   return useMemo(() => {
+		sortCache.current.clear();
+		
     if (!sortConfig) return [...games];
 
     const key = `${sortConfig.column}-${sortConfig.direction}`;
@@ -186,7 +188,7 @@ export default function Search(): JSX.Element {
 				undefined, // difficultyFrom
 				undefined, // difficultyTo
 				undefined, // page
-				undefined, // limit
+				5000, // limit
 				undefined, // orderCol
 				undefined  // orderDir
 			);
