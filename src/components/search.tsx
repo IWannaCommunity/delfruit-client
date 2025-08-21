@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useInfiniteScroll } from "../utils/infiniteScroll";
+import { formatDate } from "../utils/formatDate";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 
 const CFG: Config = require("../config.json");
@@ -12,7 +13,7 @@ const GAMES_API_CLIENT: GamesApi = new GamesApi(void 0, CFG.apiURL.toString());
 type Game = {
   id: number;
   name: string;
-  date_created: string;
+  date_created: Date | null;
   difficulty: number;
   rating: number;
   rating_count: number;
@@ -27,26 +28,6 @@ const columns = [
   { key: "rating", label: "Rating" },
   { key: "rating_count", label: "# of Ratings" },
 ];
-
-/* --------------------------------------------------------
- * Date Formatter
- * ------------------------------------------------------ */
-const dateCache: Record<string, number> = {};
-const getTimestamp = (dateString: string): number => {
-  if (!dateCache[dateString]) {
-    dateCache[dateString] = new Date(dateString.replace(" ", "T")).getTime();
-  }
-  return dateCache[dateString];
-};
-
-const formatDate = (dateString: string): string => {
-  const parsed = new Date(dateString.replace(" ", "T"));
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(parsed);
-};
 
 /* --------------------------------------------------------
  * Letter Filtering Logic
@@ -78,65 +59,6 @@ const matchesLetterFilter = (gameName: string, letter: string): boolean => {
     lowerName.startsWith(lowerLetter)
   );
 };
-
-/* --------------------------------------------------------
- * Sorting/Cache Hook - ABANDONED FOR SERVER SIDE CODING
- * ------------------------------------------------------ */
- /*
-type SortCache = Map<string, Game[]>;
-const MAX_CACHE = 5;
-
-const useSortedGames = (
-  games: Game[],
-  sortConfig: SortConfig | null,
-  sortCache: React.MutableRefObject<SortCache>
-) => {
-  return useMemo(() => {
-		sortCache.current.clear();
-		
-    if (!sortConfig) return [...games];
-
-    const key = `${sortConfig.column}-${sortConfig.direction}`;
-    if (sortCache.current.has(key)) {
-      const cached = sortCache.current.get(key)!;
-      sortCache.current.delete(key);
-      sortCache.current.set(key, cached);
-      return cached;
-    }
-
-    const { column, direction } = sortConfig;
-    const sorted = [...games].sort((a, b) => {
-      const valA = a[column];
-      const valB = b[column];
-
-      if (column === "date_created") {
-        const timeA = getTimestamp(valA as string);
-        const timeB = getTimestamp(valB as string);
-        return direction === "asc" ? timeA - timeB : timeB - timeA;
-      }
-
-      if (typeof valA === "string" && typeof valB === "string") {
-        return direction === "asc"
-          ? valA.localeCompare(valB)
-          : valB.localeCompare(valA);
-      }
-
-      return direction === "asc"
-        ? (valA as number) - (valB as number)
-        : (valB as number) - (valA as number);
-    });
-
-    // Cache the result
-    sortCache.current.set(key, sorted);
-    if (sortCache.current.size > MAX_CACHE) {
-      const oldestKey = sortCache.current.keys().next().value;
-      sortCache.current.delete(oldestKey);
-    }
-
-    return sorted;
-  }, [games, sortConfig]);
-};
-*/
 /* --------------------------------------------------------
  * Component
  * ------------------------------------------------------ */
@@ -197,7 +119,7 @@ export default function Search(): JSX.Element {
     let newData: Game[] = (res.data ?? []).map((g: any) => ({
       id: Number(g.id),
       name: g.name,
-      date_created: g.date_created,
+      date_created: g.date_created ? new Date(g.date_created.replace(" ", "T")) : null,
       difficulty: Number(g.difficulty),
       rating: Number(g.rating),
       rating_count: Number(g.rating_count),

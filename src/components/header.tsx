@@ -10,12 +10,6 @@ export default function Header(): JSX.Element {
 	const [session, setSession] = useSessionContext();
 	const router = useRouter();
   const [search, setSearch] = useState("");
-	
-	useEffect(() => {
-    if (typeof router.query.s === "string") {
-      setSearch(router.query.s);
-    }
-  }, [router.query.s]);
 
   const handleSearch = () => {
     router.push({

@@ -1,4 +1,5 @@
 import Game, { GameProps } from "../game";
+import Link from "next/link";
 
 type GameListProps = {
     games: GameProps[];
@@ -38,19 +39,19 @@ export default function GameList(props: GameListProps): JSX.Element {
                 <tbody>
                     <tr>
                         <td className="!text-center">
-                            <a className="text-base" href="/">
+                            <Link className="text-base" href="/search?q=ALL">
                                 Full List
-                            </a>
+                            </Link>
                         </td>
                         <td className="!text-center">
-                            <a className="text-base" href="/">
+                            <Link className="text-base" href="/">
                                 Random Game!
-                            </a>
+                            </Link>
                         </td>
                         <td className="!text-center">
-                            <a className="text-base" href="/">
+                            <Link className="text-base" href="/">
                                 User List
-                            </a>
+                            </Link>
                         </td>
                     </tr>
                 </tbody>

@@ -1,3 +1,5 @@
+import { formatDate } from "../utils/formatDate";
+
 export type GameProps = {
 	name: string;
 	id: number;
@@ -15,7 +17,7 @@ export default function Game(props: GameProps): JSX.Element {
 					{props.name}
 				</a>
 			</td>
-			<td className="rating">{new Date(props.date).toDateString()}</td>
+			<td className="rating">{formatDate(props.date)}</td>
 			<td className="rating">{props.rating !== -1 ? props.rating : "N/A"}</td>
 			<td className="rating">
 				{props.difficulty !== -1 ? props.difficulty : "N/A"}

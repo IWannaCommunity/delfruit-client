@@ -1,5 +1,6 @@
 import Tag from "./game/tag";
 import Whitespace from "./whitespace";
+import { formatDate } from "../utils/formatDate";
 
 type ReviewProps = {
     author: string;
@@ -53,7 +54,7 @@ export default function Review(props: ReviewProps): JSX.Element {
                 </span>
                 <div className="!absolute !right-[0px] !top-[0px] !p-[0.5em] !text-right">
                     {" "}
-                    {new Date(props.dateCreated).toDateString()}{" "}
+                    {formatDate(props.dateCreated)}{" "}
                 </div>
             </div>
         </div>
