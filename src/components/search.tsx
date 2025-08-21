@@ -12,20 +12,20 @@ const GAMES_API_CLIENT: GamesApi = new GamesApi(void 0, CFG.apiURL.toString());
 type Game = {
   id: number;
   name: string;
-  releaseDate: string;
+  date_created: string;
   difficulty: number;
   rating: number;
-  ratingCount: number;
+  rating_count: number;
 };
 
 type SortConfig = { column: keyof Game; direction: "asc" | "desc" };
 
 const columns = [
   { key: "name", label: "Game" },
-  { key: "releaseDate", label: "Release Date" },
+  { key: "date_created", label: "Release Date" },
   { key: "difficulty", label: "Difficulty" },
   { key: "rating", label: "Rating" },
-  { key: "ratingCount", label: "# of Ratings" },
+  { key: "rating_count", label: "# of Ratings" },
 ];
 
 /* --------------------------------------------------------
@@ -80,8 +80,9 @@ const matchesLetterFilter = (gameName: string, letter: string): boolean => {
 };
 
 /* --------------------------------------------------------
- * Sorting/Cache Hook
+ * Sorting/Cache Hook - ABANDONED FOR SERVER SIDE CODING
  * ------------------------------------------------------ */
+ /*
 type SortCache = Map<string, Game[]>;
 const MAX_CACHE = 5;
 
@@ -108,7 +109,7 @@ const useSortedGames = (
       const valA = a[column];
       const valB = b[column];
 
-      if (column === "releaseDate") {
+      if (column === "date_created") {
         const timeA = getTimestamp(valA as string);
         const timeB = getTimestamp(valB as string);
         return direction === "asc" ? timeA - timeB : timeB - timeA;
@@ -135,7 +136,7 @@ const useSortedGames = (
     return sorted;
   }, [games, sortConfig]);
 };
-
+*/
 /* --------------------------------------------------------
  * Component
  * ------------------------------------------------------ */
@@ -143,6 +144,7 @@ export default function Search(): JSX.Element {
   const [games, setGames] = useState<Game[]>([]);
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
   const [page, setPage] = useState(1);
+	const [hasMore, setHasMore] = useState(true);
 
   const router = useRouter();
 
@@ -160,83 +162,116 @@ export default function Search(): JSX.Element {
 		}
     router.push({ pathname: "/search", query });
   };
+	
+	const dedupeGames = (games: Game[]): Game[] => {
+		return Array.from(new Map(games.map((g) => [g.id, g])).values());
+	};
 
-  useEffect(() => {
+	const fetchGames = async (
+    requestedPage: number,
+    sort: SortConfig | null
+  ): Promise<Game[]> => {
+    const res = await GAMES_API_CLIENT.getGames(
+      undefined, // authorization
+      undefined, // id
+      undefined, // removed
+      searchQuery || undefined, // name
+      undefined, // tags
+      undefined, // author
+      undefined, // ownerUserID
+      undefined, // hasDownload
+      undefined, // createdFrom
+      undefined, // createdTo
+      undefined, // clearedByUserID
+      undefined, // reviewedByUserID
+      undefined, // ratingFrom
+      undefined, // ratingTo
+      undefined, // difficultyFrom
+      undefined, // difficultyTo
+			requestedPage, // page number
+      50, // limit
+      sort?.column, // orderCol
+      sort?.direction // orderDir
+    );
+
+    let newData: Game[] = (res.data ?? []).map((g: any) => ({
+      id: Number(g.id),
+      name: g.name,
+      date_created: g.date_created,
+      difficulty: Number(g.difficulty),
+      rating: Number(g.rating),
+      rating_count: Number(g.rating_count),
+    }));
+		
+		if (activeLetter.trim() && activeLetter !== "ALL") {
+			newData = newData.filter((g) =>
+				matchesLetterFilter(g.name, activeLetter)
+			);
+		}
+		
+		return newData;
+	};
+			
+	useEffect(() => {
 		if (!router.isReady) return;
 
 		if (!searchQuery.trim() && !activeLetter.trim()) {
 			setGames([]);
+			setHasMore(false);
 			return;
 		}
-
-		const fetchGames = async () => {
-			const res = await GAMES_API_CLIENT.getGames(
-				undefined, // authorization
-				undefined, // id
-				undefined, // removed
-				searchQuery || undefined, // name
-				undefined, // tags
-				undefined, // author
-				undefined, // ownerUserID
-				undefined, // hasDownload
-				undefined, // createdFrom
-				undefined, // createdTo
-				undefined, // clearedByUserID
-				undefined, // reviewedByUserID
-				undefined, // ratingFrom
-				undefined, // ratingTo
-				undefined, // difficultyFrom
-				undefined, // difficultyTo
-				undefined, // page
-				5000, // limit
-				undefined, // orderCol
-				undefined  // orderDir
-			);
-
-			let newData: Game[] = (res.data ?? []).map((g: any) => ({
-				id: Number(g.id),
-				name: g.name,
-				releaseDate: g.date_created,
-				difficulty: Number(g.difficulty),
-				rating: Number(g.rating),
-				ratingCount: Number(g.rating_count),
-			}));
-
-			if (activeLetter.trim() && activeLetter !== "ALL") {
-				newData = newData.filter((g) =>
-					matchesLetterFilter(g.name, activeLetter)
-				);
+		
+		let isCancelled = false;
+			
+		const fetchAndSet = async () => {
+			const firstPage = await fetchGames(0, sortConfig);
+			if (!isCancelled) {
+				setGames(firstPage);
+				setPage(0);
+				setHasMore(firstPage.length > 0);
 			}
-
-			setGames(newData);
-			setPage(1);
 		};
+		
+		fetchAndSet();
+		
+		return () => {
+			isCancelled = true; // cleanup useEffect
+		};
+	
+  }, [searchQuery, activeLetter, sortConfig, router.isReady]);
+	
+	const loadMore = async () => {
+    const nextPage = page + 1;
+    const moreGames = await fetchGames(nextPage, sortConfig);
 
-		fetchGames();
-	}, [searchQuery, activeLetter, router.isReady]);
+    if (moreGames.length === 0) {
+      setHasMore(false);
+      return;
+    }
 
+    setGames((prev) => dedupeGames([...prev, ...moreGames]));
+    setPage(nextPage);
+  };
+	
+	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
+		if (hasMore) loadMore();
+  });
+
+	/*
   const sortCache = useRef<SortCache>(new Map());
   const sortedGames = useSortedGames(games, sortConfig, sortCache);
-
-  const visibleGames = useMemo(
-    () => sortedGames.slice(0, page * 20),
-    [sortedGames, page]
-  );
-
-  const loaderRef = useInfiniteScroll<HTMLDivElement>(() =>
-    setPage((p) => p + 1)
-  );
+	*/
 
   const handleSort = (column: keyof Game) => {
     if (sortConfig?.column === column) {
       setSortConfig({
         column,
-        direction: sortConfig.direction === "asc" ? "desc" : "asc",
+        direction: sortConfig.direction === "asc" ? "desc" : "asc"
       });
     } else {
       setSortConfig({ column, direction: "asc" });
     }
-    setPage(1);
+    setPage(0);
   };
 
   const getSortIcon = (column: keyof Game) => {
@@ -283,7 +318,7 @@ export default function Search(): JSX.Element {
         Showing search results:
 				<span className="ml-[1em]">{activeLetter && ` Starting with "${activeLetter}"`}</span>
         <span className="ml-[1em]">{searchQuery && ` Containing "${searchQuery}"`}</span>
-        <span className="ml-[1em]">({sortedGames.length}{" "} {sortedGames.length === 1 ? "result" : "results"})</span>
+        <span className="ml-[1em]">({games.length}{" "} {games.length === 1 ? "result" : "results"})</span>
       </p>
 
       <div className="overflow-x-auto">
@@ -299,7 +334,7 @@ export default function Search(): JSX.Element {
                   style={{
                     backgroundImage: `url(${getSortIcon(key as keyof Game)})`,
                   }}
-                  onClick={() => handleSort(key as keyof Game)}
+									onClick={() => handleSort(key as keyof Game)}
                 >
                   {label}
                 </th>
@@ -307,15 +342,15 @@ export default function Search(): JSX.Element {
             </tr>
           </thead>
           <tbody>
-            {visibleGames.map((game) => (
+            {games.map((game) => (
               <tr key={game.id}>
                 <td className="!max-w-[15em] break-words">
                   <a href={`/game/${game.id}`}>{game.name}</a>
                 </td>
-                <td className="rating">{formatDate(game.releaseDate)}</td>
+                <td className="rating">{game.date_created ? formatDate(game.date_created) : "Unknown"}</td>
                 <td className="rating">{game.difficulty.toFixed(1)}</td>
                 <td className="rating">{game.rating.toFixed(1)}</td>
-                <td className="rating">{game.ratingCount}</td>
+                <td className="rating">{game.rating_count}</td>
               </tr>
             ))}
           </tbody>
