@@ -20,7 +20,7 @@ export default function Game(): NextPage {
 	const router = useRouter();
 	const params = router.query;
 
-	useEffect(() => {
+	useMemo(() => {
 		if (params.id === null || params.id === undefined) {
 			return;
 		}
