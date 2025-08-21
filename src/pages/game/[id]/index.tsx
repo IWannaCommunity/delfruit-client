@@ -6,14 +6,15 @@ import Carousel from "../../../components/game/carousel";
 import GameReviews from "../../../components/game/gameReviews";
 import { CompositeApi, GameExt } from "delfruit-swagger-cg-sdk";
 import { Config } from "../../../utils/config";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
+import type { NextPage } from "next";
 
 const CFG: Config = require("../../../config.json");
 
 const APICLIENT = new CompositeApi(void 0, CFG.apiURL.toString());
 
-export default function Game(): JSX.Element {
+export default function Game(): NextPage {
 	const [details, setDetails] = useState<GameExt>(null);
 
 	const router = useRouter();
@@ -32,7 +33,7 @@ export default function Game(): JSX.Element {
 			console.log(resp.data);
 			setDetails(resp.data);
 		})();
-	}, [params.id]);
+	}, [params.id, details]);
 
 	if (details === null) {
 		return <></>;
