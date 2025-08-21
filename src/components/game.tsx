@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { formatDate } from "../utils/formatDate";
 
 export type GameProps = {
@@ -13,9 +14,9 @@ export default function Game(props: GameProps): JSX.Element {
 	return (
 		<tr>
 			<td>
-				<a className="!max-w-[12em] !break-all" href={`/game/${props.id}`}>
+				<Link className="!max-w-[12em] !break-all" href={`/game/${props.id}`}>
 					{props.name}
-				</a>
+				</Link>
 			</td>
 			<td className="rating">{formatDate(props.date)}</td>
 			<td className="rating">{props.rating !== -1 ? props.rating : "N/A"}</td>
@@ -26,4 +27,3 @@ export default function Game(props: GameProps): JSX.Element {
 		</tr>
 	);
 }
-
