@@ -23,6 +23,9 @@ export default function Game(): JSX.Element {
 		if (params.id === null || params.id === undefined) {
 			return;
 		}
+		if (details !== null) {
+			return;
+		}
 
 		(async () => {
 			const resp = await APICLIENT.getGameCompositeAll(params.id);
