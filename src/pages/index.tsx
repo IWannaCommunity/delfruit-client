@@ -4,9 +4,10 @@ import News from "../components/home/news";
 import GameList from "../components/home/gameList";
 import ReviewList from "../components/home/reviewList";
 import { CompositeApi, Review, ReviewsApi } from "delfruit-swagger-cg-sdk";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GameProps } from "../components/game";
 import type { Config } from "../utils/config";
+import { NextPage } from "next";
 
 const CFG: Config = require("../config.json");
 
@@ -26,7 +27,7 @@ export default function Home(): NextPage {
 	useEffect(() => {
 		if (games.length === 0) {
 			(async () => {
-				let resp = await COMPOSITEAPICLIENT.getGamesWithRatings(
+				const resp = await COMPOSITEAPICLIENT.getGamesWithRatings(
 					void 0,
 					void 0,
 					false,
@@ -62,9 +63,9 @@ export default function Home(): NextPage {
 				}
 				setGames(gameProps);
 			})();
-		} else {
+		} else if (reviews.length === 0) {
 			(async () => {
-				let resp = await REVIEWSAPICLIENT.getReviews(0, 5);
+				const resp = await REVIEWSAPICLIENT.getReviews(0, 5);
 				setReviews(resp.data);
 			})();
 		}
