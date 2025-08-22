@@ -1,5 +1,5 @@
 [tool.towncrier]
-name = "weeping"
+name = "Delicious Fruit [client, weeping]"
 directory = "./docs/newsfragments"
 filename = "./NEWS.md"
 start_string = "<!-- towncrier release notes start -->\n"

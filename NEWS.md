@@ -1,4 +1,4 @@
-weeping 1.0.0-preview.0 (2025-08-22)
+Delicious Fruit [client, weeping] 1.0.0-preview.0 (2025-08-22)
 ====================================
 
 ### ➕ Added
@@ -9,7 +9,7 @@ weeping 1.0.0-preview.0 (2025-08-22)
 
 - Individual game pages no longer makes additional unnecessary API calls when it has already fetched all the details to populate the document. (starz0r.0)
 - Individual game pages no longer loop gets stuck in a loop making API calls. (starz0r.1)
-- Home page no longer makes additional unnecesarry API calls when it has already fetched all the details to populate the document. (starz0r.2)
+- Home page no longer makes additional unnecessary API calls when it has already fetched all the details to populate the document. (starz0r.2)
 - Individual game page navigation now works as intended. (starz0r.3)
 - Search page now allows you to navigate to game pages listed by the query. (starz0r.4)
 - Tags were being incorrectly mapped, causing the application to crash. (starz0r.5)
