@@ -3,284 +3,295 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useInfiniteScroll } from "../utils/infiniteScroll";
 import { formatDate } from "../utils/formatDate";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
+import Link from "next/link";
 
 const CFG: Config = require("../config.json");
-const GAMES_API_CLIENT: GamesApi = new GamesApi(undefined, CFG.apiURL.toString());
+const GAMES_API_CLIENT: GamesApi = new GamesApi(void 0, CFG.apiURL.toString());
 
 /* --------------------------------------------------------
  * Types
  * ------------------------------------------------------ */
 type Game = {
-  id: number;
-  name: string;
-  date_created: Date | null;
-  difficulty: number;
-  rating: number;
-  rating_count: number;
+    id: number;
+    name: string;
+    date_created: Date | null;
+    difficulty: number;
+    rating: number;
+    rating_count: number;
 };
 
 type SortConfig = { column: keyof Game; direction: "asc" | "desc" };
 
 const columns = [
-  { key: "name", label: "Game" },
-  { key: "date_created", label: "Release Date" },
-  { key: "difficulty", label: "Difficulty" },
-  { key: "rating", label: "Rating" },
-  { key: "rating_count", label: "# of Ratings" },
+    { key: "name", label: "Game" },
+    { key: "date_created", label: "Release Date" },
+    { key: "difficulty", label: "Difficulty" },
+    { key: "rating", label: "Rating" },
+    { key: "rating_count", label: "# of Ratings" },
 ];
 
 /* --------------------------------------------------------
  * Letter Filtering Logic
  * ------------------------------------------------------ */
 const matchesLetterFilter = (gameName: string, letter: string): boolean => {
-  const lowerName = gameName.toLowerCase().trim();
-  const lowerLetter = letter.toLowerCase();
-	
-	if (lowerLetter === "b") {
-		return (
-			(lowerName.startsWith("i wanna b") && !lowerName.startsWith("i wanna be")) ||
-			lowerName.startsWith("i wanna be the b") ||
-			lowerName.startsWith(lowerLetter)
-		);
-	}
+    const lowerName = gameName.toLowerCase().trim();
+    const lowerLetter = letter.toLowerCase();
 
-  if (lowerLetter === "i") {
+    if (lowerLetter === "b") {
+        return (
+            (lowerName.startsWith("i wanna b") &&
+                !lowerName.startsWith("i wanna be")) ||
+            lowerName.startsWith("i wanna be the b") ||
+            lowerName.startsWith(lowerLetter)
+        );
+    }
+
+    if (lowerLetter === "i") {
+        return (
+            lowerName.startsWith("i wanna i") ||
+            lowerName.startsWith("i wanna be the i") ||
+            (lowerName.startsWith("i ") && !lowerName.startsWith("i wanna"))
+        );
+    }
+
+    // Normal case
     return (
-      lowerName.startsWith("i wanna i") ||
-      lowerName.startsWith("i wanna be the i") ||
-      (lowerName.startsWith("i ") && !lowerName.startsWith("i wanna"))
+        lowerName.startsWith(`i wanna ${lowerLetter}`) ||
+        lowerName.startsWith(`i wanna be the ${lowerLetter}`) ||
+        lowerName.startsWith(lowerLetter)
     );
-  }
-
-  // Normal case
-  return (
-    lowerName.startsWith(`i wanna ${lowerLetter}`) ||
-    lowerName.startsWith(`i wanna be the ${lowerLetter}`) ||
-    lowerName.startsWith(lowerLetter)
-  );
 };
 /* --------------------------------------------------------
  * Component
  * ------------------------------------------------------ */
 export default function Search(): JSX.Element {
-  const [games, setGames] = useState<Game[]>([]);
-  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
-  const [page, setPage] = useState(1);
-	const [hasMore, setHasMore] = useState(true);
+    const [games, setGames] = useState<Game[]>([]);
+    const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
 
-  const router = useRouter();
+    const router = useRouter();
 
-  const searchQuery = (router.query.s as string) ?? "";
-  const activeLetter = (router.query.q as string) ?? "";
+    const searchQuery = (router.query.s as string) ?? "";
+    const activeLetter = (router.query.q as string) ?? "";
 
-  const handleLetterNavigation = (letter: string) => {
-    const query: Record<string, string> = {};
-    if (searchQuery.trim()) query.s = searchQuery.trim();
+    const handleLetterNavigation = (letter: string) => {
+        const query: Record<string, string> = {};
+        if (searchQuery.trim()) query.s = searchQuery.trim();
 
-    if (letter !== "ALL") {
-      query.q = letter;
-    } else {
-			query.q = "ALL";
-		}
-    router.push({ pathname: "/search", query });
-  };
-	
-	const dedupeGames = (games: Game[]): Game[] => {
-		return Array.from(new Map(games.map((g) => [g.id, g])).values());
-	};
+        if (letter !== "ALL") {
+            query.q = letter;
+        } else {
+            query.q = "ALL";
+        }
+        router.push({ pathname: "/search", query });
+    };
 
-	const fetchGames = async (
-    requestedPage: number,
-    sort: SortConfig | null
-  ): Promise<Game[]> => {
-    const res = await GAMES_API_CLIENT.getGames(
-      undefined, // authorization
-      undefined, // id
-      undefined, // removed
-      searchQuery || undefined, // name
-      undefined, // tags
-      undefined, // author
-      undefined, // ownerUserID
-      undefined, // hasDownload
-      undefined, // createdFrom
-      undefined, // createdTo
-      undefined, // clearedByUserID
-      undefined, // reviewedByUserID
-      undefined, // ratingFrom
-      undefined, // ratingTo
-      undefined, // difficultyFrom
-      undefined, // difficultyTo
-			requestedPage, // page number
-      50, // limit
-      sort?.column, // orderCol
-      sort?.direction // orderDir
-    );
+    const dedupeGames = (games: Game[]): Game[] => {
+        return Array.from(new Map(games.map((g) => [g.id, g])).values());
+    };
 
-    let newData: Game[] = (res.data ?? []).map((g: any) => ({
-      id: Number(g.id),
-      name: g.name,
-      date_created: g.date_created ? new Date(g.date_created) : null,
-      difficulty: Number(g.difficulty),
-      rating: Number(g.rating),
-      rating_count: Number(g.rating_count),
-    }));
-		
-		if (activeLetter.trim() && activeLetter !== "ALL") {
-			newData = newData.filter((g) =>
-				matchesLetterFilter(g.name, activeLetter)
-			);
-		}
-		
-		return newData;
-	};
-			
-	useEffect(() => {
-		if (!router.isReady) return;
+    const fetchGames = async (
+        requestedPage: number,
+        sort: SortConfig | null,
+    ): Promise<Game[]> => {
+        const res = await GAMES_API_CLIENT.getGames(
+            undefined, // authorization
+            undefined, // id
+            undefined, // removed
+            searchQuery || undefined, // name
+            undefined, // tags
+            undefined, // author
+            undefined, // ownerUserID
+            undefined, // hasDownload
+            undefined, // createdFrom
+            undefined, // createdTo
+            undefined, // clearedByUserID
+            undefined, // reviewedByUserID
+            undefined, // ratingFrom
+            undefined, // ratingTo
+            undefined, // difficultyFrom
+            undefined, // difficultyTo
+            requestedPage, // page number
+            50, // limit
+            sort?.column, // orderCol
+            sort?.direction, // orderDir
+        );
 
-		if (!searchQuery.trim() && !activeLetter.trim()) {
-			setGames([]);
-			setHasMore(false);
-			return;
-		}
-		
-		let isCancelled = false;
-			
-		const fetchAndSet = async () => {
-			const firstPage = await fetchGames(0, sortConfig);
-			if (!isCancelled) {
-				setGames(firstPage);
-				setPage(0);
-				setHasMore(firstPage.length > 0);
-			}
-		};
-		
-		fetchAndSet();
-		
-		return () => {
-			isCancelled = true; // cleanup useEffect
-		};
-	
-  }, [searchQuery, activeLetter, sortConfig, router.isReady]);
-	
-	const loadMore = async () => {
-    const nextPage = page + 1;
-    const moreGames = await fetchGames(nextPage, sortConfig);
+        let newData: Game[] = (res.data ?? []).map((g: any) => ({
+            id: Number(g.id),
+            name: g.name,
+            date_created: g.date_created ? new Date(g.date_created) : null,
+            difficulty: Number(g.difficulty),
+            rating: Number(g.rating),
+            rating_count: Number(g.rating_count),
+        }));
 
-    if (moreGames.length === 0) {
-      setHasMore(false);
-      return;
-    }
+        if (activeLetter.trim() && activeLetter !== "ALL") {
+            newData = newData.filter((g) =>
+                matchesLetterFilter(g.name, activeLetter),
+            );
+        }
 
-    setGames((prev) => dedupeGames([...prev, ...moreGames]));
-    setPage(nextPage);
-  };
-	
-	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
-		if (hasMore) loadMore();
-  });
+        return newData;
+    };
 
-	/*
+    useEffect(() => {
+        if (!router.isReady) return;
+
+        if (!searchQuery.trim() && !activeLetter.trim()) {
+            setGames([]);
+            setHasMore(false);
+            return;
+        }
+
+        let isCancelled = false;
+
+        const fetchAndSet = async () => {
+            const firstPage = await fetchGames(0, sortConfig);
+            if (!isCancelled) {
+                setGames(firstPage);
+                setPage(0);
+                setHasMore(firstPage.length > 0);
+            }
+        };
+
+        fetchAndSet();
+
+        return () => {
+            isCancelled = true; // cleanup useEffect
+        };
+    }, [searchQuery, activeLetter, sortConfig, router.isReady]);
+
+    const loadMore = async () => {
+        const nextPage = page + 1;
+        const moreGames = await fetchGames(nextPage, sortConfig);
+
+        if (moreGames.length === 0) {
+            setHasMore(false);
+            return;
+        }
+
+        setGames((prev) => dedupeGames([...prev, ...moreGames]));
+        setPage(nextPage);
+    };
+
+    const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
+        if (hasMore) loadMore();
+    });
+
+    /*
   const sortCache = useRef<SortCache>(new Map());
   const sortedGames = useSortedGames(games, sortConfig, sortCache);
-	*/
+    */
 
-  const handleSort = (column: keyof Game) => {
-    if (sortConfig?.column === column) {
-      setSortConfig({
-        column,
-        direction: sortConfig.direction === "asc" ? "desc" : "asc"
-      });
-    } else {
-      setSortConfig({ column, direction: "asc" });
-    }
-    setPage(0);
-  };
+    const handleSort = (column: keyof Game) => {
+        if (sortConfig?.column === column) {
+            setSortConfig({
+                column,
+                direction: sortConfig.direction === "asc" ? "desc" : "asc",
+            });
+        } else {
+            setSortConfig({ column, direction: "asc" });
+        }
+        setPage(0);
+    };
 
-  const getSortIcon = (column: keyof Game) => {
-    if (sortConfig?.column !== column) return "/images/bg.gif";
-    return sortConfig.direction === "asc"
-      ? "/images/asc.gif"
-      : "/images/desc.gif";
-  };
+    const getSortIcon = (column: keyof Game) => {
+        if (sortConfig?.column !== column) return "/images/bg.gif";
+        return sortConfig.direction === "asc"
+            ? "/images/asc.gif"
+            : "/images/desc.gif";
+    };
 
-  return (
-    <div
-      id="content"
-      className="px-4 sm:px-6 lg:px-8 min-h-screen scrollbar-gutter-stable"
-    >
-      <h2>Full Fangame List</h2>
-
-      {/* Letter Navigation */}
-      <p>Choose a letter to get fangames starting with that letter:</p>
-      <p className="flex flex-wrap gap-1">
-        {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
-          <span
-            role="button"
-            key={letter}
-            onClick={() => handleLetterNavigation(letter)}
-            className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${
-              activeLetter === letter ? "font-bold" : ""
-            }`}
-          >
-            {letter}
-          </span>
-        ))}
-        <span
-          role="button"
-          onClick={() => handleLetterNavigation("ALL")}
-          className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${
-            !activeLetter ? "font-bold" : ""
-          }`}
+    return (
+        <div
+            id="content"
+            className="px-4 sm:px-6 lg:px-8 min-h-screen scrollbar-gutter-stable"
         >
-          ALL
-        </span>
-      </p>
+            <h2>Full Fangame List</h2>
 
-      <p className="!font-bold mb-2">
-        Showing search results:
-				<span className="ml-[1em]">{activeLetter && ` Starting with "${activeLetter}"`}</span>
-        <span className="ml-[1em]">{searchQuery && ` Containing "${searchQuery}"`}</span>
-        <span className="ml-[1em]">({games.length}{" "} {games.length === 1 ? "result" : "results"})</span>
-      </p>
-
-      <div className="overflow-x-auto">
-        <table className="tablesorter min-w-[600px] w-full">
-          <thead>
-            <tr>
-              {columns.map(({ key, label }) => (
-                <th
-                  key={key}
-                  className={`cursor-pointer ${
-                    sortConfig?.column === key ? "bg-[#8DBDD8]" : "bg-[#E6EEEE]"
-                  } bg-right bg-no-repeat`}
-                  style={{
-                    backgroundImage: `url(${getSortIcon(key as keyof Game)})`,
-                  }}
-									onClick={() => handleSort(key as keyof Game)}
+            {/* Letter Navigation */}
+            <p>Choose a letter to get fangames starting with that letter:</p>
+            <p className="flex flex-wrap gap-1">
+                {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
+                    <span
+                        role="button"
+                        key={letter}
+                        onClick={() => handleLetterNavigation(letter)}
+                        className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${activeLetter === letter ? "font-bold" : ""
+                            }`}
+                    >
+                        {letter}
+                    </span>
+                ))}
+                <span
+                    role="button"
+                    onClick={() => handleLetterNavigation("ALL")}
+                    className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${!activeLetter ? "font-bold" : ""
+                        }`}
                 >
-                  {label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {games.map((game) => (
-              <tr key={game.id}>
-                <td className="!max-w-[15em] break-words">
-                  <a href={`/game/${game.id}`}>{game.name}</a>
-                </td>
-                <td className="rating">{game.date_created ? formatDate(game.date_created) : "Unknown"}</td>
-                <td className="rating">{game.difficulty.toFixed(1)}</td>
-                <td className="rating">{game.rating.toFixed(1)}</td>
-                <td className="rating">{game.rating_count}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                    ALL
+                </span>
+            </p>
 
-      {/* Infinite scroll loader trigger */}
-      <div ref={loaderRef} className="h-10" />
-    </div>
-  );
+            <p className="!font-bold mb-2">
+                Showing search results:
+                <span className="ml-[1em]">
+                    {activeLetter && ` Starting with "${activeLetter}"`}
+                </span>
+                <span className="ml-[1em]">
+                    {searchQuery && ` Containing "${searchQuery}"`}
+                </span>
+                <span className="ml-[1em]">
+                    ({games.length} {games.length === 1 ? "result" : "results"})
+                </span>
+            </p>
+
+            <div className="overflow-x-auto">
+                <table className="tablesorter min-w-[600px] w-full">
+                    <thead>
+                        <tr>
+                            {columns.map(({ key, label }) => (
+                                <th
+                                    key={key}
+                                    className={`cursor-pointer ${sortConfig?.column === key ? "bg-[#8DBDD8]" : "bg-[#E6EEEE]"
+                                        } bg-right bg-no-repeat`}
+                                    style={{
+                                        backgroundImage: `url(${getSortIcon(key as keyof Game)})`,
+                                    }}
+                                    onClick={() => handleSort(key as keyof Game)}
+                                >
+                                    {label}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {games.map((game) => (
+                            <tr key={game.id}>
+                                <td className="!max-w-[15em] break-words">
+                                    <Link href="/game/[id]" as={`/game/${game.id}`}>
+                                        {game.name}
+                                    </Link>
+                                </td>
+                                <td className="rating">
+                                    {game.date_created
+                                        ? formatDate(game.date_created)
+                                        : "Unknown"}
+                                </td>
+                                <td className="rating">{game.difficulty.toFixed(1)}</td>
+                                <td className="rating">{game.rating.toFixed(1)}</td>
+                                <td className="rating">{game.rating_count}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Infinite scroll loader trigger */}
+            <div ref={loaderRef} className="h-10" />
+        </div>
+    );
 }
+
