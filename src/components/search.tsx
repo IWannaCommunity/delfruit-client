@@ -1,5 +1,11 @@
 import { useRouter } from "next/router";
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, {
+	useEffect,
+	useState,
+	useMemo,
+	useRef,
+	useCallback,
+} from "react";
 import { useInfiniteScroll } from "../utils/infiniteScroll";
 import { formatDate } from "../utils/formatDate";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
@@ -93,50 +99,50 @@ export default function Search(): JSX.Element {
 		return Array.from(new Map(games.map((g) => [g.id, g])).values());
 	};
 
-	const fetchGames = async (
-		requestedPage: number,
-		sort: SortConfig | null,
-	): Promise<Game[]> => {
-		const res = await GAMES_API_CLIENT.getGames(
-			undefined, // authorization
-			undefined, // id
-			undefined, // removed
-			searchQuery || undefined, // name
-			undefined, // tags
-			undefined, // author
-			undefined, // ownerUserID
-			undefined, // hasDownload
-			undefined, // createdFrom
-			undefined, // createdTo
-			undefined, // clearedByUserID
-			undefined, // reviewedByUserID
-			undefined, // ratingFrom
-			undefined, // ratingTo
-			undefined, // difficultyFrom
-			undefined, // difficultyTo
-			requestedPage, // page number
-			50, // limit
-			sort?.column, // orderCol
-			sort?.direction, // orderDir
-		);
-
-		let newData: Game[] = (res.data ?? []).map((g: any) => ({
-			id: Number(g.id),
-			name: g.name,
-			date_created: g.date_created ? new Date(g.date_created) : null,
-			difficulty: Number(g.difficulty),
-			rating: Number(g.rating),
-			rating_count: Number(g.rating_count),
-		}));
-
-		if (activeLetter.trim() && activeLetter !== "ALL") {
-			newData = newData.filter((g) =>
-				matchesLetterFilter(g.name, activeLetter),
+	const fetchGames = useCallback(
+		async (requestedPage: number, sort: SortConfig | null): Promise<Game[]> => {
+			const res = await GAMES_API_CLIENT.getGames(
+				undefined, // authorization
+				undefined, // id
+				undefined, // removed
+				searchQuery || undefined, // name
+				undefined, // tags
+				undefined, // author
+				undefined, // ownerUserID
+				undefined, // hasDownload
+				undefined, // createdFrom
+				undefined, // createdTo
+				undefined, // clearedByUserID
+				undefined, // reviewedByUserID
+				undefined, // ratingFrom
+				undefined, // ratingTo
+				undefined, // difficultyFrom
+				undefined, // difficultyTo
+				requestedPage, // page number
+				50, // limit
+				sort?.column, // orderCol
+				sort?.direction, // orderDir
 			);
-		}
 
-		return newData;
-	};
+			let newData: Game[] = (res.data ?? []).map((g: any) => ({
+				id: Number(g.id),
+				name: g.name,
+				date_created: g.date_created ? new Date(g.date_created) : null,
+				difficulty: Number(g.difficulty),
+				rating: Number(g.rating),
+				rating_count: Number(g.rating_count),
+			}));
+
+			if (activeLetter.trim() && activeLetter !== "ALL") {
+				newData = newData.filter((g) =>
+					matchesLetterFilter(g.name, activeLetter),
+				);
+			}
+
+			return newData;
+		},
+		[activeLetter, searchQuery],
+	);
 
 	useEffect(() => {
 		if (!router.isReady) return;
