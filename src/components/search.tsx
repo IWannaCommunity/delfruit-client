@@ -8,9 +8,7 @@ import Link from "next/link";
 const CFG: Config = require("../config.json");
 const GAMES_API_CLIENT: GamesApi = new GamesApi(void 0, CFG.apiURL.toString());
 
-/* --------------------------------------------------------
- * Types
- * ------------------------------------------------------ */
+// #region Types
 type Game = {
 	id: number;
 	name: string;
@@ -29,10 +27,9 @@ const columns = [
 	{ key: "rating", label: "Rating" },
 	{ key: "rating_count", label: "# of Ratings" },
 ];
+// #endregion
 
-/* --------------------------------------------------------
- * Letter Filtering Logic
- * ------------------------------------------------------ */
+// #region Letter Filtering Logic
 const matchesLetterFilter = (gameName: string, letter: string): boolean => {
 	const lowerName = gameName.toLowerCase().trim();
 	const lowerLetter = letter.toLowerCase();
@@ -61,9 +58,14 @@ const matchesLetterFilter = (gameName: string, letter: string): boolean => {
 		lowerName.startsWith(lowerLetter)
 	);
 };
-/* --------------------------------------------------------
- * Component
- * ------------------------------------------------------ */
+// #endregion
+
+// #region Component
+/*
+ * The search component of the site.
+ * @constructor
+ * @returns JSX.Element
+ */
 export default function Search(): JSX.Element {
 	const [games, setGames] = useState<Set<Game>>(new Set());
 	const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
@@ -304,3 +306,4 @@ export default function Search(): JSX.Element {
 		</div>
 	);
 }
+// #endregion
