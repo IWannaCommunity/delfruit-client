@@ -161,7 +161,7 @@ export default function Search(): JSX.Element {
 		return () => {
 			isCancelled = true; // cleanup useEffect
 		};
-	}, [searchQuery, activeLetter, sortConfig, router.isReady]);
+	}, [searchQuery, activeLetter, sortConfig, router.isReady, fetchGames]);
 
 	const loadMore = async () => {
 		const nextPage = page + 1;
