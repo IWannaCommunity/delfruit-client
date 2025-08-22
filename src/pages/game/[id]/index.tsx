@@ -30,7 +30,6 @@ export default function Game(): NextPage {
 
 		(async () => {
 			const resp = await APICLIENT.getGameCompositeAll(params.id);
-			console.log(resp.data);
 			setDetails(resp.data);
 		})();
 	}, [params.id, details]);
