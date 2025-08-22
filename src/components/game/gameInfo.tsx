@@ -107,7 +107,7 @@ export default function GameInfo(props: GameInfoProps): JSX.Element {
 			<div>
 				<h2>Tags:</h2>
 				{props.game.tags.map((tag) => {
-					return <Tag name={tag} count={1} />;
+					return <Tag name={tag.name} count={1} />;
 				})}
 			</div>
 		</div>
