@@ -3,7 +3,7 @@ import Header from "../components/header";
 import News from "../components/home/news";
 import GameList from "../components/home/gameList";
 import ReviewList from "../components/home/reviewList";
-import { CompositeApi, Review, ReviewsApi } from "delfruit-swagger-cg-sdk";
+import { GamesApi, ReviewsApi, Review } from "delfruit-swagger-cg-sdk";
 import React, { useEffect, useState } from "react";
 import { GameProps } from "../components/game";
 import type { Config } from "../utils/config";
@@ -11,79 +11,107 @@ import { NextPage } from "next";
 
 const CFG: Config = require("../config.json");
 
-const COMPOSITEAPICLIENT: CompositeApi = new CompositeApi(
-	void 0,
-	CFG.apiURL.toString(),
-);
-const REVIEWSAPICLIENT: ReviewsApi = new ReviewsApi(
-	void 0,
-	CFG.apiURL.toString(),
-);
+const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
+const REVIEWS_API_CLIENT = new ReviewsApi(undefined, CFG.apiURL.toString());
 
-export default function Home(): NextPage {
-	const [games, setGames] = useState<GameProps[]>([]);
-	const [reviews, setReviews] = useState<Review[]>([]);
+const Home: NextPage = () => {
+  const [games, setGames] = useState<GameProps[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
-	useEffect(() => {
-		if (games.length === 0) {
-			(async () => {
-				const resp = await COMPOSITEAPICLIENT.getGamesWithRatings(
-					void 0,
-					void 0,
-					false,
-					void 0,
-					void 0,
-					void 0,
-					void 0,
-					void 0,
-					//new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-					void 0,
-					new Date(Date.now()),
-					void 0,
-					void 0,
-					void 0,
-					void 0,
-					void 0,
-					void 0,
-					0,
-					25,
-					"date_created",
-					"desc",
-				);
-				const gameProps: Array<GameProps> = new Array(resp.data.length);
-				for (const game of resp.data) {
-					gameProps.push({
-						name: game.name,
-						id: game.id,
-						date: game.dateCreated,
-						rating: game.rating,
-						difficulty: game.difficulty,
-						numOfRatings: game.rating_count,
-					});
-				}
-				setGames(gameProps);
-			})();
-		} else if (reviews.length === 0) {
-			(async () => {
-				const resp = await REVIEWSAPICLIENT.getReviews(0, 5);
-				setReviews(resp.data);
-			})();
-		}
-	}, [games, reviews]);
+  const [loadingGames, setLoadingGames] = useState(true);
+  const [loadingReviews, setLoadingReviews] = useState(true);
 
-	return (
-		<div>
-			<Head>
-				<title>Delicious Fruit</title>
-			</Head>
-			<div id="container">
-				<Header />
-				<div id="content">
-					<News />
-					<GameList games={games} />
-					<ReviewList reviews={reviews} />
-				</div>
-			</div>
-		</div>
-	);
-}
+  const [gamesError, setGamesError] = useState<string | null>(null);
+  const [reviewsError, setReviewsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const results = await Promise.allSettled([
+        GAMES_API_CLIENT.getGames(
+          undefined,
+          undefined,
+          false,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          new Date(Date.now()), // createdTo
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          0,
+          25,
+          "date_created",
+          "desc"
+        ),
+        REVIEWS_API_CLIENT.getReviews(0, 5),
+      ]);
+
+      // Games result
+      if (results[0].status === "fulfilled") {
+        const resp = results[0].value;
+        const gameProps: GameProps[] = resp.data.map((game) => ({
+          name: game.name,
+          id: game.id,
+          date_created: game.date_created,
+          rating: Number(game.rating),
+          difficulty: Number(game.difficulty),
+          rating_count: game.rating_count,
+        }));
+        setGames(gameProps);
+      } else {
+        setGamesError("Failed to load games.");
+      }
+      setLoadingGames(false);
+
+      // Reviews result
+      if (results[1].status === "fulfilled") {
+        setReviews(results[1].value.data);
+      } else {
+        setReviewsError("Failed to load reviews.");
+      }
+      setLoadingReviews(false);
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      <Head>
+        <title>Delicious Fruit</title>
+      </Head>
+      <div id="container">
+        <Header />
+        <div id="content">
+          <News />
+
+          {/* Games */}
+          {loadingGames ? (
+            <p>Loading games...</p>
+          ) : gamesError ? (
+            <p className="error">{gamesError}</p>
+          ) : (
+            <GameList games={games} />
+          )}
+
+          {/* Reviews */}
+          {loadingReviews ? (
+            <p>Loading reviews...</p>
+          ) : reviewsError ? (
+            <p className="error">{reviewsError}</p>
+          ) : (
+            <ReviewList reviews={reviews} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Home;

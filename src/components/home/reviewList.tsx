@@ -1,4 +1,3 @@
-import Whitespace from "../whitespace";
 import Review from "../review";
 import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 
@@ -14,13 +13,16 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 			{props.reviews.map((review) => {
 				return (
 					<Review
+						key={review.id}
 						author={review.user_name}
 						comment={review.comment}
 						rating={review.rating}
 						difficulty={review.difficulty}
 						tags={review.tags}
-						dateCreated={review.dateCreated}
+						date_created={review.date_created}
 						likes={review.like_count}
+						game_name={review.game_name}
+						game_id={review.game_id}
 					/>
 				);
 			})}

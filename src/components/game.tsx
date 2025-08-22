@@ -4,10 +4,10 @@ import { formatDate } from "../utils/formatDate";
 export type GameProps = {
 	name: string;
 	id: number;
-	date: Date | string;
+	date_created: Date | null;
 	rating: number;
 	difficulty: number;
-	numOfRatings: number;
+	rating_count: number;
 };
 
 export default function Game(props: GameProps): JSX.Element {
@@ -18,12 +18,12 @@ export default function Game(props: GameProps): JSX.Element {
 					{props.name}
 				</Link>
 			</td>
-			<td className="rating">{formatDate(props.date)}</td>
-			<td className="rating">{props.rating !== -1 ? props.rating : "N/A"}</td>
+			<td className="rating">{formatDate(new Date(props.date_created))}</td>
+			<td className="rating">{props.rating !== null ? props.rating.toFixed(1) : "N/A"}</td>
 			<td className="rating">
-				{props.difficulty !== -1 ? props.difficulty : "N/A"}
+				{props.difficulty !== null ? props.difficulty.toFixed(1) : "N/A"}
 			</td>
-			<td className="rating">{props.numOfRatings}</td>
+			<td className="rating">{props.rating_count}</td>
 		</tr>
 	);
 }

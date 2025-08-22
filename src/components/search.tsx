@@ -5,7 +5,7 @@ import { formatDate } from "../utils/formatDate";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 
 const CFG: Config = require("../config.json");
-const GAMES_API_CLIENT: GamesApi = new GamesApi(void 0, CFG.apiURL.toString());
+const GAMES_API_CLIENT: GamesApi = new GamesApi(undefined, CFG.apiURL.toString());
 
 /* --------------------------------------------------------
  * Types
@@ -119,7 +119,7 @@ export default function Search(): JSX.Element {
     let newData: Game[] = (res.data ?? []).map((g: any) => ({
       id: Number(g.id),
       name: g.name,
-      date_created: g.date_created ? new Date(g.date_created.replace(" ", "T")) : null,
+      date_created: g.date_created ? new Date(g.date_created) : null,
       difficulty: Number(g.difficulty),
       rating: Number(g.rating),
       rating_count: Number(g.rating_count),

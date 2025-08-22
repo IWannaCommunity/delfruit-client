@@ -25,10 +25,10 @@ export default function GameList(props: GameListProps): JSX.Element {
                                 key={game.id}
                                 name={game.name}
                                 id={game.id}
-                                date={game.date}
+                                date_created={game.date_created}
                                 rating={game.rating}
                                 difficulty={game.difficulty}
-                                numOfRatings={game.numOfRatings}
+                                rating_count={game.rating_count}
                             />
                         );
                     })}

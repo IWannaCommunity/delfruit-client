@@ -10,4 +10,3 @@ export const formatDate = (date: Date | null): string => {
 		return "00/00/0000";
 	}
 };
-
