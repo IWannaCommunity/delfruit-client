@@ -14,7 +14,11 @@ export default function Game(props: GameProps): JSX.Element {
 	return (
 		<tr>
 			<td>
-				<Link className="!max-w-[12em] !break-all" href={`/game/${props.id}`}>
+				<Link
+					className="!max-w-[12em] !break-all"
+					href="/game/[id]"
+					as={`/game/${props.id}`}
+				>
 					{props.name}
 				</Link>
 			</td>
