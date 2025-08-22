@@ -1,1 +1,0 @@
-Individual game page navigation now works as intended.

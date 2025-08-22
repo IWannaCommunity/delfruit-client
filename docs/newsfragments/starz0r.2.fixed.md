@@ -1,1 +1,0 @@
-Home page no longer makes additional unnecesarry API calls when it has already fetched all the details to populate the document.

@@ -1,1 +1,0 @@
-Individual game pages without a proper rating no longer cause the application to crash.

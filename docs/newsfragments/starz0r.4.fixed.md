@@ -1,1 +1,0 @@
-Search page now allows you to navigate to game pages listed by the query.

@@ -1,1 +1,0 @@
-Tags on reviews were being incorrectly mapped, causing the application to crash.

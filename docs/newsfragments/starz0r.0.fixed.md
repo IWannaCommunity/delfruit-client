@@ -1,1 +1,0 @@
-Individual game pages no longer makes additional unnecessary API calls when it has already fetched all the details to populate the document.
