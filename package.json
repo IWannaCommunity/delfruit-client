@@ -1,6 +1,6 @@
 {
   "name": "weeping",
-  "version": "1.0.0-preview.0",
+  "version": "1.0.0-preview.1",
   "private": true,
   "engines": {
     "node": ">=16"
@@ -15,17 +15,15 @@
   "dependencies": {
     "@emoji-mart/react": "1.1.1",
     "@heroicons/react": "1.0.6",
-    "axios": "1.2.2",
+    "axios": "1.2.3",
     "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#87834b4",
     "emoji-mart": "5.5.2",
-    "eslint": "8.29.0",
-    "eslint-config-next": "13.0.6",
     "jquery": "3.6.4",
     "jquery-ui": "1.12.0",
     "js-cookie": "3.0.5",
-    "jsonwebtoken": "8.2.2",
+    "jsonwebtoken": "8.3.0",
     "lodash": "4.17.21",
-    "next": "13.0.6",
+    "next": "13.0.7",
     "next-transpile-modules": "10.0.0",
     "overlayscrollbars": "2.1.1",
     "purecss": "0.5.0",
@@ -42,10 +40,11 @@
     "@types/lodash": "4.17.16",
     "@types/node": "20.3.3",
     "@types/react": "18.2.0",
-    "autoprefixer": "10.4.13",
-    "postcss": "8.4.19",
+    "autoprefixer": "10.4.14",
+    "eslint": "8.30.0",
+    "postcss": "8.4.20",
     "swagger-typescript-api": "12.0.4",
-    "tailwindcss": "3.2.4",
-    "typescript": "5.1.3"
+    "tailwindcss": "3.2.5",
+    "typescript": "5.1.6",
   }
 }
