@@ -16,6 +16,7 @@ const nextConfig = {
 	typescript: {
 		ignoreBuildErrors: true,
 	},
+	productionBrowserSourceMaps: true,
 	output: "standalone",
 };
 
