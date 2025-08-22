@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Review from "../review";
 import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
+import React from "react";
 
 type GameReviewsProp = {
 	reviews: ReviewT[];
@@ -112,4 +113,3 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 		</div>
 	);
 }
-

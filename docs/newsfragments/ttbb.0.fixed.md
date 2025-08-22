@@ -1,0 +1,1 @@
+Cache bug when sorting while searching.

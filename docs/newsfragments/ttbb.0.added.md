@@ -1,0 +1,1 @@
+Use server for infinite scrolling and sorting while searching.

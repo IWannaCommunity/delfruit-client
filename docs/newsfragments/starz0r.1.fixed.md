@@ -1,0 +1,1 @@
+Individual game pages no longer loop gets stuck in a loop making API calls.
