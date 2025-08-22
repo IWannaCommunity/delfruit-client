@@ -21,5 +21,10 @@ const nextConfig = {
 
 const withTM = require('next-transpile-modules')(["delfruit-swagger-cg-sdk"]); // TODO: remove this once NextJS stops complaining about it
 
-module.exports = withTM(nextConfig);
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.NEXT_ANALYZE === 'true',
+});
 
+module.exports = withBundleAnalyzer(
+	withTM(nextConfig)
+);
