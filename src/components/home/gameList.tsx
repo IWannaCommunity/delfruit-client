@@ -49,7 +49,7 @@ export default function GameList(props: GameListProps): JSX.Element {
                             </Link>
                         </td>
                         <td className="!text-center">
-                            <Link className="text-base" href="/">
+                            <Link className="text-base" href="/userlist">
                                 User List
                             </Link>
                         </td>

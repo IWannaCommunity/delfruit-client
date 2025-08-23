@@ -53,7 +53,7 @@ const matchesLetterFilter = (gameName: string, letter: string): boolean => {
 export default function Search(): JSX.Element {
 	const [games, setGames] = useState<Set<Game>>(new Set());
 	const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
-	const [page, setPage] = useState(1);
+	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 
 	const router = useRouter();
