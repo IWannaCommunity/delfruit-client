@@ -36,6 +36,8 @@
     "@next/bundle-analyzer": "13.0.7",
     "@tailwindcss/forms": "0.5.3",
     "@tailwindcss/typography": "0.5.8",
+    "@types/jquery": "3.5.6",
+    "@types/jqueryui": "1.12.20",
     "@types/js-cookie": "3.0.5",
     "@types/jsonwebtoken": "8.3.6",
     "@types/lodash": "4.17.16",
