@@ -1,33 +1,38 @@
 import Image from "next/image";
-import type { AnyElem } from "../utils/element";
-import { useSessionContext } from "../utils/session";
+import type { AnyElem } from "@/utils/element";
+import { useSessionContext } from "@/utils/session";
 import Whitespace from "./whitespace";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-export default function Header(): JSX.Element {
+export default function Header(): AnyElem {
 	const [session, setSession] = useSessionContext();
 	const router = useRouter();
-  const [search, setSearch] = useState("");
+	const [search, setSearch] = useState("");
 
-  const handleSearch = () => {
-    router.push({
-      pathname: "/search",
-      query: search ? { s: search } : {}
-    });
-  };
+	const handleSearch = () => {
+		router.push({
+			pathname: "/search",
+			query: search ? { s: search } : {},
+		});
+	};
 
 	return (
 		<div id="header">
 			<div className="!float-left">
-				<a className="!no-underline" href="/">
+				<Link className="!no-underline" href="/">
 					<h1>
-						<Image src="/images/cherry.gif" alt="Delicious Fruit" width={21} height={24} />
+						<Image
+							src="/images/cherry.gif"
+							alt="Delicious Fruit"
+							width={21}
+							height={24}
+						/>
 						<Whitespace />
 						Delicious Fruit
 					</h1>
-				</a>
+				</Link>
 				<br />
 			</div>
 			<div className="!text-right">
@@ -40,12 +45,19 @@ export default function Header(): JSX.Element {
 					onChange={(e) => setSearch(e.target.value)}
 					onKeyDown={(e) => e.key === "Enter" && handleSearch()}
 				/>
-				<button type="submit" className="styled-button-1 !ml-[0.35em]" onClick={handleSearch}>
+				<button
+					type="submit"
+					className="styled-button-1 !ml-[0.35em]"
+					onClick={handleSearch}
+				>
 					Search
 				</button>
-				<a className="styled-button-1 !inline-block !h-[12px] !ml-[0.35em]" href="/">
+				<Link
+					className="styled-button-1 !inline-block !h-[12px] !ml-[0.35em]"
+					href="/search/advanced"
+				>
 					Advanced...
-				</a>
+				</Link>
 				{!session.active && (
 					<p className="!mt-[1em]">
 						<a href="/login">Login</a>
