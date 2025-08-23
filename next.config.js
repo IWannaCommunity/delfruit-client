@@ -1,3 +1,5 @@
+const path = require("node:path");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: true,
@@ -17,6 +19,17 @@ const nextConfig = {
 		ignoreBuildErrors: true,
 	},
 	output: "standalone",
+	webpack: {
+		externals: {
+		  jquery: "jQuery",
+		  "jquery-ui": "jquery-ui",
+		},
+		resolve: {
+			alias: {
+				'@*': path.resolve(__dirname, "./src/"),
+			},
+		},
+	},
 };
 
 const withTM = require('next-transpile-modules')(["delfruit-swagger-cg-sdk"]); // TODO: remove this once NextJS stops complaining about it

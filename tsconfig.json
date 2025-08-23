@@ -17,6 +17,9 @@
       "node_modules/@types",
       "./typings"
     ],
+	"paths": {
+		"@*": ["./src/*"]
+	},
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
