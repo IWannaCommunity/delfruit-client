@@ -12,7 +12,7 @@ import { GamesApi } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
 
 const CFG: Config = require("../config.json");
-const GAMES_API_CLIENT: GamesApi = new GamesApi(void 0, CFG.apiURL.toString());
+const GAMES_API_CLIENT: GamesApi = new GamesApi(undefined, CFG.apiURL.toString());
 
 // #region Types
 type Game = {
@@ -40,29 +40,7 @@ const matchesLetterFilter = (gameName: string, letter: string): boolean => {
 	const lowerName = gameName.toLowerCase().trim();
 	const lowerLetter = letter.toLowerCase();
 
-	if (lowerLetter === "b") {
-		return (
-			(lowerName.startsWith("i wanna b") &&
-				!lowerName.startsWith("i wanna be")) ||
-			lowerName.startsWith("i wanna be the b") ||
-			lowerName.startsWith(lowerLetter)
-		);
-	}
-
-	if (lowerLetter === "i") {
-		return (
-			lowerName.startsWith("i wanna i") ||
-			lowerName.startsWith("i wanna be the i") ||
-			(lowerName.startsWith("i ") && !lowerName.startsWith("i wanna"))
-		);
-	}
-
-	// Normal case
-	return (
-		lowerName.startsWith(`i wanna ${lowerLetter}`) ||
-		lowerName.startsWith(`i wanna be the ${lowerLetter}`) ||
-		lowerName.startsWith(lowerLetter)
-	);
+	return lowerName.startsWith(lowerLetter);
 };
 // #endregion
 
@@ -87,11 +65,7 @@ export default function Search(): JSX.Element {
 		const query: Record<string, string> = {};
 		if (searchQuery.trim()) query.s = searchQuery.trim();
 
-		if (letter !== "ALL") {
-			query.q = letter;
-		} else {
-			query.q = "ALL";
-		}
+		query.q = (letter === "ALL") ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
 	};
 
@@ -99,6 +73,7 @@ export default function Search(): JSX.Element {
 		return Array.from(new Map(games.map((g) => [g.id, g])).values());
 	};
 
+	// NOTE: Letter filtering/sorting is currently broken until there is a backend fix
 	const fetchGames = useCallback(
 		async (requestedPage: number, sort: SortConfig | null): Promise<Game[]> => {
 			const res = await GAMES_API_CLIENT.getGames(
@@ -120,13 +95,14 @@ export default function Search(): JSX.Element {
 				undefined, // difficultyTo
 				requestedPage, // page number
 				50, // limit
-				sort?.column, // orderCol
+				sort?.column === "name" ? "sortname" : sort?.column, // orderCol
 				sort?.direction, // orderDir
 			);
 
 			let newData: Game[] = (res.data ?? []).map((g: any) => ({
 				id: Number(g.id),
 				name: g.name,
+				sortname: g.sortname,
 				date_created: g.date_created ? new Date(g.date_created) : null,
 				difficulty: Number(g.difficulty),
 				rating: Number(g.rating),
@@ -135,7 +111,7 @@ export default function Search(): JSX.Element {
 
 			if (activeLetter.trim() && activeLetter !== "ALL") {
 				newData = newData.filter((g) =>
-					matchesLetterFilter(g.name, activeLetter),
+					matchesLetterFilter(g.sortname, activeLetter),
 				);
 			}
 
@@ -179,15 +155,8 @@ export default function Search(): JSX.Element {
 			setHasMore(false);
 			return;
 		}
-
-		setGames((prev) => {
-			// QUEST: can we turn this into a one liner?
-			const newGames = new Set(prev);
-			for (const game of moreGames) {
-				newGames.add(game);
-			}
-			return newGames;
-		});
+		
+		setGames((prev) => new Set([...prev, ...moreGames]));
 		setPage(nextPage);
 	};
 
