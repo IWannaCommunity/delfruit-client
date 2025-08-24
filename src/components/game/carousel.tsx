@@ -8,19 +8,31 @@ type CarouselProps = {
 
 export default function Carousel({ images }: CarouselProps): JSX.Element {
   const [current, setCurrent] = useState(0);
+	const [paused, setPaused] = useState(false);
   const thumbsRef = useRef<HTMLDivElement>(null);
 
   const hasImages = images.length > 0;
-  const thumbWidth = 111;
+  const thumbWidth = 120;
 
   const scrollThumbnails = (index: number) => {
-    if (!thumbsRef.current) return;
-    const scrollTo = index * thumbWidth;
-    thumbsRef.current.scrollTo({
-      left: scrollTo,
-      behavior: "smooth",
-    });
-  };
+		if (!thumbsRef.current) return;
+
+		const container = thumbsRef.current;
+		const containerWidth = container.clientWidth;
+		const maxScroll = container.scrollWidth - containerWidth;
+
+		// Center the thumbnail
+		let scrollTo = index * thumbWidth - containerWidth / 2 + thumbWidth / 2;
+
+		// Clamp so it doesn't overscroll
+		if (scrollTo < 0) scrollTo = 0;
+		if (scrollTo > maxScroll) scrollTo = maxScroll;
+
+		container.scrollTo({
+			left: scrollTo,
+			behavior: "smooth",
+		});
+	};
 
   const next = () => {
     setCurrent((prev) => {
@@ -37,6 +49,15 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
       return prevIndex;
     });
   };
+	
+	// autoscroller
+  useEffect(() => {
+    if (!hasImages || paused) return;
+    const interval = setInterval(() => {
+      next();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [hasImages, paused]);
 
   // Keep thumbnails synced when the index changes
   useEffect(() => {
@@ -50,16 +71,25 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 
       <div className="float-left w-[370px]">
         {/* Main */}
-        <div className="group relative h-[250px] w-[350px] bg-[#fafafa] border border-solid border-[#e5e5e5] px-[10px] pb-[40px] pt-[10px] text-center">
+        <div className="group relative h-[250px] w-[350px] bg-[#fafafa] border border-solid border-[#e5e5e5] px-[10px] pb-[40px] pt-[10px] text-center"
+					onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}>
           {hasImages ? (
             <Link href="/">
-              <Image
-                src={images[current].src}
-                alt={images[current].alt || `Screenshot ${current + 1}`}
-                width={350}
-                height={250}
-                className="h-full max-w-[350px] left-[0px] inline"
-              />
+              <div className="relative h-full w-full">
+                {images.map((img, index) => (
+                  <Image
+                    key={index}
+                    src={img.src}
+                    alt={img.alt || `Screenshot ${index + 1}`}
+                    width={350}
+                    height={250}
+                    className={`absolute top-0 left-0 h-full max-w-[350px] 
+										object-contain transition-opacity duration-500 ease-in-out 
+										${current === index ? "opacity-100" : "opacity-0"}`}
+                  />
+                ))}
+              </div>
             </Link>
           ) : (
             <div className="text-center text-gray-500 p-6">
