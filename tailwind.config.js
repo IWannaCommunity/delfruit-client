@@ -1,22 +1,5 @@
 const plugin = require('tailwindcss/plugin');
 
-function createWidthUtility(matchUtilities, name, divisor) {
-  matchUtilities(
-    {
-      [name]: (value) => {
-        const num = parseFloat(value);
-        if (isNaN(num)) return {};
-        const width = 170 * (num / divisor);
-        return { width: `${width}px` };
-      },
-    },
-    {
-      values: {},
-      type: 'number',
-    }
-  );
-}
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   corePlugins: {
@@ -66,11 +49,6 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-
-    plugin(function ({ matchUtilities }) {
-      createWidthUtility(matchUtilities, 'w-rating', 10);
-      createWidthUtility(matchUtilities, 'w-difficulty', 100);
-    }),
+    require('@tailwindcss/typography')
   ],
 };

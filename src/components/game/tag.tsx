@@ -1,5 +1,6 @@
-import { AnyElem } from "../../utils/element";
+import { AnyElem } from "@/utils/element";
 import Whitespace from "../whitespace";
+import Link from "next/link";
 
 type TagProps = {
 	name: string;
@@ -10,9 +11,9 @@ type TagProps = {
 export default function Tag(props: TagProps): AnyElem {
 	return (
 		<>
-			<a href="/" className={"tag" + props.impossible ? "impossible-tag" : ""}>
+			<Link href="/" className={`tag ${props.impossible ? "impossible-tag" : ""}`}>
 				{props.name} ({props.count})
-			</a>
+			</Link>
 			<Whitespace />
 		</>
 	);

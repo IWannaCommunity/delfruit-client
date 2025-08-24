@@ -5,7 +5,7 @@ import Carousel from "@/components/game/carousel";
 import GameReviews from "@/components/game/gameReviews";
 import { CompositeApi, GameExt } from "delfruit-swagger-cg-sdk";
 import { Config } from "@/utils/config";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 
@@ -24,25 +24,18 @@ export default function Game(): NextPage {
 	const [details, setDetails] = useState<GameExt>(null);
 
 	const router = useRouter();
-	const params = router.query;
+	const { id } = router.query;
 
-	useMemo(() => {
-		if (params.id === null || params.id === undefined) {
-			return;
-		}
-		if (details !== null) {
-			return;
-		}
-
+	useEffect(() => {
+		if (!id) { return; }
+		
 		(async () => {
-			const resp = await APICLIENT.getGameCompositeAll(params.id);
+			const resp = await APICLIENT.getGameCompositeAll(id);
 			setDetails(resp.data);
 		})();
-	}, [params.id, details]);
+	}, [id]);
 
-	if (details === null) {
-		return <></>;
-	}
+	if (!details) { return <></>; }
 
 	return (
 		<div>
