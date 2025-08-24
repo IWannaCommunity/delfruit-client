@@ -1,9 +1,30 @@
 import Head from "next/head";
-import Header from "../../components/header";
-import Whitespace from "../../components/whitespace";
+import Header from "@/components/header";
+import Whitespace from "@/components/whitespace";
 import "purecss/pure-min.css";
+import React from "react";
+import type { NextPage } from "next";
+import { UserRegistration, UsersApi } from "delfruit-swagger-cg-sdk";
+import { Config } from "@/utils/config";
+import { useRouter } from "next/router";
 
-export default function Register(): JSX.Element {
+const CFG: Config = require("@/config.json");
+const USERSAPI: UsersApi = new UsersApi(void 0, CFG.apiURL.toString());
+
+export default function Register(): NextPage {
+	const router = useRouter();
+
+	async function attemptUserRegistration(evt: FormEvent<HTMLFormElement>) {
+		evt.preventDefault();
+
+		const frmData: FormData = new FormData(evt.currentTarget);
+
+		// TODO: check if we actually registered
+		const resp = await USERSAPI.postUser(
+			Object.fromEntries(frmData) as any as UserRegistration,
+		);
+		router.reload();
+	}
 	return (
 		<>
 			<Head>
@@ -58,7 +79,10 @@ export default function Register(): JSX.Element {
 							email or use a throwaway email.
 						</li>
 					</ol>
-					<form className="pure-form pure-form-aligned">
+					<form
+						className="pure-form pure-form-aligned"
+						onSubmit={attemptUserRegistration}
+					>
 						<fieldset>
 							<div className="pure-control-group">
 								<label htmlFor="user">Username</label>
