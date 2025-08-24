@@ -31,6 +31,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+	"downlevelIteration": true,
     "isolatedModules": true
   },
   "include": [
