@@ -109,6 +109,7 @@ module.exports = {
 		"jsx-a11y/anchor-has-content": "off",
 		"react/jsx-first-prop-new-line": "off",
 		"react/jsx-closing-bracket-location": "off",
+		"padded-blocks": "off", // this one might be machine dependent
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
