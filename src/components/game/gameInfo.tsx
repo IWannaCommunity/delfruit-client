@@ -3,114 +3,125 @@ import Whitespace from "../whitespace";
 import { GameExt } from "delfruit-swagger-cg-sdk";
 import Tag from "./tag";
 import React from "react";
+import { formatDate } from "@//utils/formatDate";
+import Link from "next/link";
 
 type GameInfoProps = {
-    game: GameExt;
+  game: GameExt;
 };
 
-export default function GameInfo(props: GameInfoProps): JSX.Element {
-    return (
-        <div className="!w-[50%] !float-left">
-            <h1 className="!wrap-break-word">{props.game.name} </h1>
-            <h2 id="creator-label" className="!mb-[13px]">
-                Creator: <a href="/">{props.game.author}</a>
-            </h2>
-            <div className="!w-[380px] !m-auto !h-[80px]">
-                <div className="rating !bg-[#a7d780]">
-                    <span>Average Rating</span>
-                    <div>
-                        <span id="avgRating">
-                            {
-                                // QUEST: is this mechanism complex? heck yea it is. can we simplify it? no clue
-                                props.game.ratings.rating !== -1 ? (
-                                    <>{props.game.ratings.rating} / 10 </>
-                                ) : (
-                                    "N/A"
-                                )
-                            }
-                        </span>
-                        <br />
-                        <span className="description" id="avgRatingLabel">
-                            Good
-                        </span>
-                    </div>
-                </div>
-                <div className="rating !bg-[#d480aa]">
-                    <span>Average Difficulty</span>
-                    <div>
-                        <span id="avgDifficulty">
-                            {
-                                // QUEST: yep, this one is the same as the one above
-                                props.game.ratings.difficulty !== -1 ? (
-                                    <>{props.game.ratings.difficulty} / 100 </>
-                                ) : (
-                                    "N/A"
-                                )
-                            }
-                        </span>
-                        <br />
-                        <span className="description" id="avgDiffLabel">
-                            Good
-                        </span>
-                    </div>
-                </div>
-            </div>
-            {props.game.url ? (
-                <a
-                    target="_blank"
-                    className="standalone"
-                    id="game-link"
-                    href={props.game.url}
-                >
-                    <Image
-                        src="/images/download.png"
-                        className="!absolute !ml-[2px]"
-                        width={14}
-                        height={14}
-                        alt="Write Review"
-                    />
-                    <span> &nbsp;&nbsp;&nbsp;&nbsp; Download Game</span>
-                </a>
-            ) : (
-                <span id="no-link" className="!inline-block !pb-[1em] !hidden">
-                    [Download Not Available]
-                </span>
-            )}
-            <br />
-            <a className="standalone" href="/">
-                <Image
-                    src="/images/camera.png"
-                    className="!absolute !ml-[2px]"
-                    width={14}
-                    height={14}
-                    alt="Upload Screenshot"
-                />
-                <span> &nbsp;&nbsp;&nbsp;&nbsp; Upload a Screenshot </span>
-            </a>
-            <br />
-            <a className="standalone" href="/">
-                Report Game or Suggest Edit
-            </a>
-            <br />
-            <input type="checkbox" id="chk_favourite" />
-            <span>Favourite </span>
-            <span className="favourite_alert !hidden"></span>
-            <br />
-            <input type="checkbox" id="chk_clear" />
-            <span>Cleared </span>
-            <span className="clear_alert !hidden"></span>
-            <br />
-            <input type="checkbox" id="chk_bookmark" />
-            <span>Bookmark </span>
-            <span className="bookmark_alert !hidden"></span>
-            <p>0 people favourited this game!</p>
-            <p> Date Submitted: {new Date(props.game.dateCreated).toDateString()} </p>
-            <div>
-                <h2>Tags:</h2>
-                {props.game.tags.map((tag) => {
-                    return <Tag name={tag.name} count={1} />;
-                })}
-            </div>
-        </div>
-    );
+function AverageBox({label, value, max, description, bgColor}: {
+  label: string;
+  value: number;
+  max: number;
+  description: string;
+  bgColor: string;
+}) {
+  return (
+    <div className={`rating ${bgColor}`}>
+      <span>{label}</span>
+      <div>
+        <span>{value !== -1 ? `${value} / ${max} ` : "N/A"}</span>
+        <br />
+        <span className="description">{description}</span>
+      </div>
+    </div>
+  );
+}
+
+export default function GameInfo({ game }: GameInfoProps): JSX.Element {
+  return (
+    <div className="w-[50%] float-left">
+      <h1 className="break-words">{game.name}</h1>
+
+      <h2 id="creator-label" className="mb-[13px]">
+        Creator: <Link href="/">{game.author}</Link>
+      </h2>
+
+      {/* Average Boxes */}
+      <div className="w-[380px] m-auto h-[80px]">
+        <AverageBox
+          label="Average Rating"
+          value={game.ratings.rating}
+          max={10}
+          description="Good"
+          bgColor="bg-[#a7d780]"
+        />
+        <AverageBox
+          label="Average Difficulty"
+          value={game.ratings.difficulty}
+          max={100}
+          description="Good"
+          bgColor="bg-[#d480aa]"
+        />
+      </div>
+
+      {/* Download link */}
+      {game.url ? (
+        <Link
+          target="_blank"
+          className="standalone"
+          id="game-link"
+          href={game.url}
+        >
+          <Image
+            src="/images/download.png"
+            className="absolute ml-[2px]"
+            width={14}
+            height={14}
+            alt="Download Game"
+          />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp; Download Game</span>
+        </Link>
+      ) : (
+        <span id="no-link" className="inline-block pb-[1em]">
+          [Download Not Available]
+        </span>
+      )}
+
+      <br />
+      <Link className="standalone" href="/">
+        <Image
+          src="/images/camera.png"
+          className="absolute ml-[2px]"
+          width={14}
+          height={14}
+          alt="Upload Screenshot"
+        />
+        <span>&nbsp;&nbsp;&nbsp;&nbsp; Upload a Screenshot</span>
+      </Link>
+      <br />
+      <Link className="standalone" href="/">
+        Report Game or Suggest Edit
+      </Link>
+      <br />
+
+      {/* Checkboxes */}
+      <input type="checkbox" id="chk_favourite" />
+      <span>Favourite </span>
+      <span className="favourite_alert hidden"></span>
+      <br />
+
+      <input type="checkbox" id="chk_clear" />
+      <span>Cleared </span>
+      <span className="clear_alert hidden"></span>
+      <br />
+
+      <input type="checkbox" id="chk_bookmark" />
+      <span>Bookmark </span>
+      <span className="bookmark_alert hidden"></span>
+      <br />
+
+      <p>0 people favourited this game!</p>
+      <p>Date Submitted: {formatDate(new Date(game.dateCreated))}</p>
+
+      {/* Tags */}
+      <div>
+        <h2>Tags:</h2>
+        {game.tags.map((tag) => (
+          <Tag key={tag.id || tag.name} name={tag.name} count={1} />
+        ))}
+      </div>
+    </div>
+  );
 }
