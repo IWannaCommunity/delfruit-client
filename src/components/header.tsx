@@ -60,9 +60,13 @@ export default function Header(): AnyElem {
 				</Link>
 				{!session.active && (
 					<p className="!mt-[1em]">
-						<a href="/login">Login</a>
+						<Link href="/login">
+							<a>Login</a>
+						</Link>
 						<Whitespace />
-						<a href="/">Register</a>
+						<Link href="/register">
+							<a>Register</a>
+						</Link>
 					</p>
 				)}
 			</div>
