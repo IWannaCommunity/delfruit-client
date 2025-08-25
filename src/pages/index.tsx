@@ -3,7 +3,7 @@ import Header from "../components/header";
 import News from "../components/home/news";
 import GameList from "../components/home/gameList";
 import ReviewList from "../components/home/reviewList";
-import { GamesApi, ReviewsApi, Review } from "delfruit-swagger-cg-sdk";
+import { CompositeApi, ReviewsApi, Review } from "delfruit-swagger-cg-sdk";
 import React, { useEffect, useState } from "react";
 import { GameProps } from "../components/game";
 import type { Config } from "../utils/config";
@@ -11,7 +11,7 @@ import { NextPage } from "next";
 
 const CFG: Config = require("../config.json");
 
-const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
+const COMPOSITE_API_CLIENT = new CompositeApi(undefined, CFG.apiURL.toString());
 const REVIEWS_API_CLIENT = new ReviewsApi(undefined, CFG.apiURL.toString());
 
 export default function Home(): NextPage {
@@ -27,7 +27,7 @@ export default function Home(): NextPage {
 	useEffect(() => {
 		const fetchData = async () => {
 			const results = await Promise.allSettled([
-				GAMES_API_CLIENT.getGames(
+				COMPOSITE_API_CLIENT.getGamesWithRatings(
 					undefined,
 					undefined,
 					false,
@@ -59,8 +59,8 @@ export default function Home(): NextPage {
 					name: game.name,
 					id: game.id,
 					date_created: game.date_created,
-					rating: Number(game.rating),
-					difficulty: Number(game.difficulty),
+					rating: Number(game.ratings.rating),
+					difficulty: Number(game.ratings.difficulty),
 					rating_count: game.rating_count,
 				}));
 				setGames(gameProps);

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Review from "../review";
 import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import React from "react";
+import Link from "next/link";
 
 type GameReviewsProp = {
 	reviews: ReviewT[];
@@ -26,7 +27,7 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 				<ul>
 					<li>
 						<span>Make sure to follow the </span>
-						<a href="/">rules</a>
+						<Link href="/">rules</Link>
 						<span> for reviewing games when writing your review.</span>
 					</li>
 					<li>Make sure to properly tag your spoilers with the spoiler tag:</li>
@@ -102,8 +103,8 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 							key={review.id}
 							author={review.user_name}
 							comment={review.comment}
-							rating={review.rating}
-							difficulty={review.difficulty}
+							rating={review.ratings.rating}
+							difficulty={review.ratings.difficulty}
 							tags={review.tags}
 							date_created={review.date_created}
 							likes={review.like_count}
