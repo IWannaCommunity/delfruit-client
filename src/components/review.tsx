@@ -5,10 +5,10 @@ import React from "react";
 type ReviewProps = {
 		user_id: number;
 		game_id: number;
-		rating: number | string;
-    difficulty: number | string;
+		rating: number;
+    difficulty: number;
 		comment: string;
-		date_created: Date | null;
+		date_created: Date;
 		removed: boolean;
     user_name: string;
     game_name: string;
@@ -54,18 +54,28 @@ export default function Review(props: ReviewProps): JSX.Element {
 			<div className="!m-[0px]">
 				{/* RATING */}
 				<span className="!align-middle mr-[0.5em]">
-					Rating: {props.rating}
+					Rating: {props.rating === -1 ? "N/A" : `${props.rating}`}
 				</span>
-				<span className="hearts">
-					<span style={{ width: `${170 * (props.rating / 10)}px` }}></span>
-				</span>
+				{
+					props.rating !== -1 ? (
+						<span className="hearts">
+							<span style={{ width: `${170 * (props.rating / 10)}px` }}></span>
+						</span>
+				) : (
+					<span className="inline-block w-[170px] h-[16px]"></span>
+				)}
 				{/* DIFFICULTY */}
 				<span className="!align-middle ml-[2em] mr-[0.5em]">
-					Difficulty: {props.difficulty}
+					Difficulty: {props.difficulty === -1 ? "N/A" : `${props.difficulty}`}
 				</span>
-				<span className="stars">
-					<span style={{ width: `${170 * (props.difficulty / 100)}px` }}></span>
-				</span>
+				{
+					props.difficulty !== -1 ? (
+						<span className="stars">
+							<span style={{ width: `${170 * (props.difficulty / 100)}px` }}></span>
+						</span>
+				) : (
+					<span className="inline-block w-[170px] h-[16px]"></span>
+				)}
 				{/* DATE */}
 				<div className="!absolute !right-[0px] !top-[0px] !p-[0.5em] !text-right">
 					{props.date_created}

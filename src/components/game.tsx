@@ -23,8 +23,8 @@ export default function Game(props: GameProps): JSX.Element {
 				</Link>
 			</td>
 			<td className="rating">{props.date_created}</td>
-			<td className="rating">{props.difficulty}</td>
-			<td className="rating">{props.rating}</td>
+			<td className="rating">{props.difficulty === -1 ? "N/A" : `${props.difficulty}`}</td>
+			<td className="rating">{props.rating === -1 ? "N/A" : `${props.rating}`}</td>
 			<td className="rating">{props.rating_count}</td>
 		</tr>
 	);

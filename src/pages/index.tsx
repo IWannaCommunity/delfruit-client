@@ -60,8 +60,8 @@ export default function Home(): NextPage {
 					name: game.name,
 					id: game.id,
 					date_created: game.date_created ? formatDate(new Date(game.date_created)) : null,
-					rating: (game.ratings.rating === -1) ? "N/A" : Number(game.ratings.rating/10).toFixed(1),
-					difficulty: (game.ratings.difficulty === -1) ? "N/A" : Number(game.ratings.difficulty).toFixed(1),
+					rating: (game.ratings.rating === -1) ? -1 : Number(game.ratings.rating/10).toFixed(1),
+					difficulty: (game.ratings.difficulty === -1) ? -1 : Number(game.ratings.difficulty).toFixed(1),
 					rating_count: game.rating_count,
 				}));
 				setGames(gameProps);
@@ -77,8 +77,8 @@ export default function Home(): NextPage {
 					id: review.id,
 					user_id: review.user_id,
 					game_id: review.game_id,
-					rating: (review.rating === -1) ? "N/A" : Number(review.rating/10).toFixed(1),
-					difficulty: (review.difficulty === -1) ? "N/A" : Number(review.difficulty),
+					rating: (review.rating === -1) ? -1 : Number(review.rating/10).toFixed(1),
+					difficulty: (review.difficulty === -1) ? -1 : Number(review.difficulty),
 					comment: review.comment,
 					date_created: review.date_created ? formatDate(new Date(review.date_created)) : null,
 					removed: review.removed,

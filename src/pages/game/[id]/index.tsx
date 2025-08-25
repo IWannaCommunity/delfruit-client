@@ -54,11 +54,11 @@ export default function Game(): NextPage {
 					: null,
 				rating:
 					game.ratings.rating === -1
-						? "N/A"
+						? -1
 						: Number(game.ratings.rating / 10).toFixed(1),
 				difficulty:
 					game.ratings.difficulty === -1
-						? "N/A"
+						? -1
 						: Number(game.ratings.difficulty).toFixed(1),
 				urlSpdrn: game.urlSpdrn,
 				tags: game.tags,
@@ -70,10 +70,12 @@ export default function Game(): NextPage {
 						game_id: review.game_id,
 						rating:
 							review.rating === -1
-								? "N/A"
+								? -1
 								: Number(review.rating / 10).toFixed(1),
 						difficulty:
-							review.difficulty === -1 ? "N/A" : Number(review.difficulty),
+							review.difficulty === -1 
+								? -1 
+								: Number(review.difficulty),
 						comment: review.comment,
 						date_created: formatDate(new Date(review.date_created)),
 						removed: review.removed,

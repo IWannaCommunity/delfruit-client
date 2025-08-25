@@ -1,20 +1,17 @@
 import { AnyElem } from "@/utils/element";
-import Whitespace from "../whitespace";
 import Link from "next/link";
 
 type TagProps = {
 	name: string;
-	count: number;
-	impossible?: boolean;
+	count?: number | null;
 };
 
 export default function Tag(props: TagProps): AnyElem {
 	return (
 		<>
-			<Link href="/" className={`tag ${props.impossible ? "impossible-tag" : ""}`}>
-				{props.name} ({props.count})
+			<Link href="/" className={`tag mr-[0.35em] ${props.name === "Impossible" ? "impossible-tag" : ""}`}>
+				{props.name} {props.count ? `(${props.count})` : ""}
 			</Link>
-			<Whitespace />
 		</>
 	);
 }

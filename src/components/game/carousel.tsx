@@ -143,14 +143,16 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 					)}
 
 					{/* Text Nav */}
-					<div className="overflow-hidden mt-[10px] bottom-[10px] absolute w-[350px]">
-						<span className="float-left w-auto block text-[12px] p-[4px]">
-							Previous
-						</span>
-						<span className="float-right w-auto block text-[12px] p-[4px]">
-							Next
-						</span>
-					</div>
+					{hasImages && (
+						<div className="overflow-hidden mt-[10px] bottom-[10px] absolute w-[350px]">
+							<span className="float-left w-auto block text-[12px] p-[4px]">
+								Previous
+							</span>
+							<span className="float-right w-auto block text-[12px] p-[4px]">
+								Next
+							</span>
+						</div>
+					)}
 				</div>
 
 				{/* Thumbnails */}

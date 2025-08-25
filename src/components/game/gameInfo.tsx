@@ -20,7 +20,9 @@ function AverageBox({label, value, max, description, bgColor}: {
     <div className={`rating ${bgColor}`}>
       <span>{label}</span>
       <div>
-        <span>{`${value} / ${max} `}</span>
+        <span>
+					{value === -1 ? "N/A" : `${value} / ${max}`}
+				</span>
         <br />
         <span className="description">{description}</span>
       </div>
@@ -35,8 +37,14 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
       <h1 className="break-words">{game.name}</h1>
 
       <h2 id="creator-label" className="mb-[13px]">
-        Creator: <Link href="/">{game.author}</Link>
-      </h2>
+				Creator:{" "}
+				{game.author.map((author, index) => (
+					<React.Fragment key={author}>
+						<Link href="/">{author}</Link>
+						{index < game.author.length - 1 && ", "}
+					</React.Fragment>
+				))}
+			</h2>
 
       {/* Average Boxes */}
       <div className="w-[380px] m-auto h-[80px]">
