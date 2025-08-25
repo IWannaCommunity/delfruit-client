@@ -1,3 +1,5 @@
 {
-	"apiURL": "http://localhost:4201"
+	"apiURL": "http://localhost:4201",
+	"screenshotURLPrefix": "http://localhost:9001"
 }
+
