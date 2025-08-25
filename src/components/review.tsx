@@ -39,8 +39,8 @@ export default function Review(props: ReviewProps): JSX.Element {
 			{props.tags && props.tags.length > 0 && (
 				<div className="!mb-[0px]">
 					<span> Tagged as: </span>
-					{props.tags?.map((tag, index) => {
-						return <Tag name={tag.name} />;
+					{props.tags?.map((tag) => {
+						return <Tag name={tag.name} key={tag.id} />;
 					})}
 				</div>
 			)}

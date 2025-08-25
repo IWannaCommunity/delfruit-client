@@ -9,6 +9,7 @@ type GameReviewsProp = {
 };
 
 export default function GameReviews(props: GameReviewsProp): JSX.Element {
+
 	return (
 		<div>
 			<h2 className="!clear-both">{props.reviews.length} Reviews:</h2>
@@ -103,8 +104,8 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 							key={review.id}
 							author={review.user_name}
 							comment={review.comment}
-							rating={review.ratings.rating}
-							difficulty={review.ratings.difficulty}
+							rating={review.rating}
+							difficulty={review.difficulty}
 							tags={review.tags}
 							date_created={review.date_created}
 							likes={review.like_count}
