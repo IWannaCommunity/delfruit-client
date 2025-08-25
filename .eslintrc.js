@@ -110,6 +110,9 @@ module.exports = {
 		"react/jsx-first-prop-new-line": "off",
 		"react/jsx-closing-bracket-location": "off",
 		"padded-blocks": "off", // this one might be machine dependent
+		"no-bitwise": "off",
+		"operator-linebreak": "off",
+		"react/no-unused-prop-types": "off",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
