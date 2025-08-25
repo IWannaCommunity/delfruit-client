@@ -12,24 +12,32 @@ import { formatDate } from "@/utils/formatDate";
 
 const CFG: Config = require("@/config.json");
 
-const images=[
-	{"src": "/images/v2/ShowcasedImage-Test.png", "alt": "test"},
-	{"src": "/images/v2/screenshot2.png", "alt": "test"},
-	{"src": "/images/v2/screenshot3.png", "alt": "test"},
-	{"src": "/images/v2/screenshot4.png", "alt": "test"}
-];
-
 const APICLIENT = new CompositeApi(undefined, CFG.apiURL.toString());
+
+function makeScrnshotURL(gameId: number, screenshotId: number): URL {
+	const screenshotIdAsUInt32: number = screenshotId >>> 0;
+
+	return new URL(
+		`${CFG.screenshotURLPrefix.toString()}/${gameId}_${screenshotIdAsUInt32
+			.toString(16)
+			.padStart(8, "0")}`,
+	);
+}
 
 export default function Game(): NextPage {
 	const [details, setDetails] = useState<GameExt>(null);
+	const [images, setImages] = useState<
+		Array<{ src: URL | string; alt: string }>
+	>([]);
 
 	const router = useRouter();
 	const { id } = router.query;
 
 	useEffect(() => {
-		if (!id) { return; }
-		
+		if (!id) {
+			return;
+		}
+
 		(async () => {
 			const resp = await APICLIENT.getGameCompositeAll(id);
 			const game = resp.data;
@@ -41,33 +49,56 @@ export default function Game(): NextPage {
 				collab: game.collab,
 				removed: game.removed,
 				owner_id: game.owner_id,
-				dateCreated: game.dateCreated ? formatDate(new Date(game.dateCreated)) : null,
-				rating: (game.ratings.rating === -1) ? "N/A" : Number(game.ratings.rating/10).toFixed(1),
-				difficulty: (game.ratings.difficulty === -1) ? "N/A" : Number(game.ratings.difficulty).toFixed(1),
+				dateCreated: game.dateCreated
+					? formatDate(new Date(game.dateCreated))
+					: null,
+				rating:
+					game.ratings.rating === -1
+						? "N/A"
+						: Number(game.ratings.rating / 10).toFixed(1),
+				difficulty:
+					game.ratings.difficulty === -1
+						? "N/A"
+						: Number(game.ratings.difficulty).toFixed(1),
 				urlSpdrn: game.urlSpdrn,
 				tags: game.tags,
-				
-				reviews: game.reviews?.map((review) => ({
-					id: review.id,
-					user_id: review.user_id,
-					game_id: review.game_id,
-					rating: (review.rating === -1) ? "N/A" : Number(review.rating/10).toFixed(1),
-					difficulty: (review.difficulty === -1) ? "N/A" : Number(review.difficulty),
-					comment: review.comment,
-					date_created: formatDate(new Date(review.date_created)),
-					removed: review.removed,
-					user_name: review.user_name,
-					game_name: review.game_name,
-					like_count: review.like_count,
-					owner_review: review.owner_review === 1,
-					tags: review.tags
-				})) || []
+
+				reviews:
+					game.reviews?.map((review) => ({
+						id: review.id,
+						user_id: review.user_id,
+						game_id: review.game_id,
+						rating:
+							review.rating === -1
+								? "N/A"
+								: Number(review.rating / 10).toFixed(1),
+						difficulty:
+							review.difficulty === -1 ? "N/A" : Number(review.difficulty),
+						comment: review.comment,
+						date_created: formatDate(new Date(review.date_created)),
+						removed: review.removed,
+						user_name: review.user_name,
+						game_name: review.game_name,
+						like_count: review.like_count,
+						owner_review: review.owner_review === 1,
+						tags: review.tags,
+					})) || [],
 			};
+
+			const carouselProps =
+				game.screenshots.map((scrnShot) => ({
+					src: makeScrnshotURL(scrnShot.gameId, scrnShot.id).toString(),
+					alt: "",
+				})) || [];
 			setDetails(gameProps);
+			setImages(carouselProps);
 		})();
 	}, [id]);
 
-	if (!details) { return <></>; }
+	if (!details) {
+		return <></>;
+	}
+
 	return (
 		<div>
 			<Head>
@@ -78,7 +109,7 @@ export default function Game(): NextPage {
 				<div id="content">
 					<div className="!w-full">
 						<GameInfo game={details} />
-						<Carousel images={images}/>
+						<Carousel images={images} />
 					</div>
 					<GameReviews reviews={details.reviews} />
 				</div>
