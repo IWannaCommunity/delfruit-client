@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import { GameProps } from "../components/game";
 import type { Config } from "../utils/config";
 import { NextPage } from "next";
+import { formatDate } from "../utils/formatDate";
 
 const CFG: Config = require("../config.json");
 
@@ -58,9 +59,9 @@ export default function Home(): NextPage {
 				const gameProps: GameProps[] = resp.data.map((game) => ({
 					name: game.name,
 					id: game.id,
-					date_created: game.date_created,
-					rating: Number(game.ratings.rating),
-					difficulty: Number(game.ratings.difficulty),
+					date_created: game.date_created ? formatDate(new Date(game.date_created)) : null,
+					rating: (game.ratings.rating === -1) ? "N/A" : Number(game.ratings.rating/10).toFixed(1),
+					difficulty: (game.ratings.difficulty === -1) ? "N/A" : Number(game.ratings.difficulty).toFixed(1),
 					rating_count: game.rating_count,
 				}));
 				setGames(gameProps);
@@ -71,7 +72,22 @@ export default function Home(): NextPage {
 
 			// Reviews result
 			if (results[1].status === "fulfilled") {
-				setReviews(results[1].value.data);
+				const resp = results[1].value;
+				const reviewProps: ReviewProps[] = resp.data.map((review) => ({
+					id: review.id,
+					user_id: review.user_id,
+					game_id: review.game_id,
+					rating: (review.rating === -1) ? "N/A" : Number(review.rating/10).toFixed(1),
+					difficulty: (review.difficulty === -1) ? "N/A" : Number(review.difficulty),
+					comment: review.comment,
+					date_created: review.date_created ? formatDate(new Date(review.date_created)) : null,
+					removed: review.removed,
+					user_name: review.user_name,
+					game_name: review.game_name,
+					like_count: review.like_count,
+					owner_review: review.owner_review === 1
+				}));
+				setReviews(reviewProps);
 			} else {
 				setReviewsError("Failed to load reviews.");
 			}

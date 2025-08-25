@@ -3,7 +3,6 @@ import Whitespace from "../whitespace";
 import { GameExt } from "delfruit-swagger-cg-sdk";
 import Tag from "./tag";
 import React from "react";
-import { formatDate } from "@//utils/formatDate";
 import Link from "next/link";
 
 type GameInfoProps = {
@@ -21,7 +20,7 @@ function AverageBox({label, value, max, description, bgColor}: {
     <div className={`rating ${bgColor}`}>
       <span>{label}</span>
       <div>
-        <span>{value !== -1 ? `${value} / ${max} ` : "N/A"}</span>
+        <span>{`${value} / ${max} `}</span>
         <br />
         <span className="description">{description}</span>
       </div>
@@ -30,6 +29,7 @@ function AverageBox({label, value, max, description, bgColor}: {
 }
 
 export default function GameInfo({ game }: GameInfoProps): JSX.Element {
+	
   return (
     <div className="w-[50%] float-left">
       <h1 className="break-words">{game.name}</h1>
@@ -42,14 +42,14 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
       <div className="w-[380px] m-auto h-[80px]">
         <AverageBox
           label="Average Rating"
-          value={game.ratings.rating}
+          value={game.rating}
           max={10}
           description="Good"
           bgColor="bg-[#a7d780]"
         />
         <AverageBox
           label="Average Difficulty"
-          value={game.ratings.difficulty}
+          value={game.difficulty}
           max={100}
           description="Good"
           bgColor="bg-[#d480aa]"
@@ -113,13 +113,13 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
       <br />
 
       <p>0 people favourited this game!</p>
-      <p>Date Submitted: {formatDate(new Date(game.dateCreated))}</p>
+      <p>Date Submitted: {game.dateCreated}</p>
 
       {/* Tags */}
       <div>
         <h2>Tags:</h2>
         {game.tags.map((tag) => (
-          <Tag key={tag.id || tag.name} name={tag.name} count={1} />
+          <Tag key={tag.id} name={tag.name} count={game.tags.length} />
         ))}
       </div>
     </div>

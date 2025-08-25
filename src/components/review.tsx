@@ -1,28 +1,28 @@
 import Tag from "./game/tag";
-import { formatDate } from "../utils/formatDate";
 import Link from "next/link";
 import React from "react";
 
 type ReviewProps = {
-    author: string;
-    comment: string;
-    rating: number;
-    difficulty: number;
-    tags?: string[];
-    date_created: Date | null;
-    likes: number;
-    creator?: boolean;
-    game_id: number;
+		user_id: number;
+		game_id: number;
+		rating: number | string;
+    difficulty: number | string;
+		comment: string;
+		date_created: Date | null;
+		removed: boolean;
+    user_name: string;
     game_name: string;
+    like_count: number;
+		owner_review?: boolean;
+    tags?: string[];
 };
 
 export default function Review(props: ReviewProps): JSX.Element {
-	
 	return (
-		<div className={props.creator ? "owner-review" : "review"}>
+		<div className={props.owner_review ? "owner-review" : "review"}>
 			{/* AUTHOR */}
-			<Link href="/">{props.author}</Link>
-			{props.creator && <span className="!font-bold">[Creator]</span>}
+			<Link href="/">{props.user_name}</Link>
+			{props.owner_review && <span className="!font-bold">[Creator]</span>}
 			<br />
 
 			{/* GAME NAME */}
@@ -47,14 +47,14 @@ export default function Review(props: ReviewProps): JSX.Element {
 
 			{/* LIKES */}
 			<span> [</span>
-			<span className="r-like-span">{props.likes}</span>
+			<span className="r-like-span">{props.like_count}</span>
 			<span>] </span>
 			<span className="r-like-span-label">Likes</span>
 
 			<div className="!m-[0px]">
 				{/* RATING */}
 				<span className="!align-middle mr-[0.5em]">
-					Rating: {props.rating?.toFixed(1)}
+					Rating: {props.rating}
 				</span>
 				<span className="hearts">
 					<span style={{ width: `${170 * (props.rating / 10)}px` }}></span>
@@ -68,7 +68,7 @@ export default function Review(props: ReviewProps): JSX.Element {
 				</span>
 				{/* DATE */}
 				<div className="!absolute !right-[0px] !top-[0px] !p-[0.5em] !text-right">
-					{formatDate(new Date(props.date_created))}
+					{props.date_created}
 				</div>
 			</div>
 		</div>

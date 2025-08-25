@@ -9,7 +9,6 @@ type GameReviewsProp = {
 };
 
 export default function GameReviews(props: GameReviewsProp): JSX.Element {
-
 	return (
 		<div>
 			<h2 className="!clear-both">{props.reviews.length} Reviews:</h2>
@@ -102,15 +101,18 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 					return (
 						<Review
 							key={review.id}
-							author={review.user_name}
-							comment={review.comment}
+							user_id={review.user_id}
+							game_id={review.game_id}
 							rating={review.rating}
 							difficulty={review.difficulty}
-							tags={review.tags}
+							comment={review.comment}
 							date_created={review.date_created}
-							likes={review.like_count}
-							game_id={review.game_id}
+							removed={review.removed}
+							user_name={review.user_name}
 							game_name={review.game_name}
+							like_count={review.like_count}
+							owner_review={review.owner_review}
+							tags={review.tags}
 						/>
 					);
 				})}

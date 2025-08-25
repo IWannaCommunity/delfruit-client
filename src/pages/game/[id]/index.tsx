@@ -8,6 +8,7 @@ import { Config } from "@/utils/config";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
+import { formatDate } from "@/utils/formatDate";
 
 const CFG: Config = require("@/config.json");
 
@@ -31,12 +32,42 @@ export default function Game(): NextPage {
 		
 		(async () => {
 			const resp = await APICLIENT.getGameCompositeAll(id);
-			setDetails(resp.data);
+			const game = resp.data;
+			const gameProps: GameExt = {
+				id: game.id,
+				name: game.name,
+				url: game.url,
+				author: game.author,
+				collab: game.collab,
+				removed: game.removed,
+				owner_id: game.owner_id,
+				dateCreated: game.dateCreated ? formatDate(new Date(game.dateCreated)) : null,
+				rating: (game.ratings.rating === -1) ? "N/A" : Number(game.ratings.rating/10).toFixed(1),
+				difficulty: (game.ratings.difficulty === -1) ? "N/A" : Number(game.ratings.difficulty).toFixed(1),
+				urlSpdrn: game.urlSpdrn,
+				tags: game.tags,
+				
+				reviews: game.reviews?.map((review) => ({
+					id: review.id,
+					user_id: review.user_id,
+					game_id: review.game_id,
+					rating: (review.rating === -1) ? "N/A" : Number(review.rating/10).toFixed(1),
+					difficulty: (review.difficulty === -1) ? "N/A" : Number(review.difficulty),
+					comment: review.comment,
+					date_created: formatDate(new Date(review.date_created)),
+					removed: review.removed,
+					user_name: review.user_name,
+					game_name: review.game_name,
+					like_count: review.like_count,
+					owner_review: review.owner_review === 1,
+					tags: review.tags
+				})) || []
+			};
+			setDetails(gameProps);
 		})();
 	}, [id]);
 
 	if (!details) { return <></>; }
-
 	return (
 		<div>
 			<Head>
