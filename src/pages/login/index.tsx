@@ -1,16 +1,20 @@
 import Head from "next/head";
-import type { AnyElem } from "../../utils/element";
-import Header from "../../components/header";
-import Whitespace from "../../components/whitespace";
-import { useSessionContext } from "../../utils/session";
-import { AuthenticationApi } from "delfruit-swagger-cg-sdk";
+import Header from "@/components/header";
+import Whitespace from "@/components/whitespace";
+import { useSessionContext } from "@/utils/session";
+import { AuthenticationApi, UserCredentials } from "delfruit-swagger-cg-sdk";
 import { FormEvent } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import { Config } from "@/utils/config";
+import Link from "next/link";
+import { NextPage } from "next";
 
-const apiClient = new AuthenticationApi(void 0, "http://localhost:4201");
+const CFG: Config = require("@/config.json");
 
-export default function Login(): AnyElem {
+const AUTHAPI = new AuthenticationApi(void 0, CFG.apiURL.toString());
+
+export default function Login(): NextPage {
 	const [session, setSession] = useSessionContext();
 	const router = useRouter();
 
@@ -18,9 +22,10 @@ export default function Login(): AnyElem {
 		evt.preventDefault();
 
 		const frmData = new FormData(evt.currentTarget);
-
 		// TODO: check if we've actually logged in
-		const resp = await apiClient.postLogin({ username: "", password: "" });
+		const resp = await AUTHAPI.postLogin(
+			Object.fromEntries(frmData) as any as UserCredentials,
+		);
 		Cookies.set("session", resp.data.token);
 		router.reload();
 	}
@@ -53,13 +58,13 @@ export default function Login(): AnyElem {
 								<input id="form" type="hidden" name="form" value="1" />
 								<button type="submit">Login</button>
 							</form>
-							<a href="/">Forgot Password?</a>
+							<Link href="/">Forgot Password?</Link>
 						</div>
 						<div>
 							Don't have an account? It only takes 10 seconds to register, and
 							then you can get started using Delicious-Fruit!
 							<Whitespace />
-							<a href="/">Register Now!</a>
+							<Link href="/register">Register Now!</Link>
 						</div>
 					</div>
 				</div>
