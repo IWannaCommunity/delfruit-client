@@ -61,21 +61,21 @@ export default function Header(): AnyElem {
 				{!session.active && (
 					<p className="!mt-[1em]">
 						<Link href="/login">
-							<a>Login</a>
+							Login
 						</Link>
 						<Whitespace />
 						<Link href="/register">
-							<a>Register</a>
+							Register
 						</Link>
 					</p>
 				)}
 			</div>
 			<div className="!clear-both">
-				<a className="navbutton2" href="/">
+				<Link className="navbutton2" href="/">
 					Fangames
-				</a>
+				</Link>
 				<Whitespace />
-				<a className="navbutton2" href="/">
+				<a className="navbutton2" href="https://iwannacommunity.com/forum/">
 					Forums
 				</a>
 				<Whitespace />
@@ -87,9 +87,9 @@ export default function Header(): AnyElem {
 					Twitch Team
 				</a>
 				<Whitespace />
-				<a className="navbutton2" href="/">
+				<Link className="navbutton2" href="/">
 					Bingo
-				</a>
+				</Link>
 				<Whitespace />
 				<a className="navbutton2" href="https://www.fangam.es/intro">
 					Intro
