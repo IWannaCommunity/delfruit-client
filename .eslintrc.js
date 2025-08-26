@@ -34,7 +34,7 @@ module.exports = {
 		"plugin:@next/next/recommended",
 		"plugin:@typescript-eslint/recommended",
 		"airbnb",
-		"airbnb-base",
+		"airbnb/hooks",
 		//"plugin:prettier/recommended", // make sure this is always the last element in the array.
 	],
 	plugins: ["react", "prettier", "@typescript-eslint"],
@@ -113,6 +113,11 @@ module.exports = {
 		"no-bitwise": "off",
 		"operator-linebreak": "off",
 		"react/no-unused-prop-types": "off",
+		"react-hooks/exhaustive-deps": "warn",
+		"keyword-spacing": "off",
+		"react/prop-types": "off",
+		"react/button-has-type": "warn",
+		"react/jsx-curly-newline": "off",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
