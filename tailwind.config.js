@@ -11,14 +11,17 @@ module.exports = {
 	"./src/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
-    extend: {	
-		backgroundImage: {
-			'footer-bg': "url('/images/GaidenBG.png')",
-			'news-bg': "url('/images/NewsReelBG.png')"
-		},
-		screens: {
-			"3xl": "2000px"
-		}
+    extend: {
+			fontFamily: {
+        verdana: ['Verdana', 'Arial', 'sans-serif']
+      },
+			backgroundImage: {
+				'footer-bg': "url('/images/GaidenBG.png')",
+				'news-bg': "url('/images/NewsReelBG.png')"
+			},
+			screens: {
+				"3xl": "2000px"
+			}
 	},
 	container: {
 		center: true
