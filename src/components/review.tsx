@@ -21,7 +21,7 @@ export default function Review(props: ReviewProps): JSX.Element {
 	return (
 		<div className={props.owner_review ? "owner-review" : "review"}>
 			{/* AUTHOR */}
-			<Link href="/">{props.user_name}</Link>
+			<Link href={`/user/${props.user_id}`}>{props.user_name}</Link>
 			{props.owner_review && <span className="!font-bold">[Creator]</span>}
 			<br />
 

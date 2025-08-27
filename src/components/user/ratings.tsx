@@ -109,7 +109,7 @@ export default function Ratings({userID}: Number): JSX.Element {
 	
 	return(
 		<div className="px-[1.5em]">
-			<p>10 Games</p>
+		<p className="text-[#222222]">{ratings.length} Games</p>
 			
 			<div className="overflow-x-auto">
 				<DataTable
