@@ -13,7 +13,6 @@ export default function AdvancedSearch(): NextPage {
 	useEffect(() => {
 		const datepicker = require("jquery-ui/ui/widgets/datepicker");
 		const slider = require("jquery-ui/ui/widgets/slider");
-		const slider_css = require("jquery-ui/themes/base/all.css");
 		$("#rating").slider({
 			min: 0,
 			max: 10,
@@ -54,13 +53,12 @@ export default function AdvancedSearch(): NextPage {
 				<Header />
 				<div id="content">
 					<h2>Advanced Search</h2>
-					<form className="pure-form pure-form-aligned">
+					<form>
 						<fieldset>
-							<div className="pure-control-group">
+							<div>
 								<label htmlFor="title">Game Title:</label>
 								<Whitespace />
 								<input
-									className="pure-input-1-3"
 									id="title"
 									type="text"
 									placeholder="I wanna be the Guy Remastered"
@@ -69,11 +67,10 @@ export default function AdvancedSearch(): NextPage {
 								/>
 							</div>
 
-							<div className="pure-control-group">
+							<div>
 								<label htmlFor="author">Game Author:</label>
 								<Whitespace />
 								<input
-									className="pure-input-1-3"
 									id="author"
 									type="text"
 									placeholder="Cherry Treehouse"
@@ -83,13 +80,8 @@ export default function AdvancedSearch(): NextPage {
 							</div>
 
 							<label htmlFor="clear-any">
-								<input
-									className="pure-input-1-3"
-									id="dorate"
-									type="checkbox"
-									name="rated"
-								/>{" "}
-								Specify Rating
+								<input id="dorate" type="checkbox" name="rated" /> Specify
+								Rating
 							</label>
 							<div>
 								Rating: <span id="ratingSpan" />
@@ -97,13 +89,8 @@ export default function AdvancedSearch(): NextPage {
 							<div className="p-0 ml-2 mr-2 mb-4" id="rating" />
 
 							<label htmlFor="clear-any">
-								<input
-									className="pure-input-1-3"
-									id="dodiff"
-									type="checkbox"
-									name="diffd"
-								/>{" "}
-								Specify Difficulty
+								<input id="dodiff" type="checkbox" name="diffd" /> Specify
+								Difficulty
 							</label>
 							<div>
 								Difficulty: <span id="diffSpan" />
@@ -111,10 +98,9 @@ export default function AdvancedSearch(): NextPage {
 							<div className="p-0 ml-2 mr-2" id="difficulty" />
 							<br />
 
-							<div className="pure-control-group">
+							<div>
 								<label htmlFor="tags">Tags (separate with spaces): </label>
 								<input
-									className="pure-input-1-3"
 									id="tags"
 									type="text"
 									placeholder="Needle Avoidance"
@@ -146,18 +132,11 @@ export default function AdvancedSearch(): NextPage {
 									Cleared by me?
 									<br />
 									<label htmlFor="clear-any">
-										<input
-											className="pure-input-1-3"
-											id="clear-any"
-											type="radio"
-											name="clear"
-											value=""
-										/>{" "}
+										<input id="clear-any" type="radio" name="clear" value="" />{" "}
 										Any
 									</label>
 									<label htmlFor="clear-uncleared">
 										<input
-											className="pure-input-1-3"
 											id="clear-uncleared"
 											type="radio"
 											name="clear"
@@ -167,7 +146,6 @@ export default function AdvancedSearch(): NextPage {
 									</label>
 									<label htmlFor="clear-cleared">
 										<input
-											className="pure-input-1-3"
 											id="clear-cleared"
 											type="radio"
 											name="clear"
@@ -182,7 +160,6 @@ export default function AdvancedSearch(): NextPage {
 									<br />
 									<label htmlFor="review-any">
 										<input
-											className="pure-input-1-3"
 											id="review-any"
 											type="radio"
 											name="ireviewed"
@@ -192,7 +169,6 @@ export default function AdvancedSearch(): NextPage {
 									</label>
 									<label htmlFor="review-no">
 										<input
-											className="pure-input-1-3"
 											id="review-no"
 											type="radio"
 											name="ireviewed"
@@ -202,7 +178,6 @@ export default function AdvancedSearch(): NextPage {
 									</label>
 									<label htmlFor="review-yes">
 										<input
-											className="pure-input-1-3"
 											id="review-yes"
 											type="radio"
 											name="ireviewed"
@@ -214,39 +189,18 @@ export default function AdvancedSearch(): NextPage {
 								{/* #endregion */}
 
 								{/* #region Download */}
-								<div className="pure-control-group">
+								<div>
 									<label htmlFor="dl">Require Download Link:</label>
 									<label htmlFor="dl">
-										<input
-											className="pure-input-1-3"
-											id="dl"
-											type="radio"
-											name="dl"
-											value="0"
-										/>{" "}
-										Either
-										<input
-											className="pure-input-1-3"
-											id="dl"
-											type="radio"
-											name="dl"
-											value="1"
-										/>{" "}
-										Yes
-										<input
-											className="pure-input-1-3"
-											id="dl"
-											type="radio"
-											name="dl"
-											value="-1"
-										/>{" "}
-										No
+										<input id="dl" type="radio" name="dl" value="0" /> Either
+										<input id="dl" type="radio" name="dl" value="1" /> Yes
+										<input id="dl" type="radio" name="dl" value="-1" /> No
 									</label>
 								</div>
 								{/* #endregion */}
 
 								{/* #region Release Window */}
-								<div className="pure-control-group">
+								<div>
 									Released between
 									<br />
 									<label htmlFor="from">From</label>
@@ -259,13 +213,8 @@ export default function AdvancedSearch(): NextPage {
 								</div>
 								{/* #endregion */}
 
-								<div className="pure-control-group">
-									<button
-										type="submit"
-										className="pure-button pure-button-primary"
-									>
-										Search
-									</button>
+								<div>
+									<button type="submit">Search</button>
 									<Whitespace />
 									<input type="button" id="lucky" value="I'm feeling lucky!" />
 									<input type="hidden" name="advanced" value="1" />

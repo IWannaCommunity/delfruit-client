@@ -1,7 +1,6 @@
 import Head from "next/head";
 import Header from "@/components/header";
 import Whitespace from "@/components/whitespace";
-import "purecss/pure-min.css";
 import React from "react";
 import type { NextPage } from "next";
 import { UserRegistration, UsersApi } from "delfruit-swagger-cg-sdk";
