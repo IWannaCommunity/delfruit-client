@@ -12,8 +12,8 @@ type Rating = {
 	id: number;
 	game_id: number;
 	game_name: string;
-	difficulty: number;
-	rating: number;
+	difficulty: number | string;
+	rating: number | string;
 };
 
 const ratingColumns: Column<Rating>[] = [
@@ -29,11 +29,11 @@ const ratingColumns: Column<Rating>[] = [
 	{ 
 		key: "difficulty", 
 		label: "Difficulty",
-		render: (value) => (value.toFixed(1))
+		render: (value) => (value)
 	},
 	{ key: "rating", 
 		label: "User's Rating",
-		render: (value) => (value.toFixed(1))
+		render: (value) => (value)
 	}
 ];
 
@@ -58,8 +58,8 @@ export default function Ratings({userID}: Number): JSX.Element {
         id: Number(r.id),
 				game_id: Number(r.game_id),
         game_name: r.game_name,
-        difficulty: Number(r.difficulty),
-				rating: Number(r.rating)
+        difficulty: (r.difficulty === null) ? "N/A" : Number(r.difficulty).toFixed(1),
+				rating: (r.rating === null) ? "N/A" : Number(r.rating/10).toFixed(1)
       }));
 
       return newData;

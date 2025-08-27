@@ -17,8 +17,8 @@ type Review = {
 	game_name: string;
 	comment: string;
 	date_created: Date | null;
-	difficulty: number;
-	rating: number;
+	difficulty: number | null;
+	rating: number | null;
 	like_count: number;
 	owner_review: boolean;
 	tags: [];
@@ -47,8 +47,8 @@ export default function Reviews({userID}: Number): JSX.Element {
         game_name: r.game_name,
 				date_created: formatDate(new Date(r.date_created)),
 				comment: r.comment,
-        difficulty: Number(r.difficulty),
-				rating: Number(r.rating),
+        rating: (r.rating === null) ? null : Number(r.rating/10).toFixed(1),
+				difficulty: (r.difficulty === null) ? null : Number(r.difficulty),
 				like_count: Number(r.like_count),
 				owner_review: r.owner_review === 1,
 				tags: r.tags
@@ -105,7 +105,7 @@ export default function Reviews({userID}: Number): JSX.Element {
 						key={review.id}
 						user_name={review.user_name}
 						comment={review.comment}
-						rating={review.rating.toFixed(1)}
+						rating={review.rating}
 						difficulty={review.difficulty}
 						tags={review.tags}
 						date_created={review.date_created}

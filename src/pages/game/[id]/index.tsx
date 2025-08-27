@@ -53,13 +53,13 @@ export default function Game(): NextPage {
 					? formatDate(new Date(game.dateCreated))
 					: null,
 				rating:
-					game.ratings.rating === -1
-						? -1
-						: Number(game.ratings.rating / 10).toFixed(1),
+					game.rating === null
+						? null
+						: Number(game.rating / 10).toFixed(1),
 				difficulty:
-					game.ratings.difficulty === -1
-						? -1
-						: Number(game.ratings.difficulty).toFixed(1),
+					game.difficulty === null
+						? null
+						: Number(game.difficulty).toFixed(1),
 				urlSpdrn: game.urlSpdrn,
 				tags: game.tags,
 
@@ -69,12 +69,12 @@ export default function Game(): NextPage {
 						user_id: review.user_id,
 						game_id: review.game_id,
 						rating:
-							review.rating === -1
-								? -1
+							review.rating === null
+								? null
 								: Number(review.rating / 10).toFixed(1),
 						difficulty:
-							review.difficulty === -1 
-								? -1 
+							review.difficulty === null 
+								? null 
 								: Number(review.difficulty),
 						comment: review.comment,
 						date_created: formatDate(new Date(review.date_created)),

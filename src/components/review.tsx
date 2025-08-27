@@ -54,10 +54,10 @@ export default function Review(props: ReviewProps): JSX.Element {
 			<div className="!m-[0px]">
 				{/* RATING */}
 				<span className="!align-middle mr-[0.5em]">
-					Rating: {props.rating === -1 ? "N/A" : `${props.rating}`}
+					Rating: {props.rating === null ? "N/A" : `${props.rating}`}
 				</span>
 				{
-					props.rating !== -1 ? (
+					props.rating !== null ? (
 						<span className="hearts">
 							<span style={{ width: `${170 * (props.rating / 10)}px` }}></span>
 						</span>
@@ -66,10 +66,10 @@ export default function Review(props: ReviewProps): JSX.Element {
 				)}
 				{/* DIFFICULTY */}
 				<span className="!align-middle ml-[2em] mr-[0.5em]">
-					Difficulty: {props.difficulty === -1 ? "N/A" : `${props.difficulty}`}
+					Difficulty: {props.difficulty === null ? "N/A" : `${props.difficulty}`}
 				</span>
 				{
-					props.difficulty !== -1 ? (
+					props.difficulty !== null ? (
 						<span className="stars">
 							<span style={{ width: `${170 * (props.difficulty / 100)}px` }}></span>
 						</span>
