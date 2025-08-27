@@ -227,9 +227,6 @@ export default function Search(): JSX.Element {
 					loaderRef={loaderRef}
 				/>
 			</div>
-
-			{/* Infinite scroll loader trigger */}
-			<div ref={loaderRef} className="h-10" />
 		</div>
 	);
 }
