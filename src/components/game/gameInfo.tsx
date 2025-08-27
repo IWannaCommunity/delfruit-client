@@ -1,72 +1,13 @@
 import Image from "next/image";
-import Whitespace from "../whitespace";
 import { GameExt } from "delfruit-swagger-cg-sdk";
 import Tag from "./tag";
 import React from "react";
 import Link from "next/link";
+import AverageBox, { getRatingDescription, getDifficultyDescription, getColor } from "@/components/game/averageBox";
 
 type GameInfoProps = {
   game: GameExt;
 };
-
-function getColor(value: number, min: number, max: number, startColor: string, endColor: string): string {
-  // clamp value between min and max
-  const ratio = Math.min(Math.max((value - min) / (max - min), 0), 1);
-
-  // parse hex colors into r/g/b
-  const hexToRgb = (hex: string) => {
-    const cleanHex = hex.replace("#", "");
-    const num = parseInt(cleanHex, 16);
-    return {
-      r: (num >> 16) & 255,
-      g: (num >> 8) & 255,
-      b: num & 255
-    };
-  };
-
-  const rgbToHex = (r: number, g: number, b: number) => {
-    return `#${[r, g, b]
-      .map((x) => {
-        const hex = x.toString(16);
-        return hex.length === 1 ? "0" + hex : hex;
-      })
-      .join("")}`;
-  };
-
-  const start = hexToRgb(startColor);
-  const end = hexToRgb(endColor);
-
-  // interpolate each channel
-  const r = Math.round(start.r + (end.r - start.r) * ratio);
-  const g = Math.round(start.g + (end.g - start.g) * ratio);
-  const b = Math.round(start.b + (end.b - start.b) * ratio);
-
-  return rgbToHex(r, g, b);
-}
-
-function AverageBox({label, value, max, description, bgColor}: {
-  label: string;
-  value: number;
-  max: number;
-  description: string;
-  bgColor: string;
-}) {
-  return (
-    <div 
-			className={`rating bg-[var(--average-color)]`}
-			style={{ ["--average-color" as any]: bgColor }}
-		>
-      <span>{label}</span>
-      <div>
-        <span>
-					{value === -1 ? "N/A" : `${value} / ${max}`}
-				</span>
-        <br />
-        <span className="description">{description}</span>
-      </div>
-    </div>
-  );
-}
 
 export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 	
@@ -90,14 +31,14 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
           label="Average Rating"
           value={game.rating}
           max={10}
-          description="Good"
+          description={getRatingDescription(game.rating)}
           bgColor={getColor(game.rating, 0, 10, "#ff8080", "#7fff80")}
         />
         <AverageBox
           label="Average Difficulty"
           value={game.difficulty}
           max={100}
-          description="Good"
+          description={getDifficultyDescription(game.difficulty)}
           bgColor={getColor(game.difficulty, 0, 100, "#8080ff", "#ff807f")}
         />
       </div>
