@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { formatDate } from "@/utils/formatDate";
+import Footer from "@/components/footer";
 
 const CFG: Config = require("@/config.json");
 
@@ -115,6 +116,7 @@ export default function Game(): NextPage {
 					</div>
 					<GameReviews reviews={details.reviews} />
 				</div>
+				<Footer />
 			</div>
 		</div>
 	);
