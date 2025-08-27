@@ -1,20 +1,14 @@
 import { useRouter } from "next/router";
-import React, {
-	useEffect,
-	useState,
-	useMemo,
-	useRef,
-	useCallback,
-} from "react";
-import { useInfiniteScroll } from "../utils/infiniteScroll";
-import { formatDate } from "../utils/formatDate";
+import { useEffect, useState, useCallback } from "react";
+import { useInfiniteScroll } from "@/utils/infiniteScroll";
+import { formatDate } from "@/utils/formatDate";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
+import { DataTable, Column, SortConfig } from "@/components/DataTable";
 
-const CFG: Config = require("../config.json");
+const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT: GamesApi = new GamesApi(undefined, CFG.apiURL.toString());
 
-// #region Types
 type Game = {
 	id: number;
 	name: string;
@@ -24,16 +18,34 @@ type Game = {
 	rating_count: number;
 };
 
-type SortConfig = { column: keyof Game; direction: "asc" | "desc" };
-
-const columns = [
-	{ key: "name", label: "Game" },
-	{ key: "date_created", label: "Release Date" },
-	{ key: "difficulty", label: "Difficulty" },
-	{ key: "rating", label: "Rating" },
-	{ key: "rating_count", label: "# of Ratings" },
+const gameColumns: Column<Game>[] = [
+  {
+    key: "name",
+    label: "Name",
+    render: (value, row) => (
+      <Link href="/game/[id]" as={`/game/${row.id}`}>
+        {value}
+      </Link>
+    ),
+  },
+  {
+    key: "date_created",
+    label: "Release Date",
+    render: (value) => (value ? formatDate(value as Date) : "Unknown")
+  },
+	{ 
+		key: "difficulty", 
+		label: "Difficulty",
+		render: (value) => (value.toFixed(1))
+	},
+	{ key: "rating", 
+		label: "Rating",
+		render: (value) => (value.toFixed(1))
+	},
+	{ key: "rating_count", 
+		label: "# of Ratings"
+	}
 ];
-// #endregion
 
 // #region Letter Filtering Logic
 const matchesLetterFilter = (gameName: string, letter: string): boolean => {
@@ -68,11 +80,7 @@ export default function Search(): JSX.Element {
 		query.q = (letter === "ALL") ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
 	};
-
-	const dedupeGames = (games: Game[]): Game[] => {
-		return Array.from(new Map(games.map((g) => [g.id, g])).values());
-	};
-
+	
 	// NOTE: Letter filtering/sorting is currently broken until there is a backend fix
 	const fetchGames = useCallback(
 		async (requestedPage: number, sort: SortConfig | null): Promise<Game[]> => {
@@ -163,31 +171,7 @@ export default function Search(): JSX.Element {
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
 		if (hasMore) loadMore();
 	});
-
-	/*
-  const sortCache = useRef<SortCache>(new Map());
-  const sortedGames = useSortedGames(games, sortConfig, sortCache);
-    */
-
-	const handleSort = (column: keyof Game) => {
-		if (sortConfig?.column === column) {
-			setSortConfig({
-				column,
-				direction: sortConfig.direction === "asc" ? "desc" : "asc",
-			});
-		} else {
-			setSortConfig({ column, direction: "asc" });
-		}
-		setPage(0);
-	};
-
-	const getSortIcon = (column: keyof Game) => {
-		if (sortConfig?.column !== column) return "/images/bg.gif";
-		return sortConfig.direction === "asc"
-			? "/images/asc.gif"
-			: "/images/desc.gif";
-	};
-
+	
 	return (
 		<div
 			id="content"
@@ -235,45 +219,13 @@ export default function Search(): JSX.Element {
 			</p>
 
 			<div className="overflow-x-auto">
-				<table className="tablesorter min-w-[600px] w-full">
-					<thead>
-						<tr>
-							{columns.map(({ key, label }) => (
-								<th
-									key={key}
-									className={`cursor-pointer ${
-										sortConfig?.column === key ? "bg-[#8DBDD8]" : "bg-[#E6EEEE]"
-									} bg-right bg-no-repeat`}
-									style={{
-										backgroundImage: `url(${getSortIcon(key as keyof Game)})`,
-									}}
-									onClick={() => handleSort(key as keyof Game)}
-								>
-									{label}
-								</th>
-							))}
-						</tr>
-					</thead>
-					<tbody>
-						{[...games].map((game) => (
-							<tr key={game.id}>
-								<td className="!max-w-[15em] break-words">
-									<Link href="/game/[id]" as={`/game/${game.id}`}>
-										{game.name}
-									</Link>
-								</td>
-								<td className="rating">
-									{game.date_created
-										? formatDate(game.date_created)
-										: "Unknown"}
-								</td>
-								<td className="rating">{game.difficulty.toFixed(1)}</td>
-								<td className="rating">{game.rating.toFixed(1)}</td>
-								<td className="rating">{game.rating_count}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+				<DataTable
+					data={[...games]}
+					columns={gameColumns}
+					sortConfig={sortConfig}
+					onSortChange={setSortConfig}
+					loaderRef={loaderRef}
+				/>
 			</div>
 
 			{/* Infinite scroll loader trigger */}

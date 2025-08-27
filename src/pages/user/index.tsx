@@ -4,6 +4,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useState } from "react";
 import TabBar from "@/components/tabBar";
+import Profile from "@/components/user/profile";
 
 export default function Home(): NextPage {
 	const [activeTab, setActiveTab] = useState<"profile" | "ratings" | "reviews" | "games" | "favorites" | "clearList">("profile");
@@ -33,12 +34,14 @@ export default function Home(): NextPage {
 					<span className="follow_alert display-none"/>
 					<br/>
 					
-					{/* Tabs */}
 					<div className="border border-solid border-gray-400 rounded-md bg-white text-[1.1em] font-verdana">
 						<div className="border border-gray-400 rounded-md p-[0.25em]">
 						
 							{/* Tabs */}
 							<TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+							
+							{/* Profile */}
+							{activeTab === "profile" && <Profile />}
 							
 						</div>
 					</div>
