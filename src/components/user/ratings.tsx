@@ -12,10 +12,8 @@ type Rating = {
 	id: number;
 	game_id: number;
 	game_name: string;
-	date_created: Date | null;
 	difficulty: number;
 	rating: number;
-	rating_count: number;
 };
 
 const ratingColumns: Column<Rating>[] = [

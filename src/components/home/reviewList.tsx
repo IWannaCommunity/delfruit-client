@@ -1,4 +1,4 @@
-import Review from "../review";
+import Review from "@/components/review";
 import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
 

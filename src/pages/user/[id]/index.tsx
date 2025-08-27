@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import TabBar from "@/components/tabBar";
 import Profile from "@/components/user/profile";
 import Ratings from "@/components/user/ratings";
+import Reviews from "@/components/user/reviews";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 
 const CFG: Config = require("@/config.json");
@@ -65,6 +66,9 @@ export default function User(): NextPage {
 							
 							{/* Ratings */}
 							{activeTab === "ratings" && id && <Ratings userID={id}/>}
+							
+							{/* Reviews */}
+							{activeTab === "reviews" && id && <Reviews userID={id}/>}
 							
 						</div>
 					</div>
