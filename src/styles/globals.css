@@ -390,8 +390,10 @@ div.reportDiv {
 
 /* Firefox track */
 .review-slider::-moz-range-track {
-  height: 10px;
+  height: 13px;
   background: inherit;
+	border: 1px solid #cccccc;
+	border-radius: 4px;
 }
 
 /* Thumb (Chrome, Safari, Edge) */
