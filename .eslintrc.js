@@ -122,6 +122,8 @@ module.exports = {
 		"@typescript-eslint/ban-types": "off",
 		"comma-spacing": "off",
 		"@typescript-eslint/no-empty-function": "off",
+		"semi": "off",
+		"radix": "off",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
