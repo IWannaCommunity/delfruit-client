@@ -4,11 +4,12 @@ import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { formatDate } from "@/utils/formatDate";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
-import { DataTable, Column, SortConfig } from "@/components/DataTable";
+import { DataTable, Column, SortConfig } from "@/components/dataTable";
 
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT: GamesApi = new GamesApi(undefined, CFG.apiURL.toString());
 
+// #region Types
 type Game = {
 	id: number;
 	name: string;
@@ -46,6 +47,7 @@ const gameColumns: Column<Game>[] = [
 		label: "# of Ratings"
 	}
 ];
+// #endregion
 
 // #region Letter Filtering Logic
 const matchesLetterFilter = (gameName: string, letter: string): boolean => {

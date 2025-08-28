@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DataTable, Column, SortConfig } from "@/components/DataTable";
+import { DataTable, Column, SortConfig } from "@/components/dataTable";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";

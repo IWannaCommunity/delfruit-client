@@ -7,7 +7,7 @@ import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 import { NextPage } from "next";
-import { DataTable, Column, SortConfig } from "@/components/DataTable";
+import { DataTable, Column, SortConfig } from "@/components/dataTable";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT: UsersApi = new UsersApi(undefined, CFG.apiURL.toString());
