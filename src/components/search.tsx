@@ -14,8 +14,8 @@ type Game = {
 	id: number;
 	name: string;
 	date_created: Date | null;
-	difficulty: number;
-	rating: number;
+	difficulty: number | string;
+	rating: number | string;
 	rating_count: number;
 };
 
@@ -37,11 +37,11 @@ const gameColumns: Column<Game>[] = [
 	{ 
 		key: "difficulty", 
 		label: "Difficulty",
-		render: (value) => (value.toFixed(1))
+		render: (value) => (value)
 	},
 	{ key: "rating", 
 		label: "Rating",
-		render: (value) => (value.toFixed(1))
+		render: (value) => (value)
 	},
 	{ key: "rating_count", 
 		label: "# of Ratings"
@@ -114,8 +114,8 @@ export default function Search(): JSX.Element {
 				name: g.name,
 				sortname: g.sortname,
 				date_created: g.date_created ? new Date(g.date_created) : null,
-				difficulty: Number(g.difficulty),
-				rating: Number(g.rating),
+				difficulty: (g.difficulty === null) ? "N/A" : Number(g.difficulty).toFixed(1),
+				rating: (g.rating === null) ? "N/A" : Number(g.rating/10).toFixed(1),
 				rating_count: Number(g.rating_count),
 			}));
 
