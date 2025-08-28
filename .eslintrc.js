@@ -118,6 +118,9 @@ module.exports = {
 		"react/prop-types": "off",
 		"react/button-has-type": "warn",
 		"react/jsx-curly-newline": "off",
+		"import/no-unresolved": "warn",
+		"@typescript-eslint/ban-types": "off",
+		"comma-spacing": "off",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
