@@ -54,6 +54,7 @@ export default function ReviewList(props: ReviewListProps): AnyElem {
 				return (
 					<Review
 						key={review.id}
+						user_id={review.user_id}
 						user_name={review.user_name}
 						comment={review.comment}
 						rating={review.rating}

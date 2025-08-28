@@ -3,7 +3,7 @@ import Header from "@/components/header";
 import News from "@/components/home/news";
 import GameList from "@/components/home/gameList";
 import ReviewList from "@/components/home/reviewList";
-import Footer from "@components/footer";
+import Footer from "@/components/footer";
 import Link from "next/link";
 import { AnyElem } from "@/utils/element";
 
