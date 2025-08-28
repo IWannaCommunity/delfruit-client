@@ -124,6 +124,7 @@ module.exports = {
 		"@typescript-eslint/no-empty-function": "off",
 		"semi": "off",
 		"radix": "off",
+		"no-restricted-globals": "off",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
