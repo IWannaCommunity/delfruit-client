@@ -3,7 +3,8 @@ import { GameExt } from "delfruit-swagger-cg-sdk";
 import Tag from "./tag";
 import React from "react";
 import Link from "next/link";
-import AverageBox, { getRatingDescription, getDifficultyDescription, getColor } from "@/components/game/averageBox";
+import AverageBox, { getColor } from "@/components/game/averageBox";
+import {getRatingDescription, getDifficultyDescription} from "@/utils/ratingHelpers"
 
 type GameInfoProps = {
   game: GameExt;
