@@ -60,13 +60,9 @@ export default function Header(): AnyElem {
 				</Link>
 				{!session.active && (
 					<p className="!mt-[1em]">
-						<Link href="/login">
-							Login
-						</Link>
+						<Link href="/login">Login</Link>
 						<Whitespace />
-						<Link href="/register">
-							Register
-						</Link>
+						<Link href="/register">Register</Link>
 					</p>
 				)}
 			</div>
@@ -97,9 +93,7 @@ export default function Header(): AnyElem {
 				<Whitespace />
 				<form className="!float-right">
 					<select id="language" name="locale">
-						<option value="en_US" defaultValue>
-							English
-						</option>
+						<option defaultValue="en_US">English</option>
 						{false && (
 							<>
 								<option value="cs_CZ">Čeština</option>
