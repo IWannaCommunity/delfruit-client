@@ -121,6 +121,7 @@ module.exports = {
 		"import/no-unresolved": "warn",
 		"@typescript-eslint/ban-types": "off",
 		"comma-spacing": "off",
+		"@typescript-eslint/no-empty-function": "off",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
