@@ -1,3 +1,20 @@
+Delicious Fruit [client, weeping] 1.0.0-preview.2 (2025-08-28)
+==============================================================
+
+### ➕ Added
+
+- Game pages now look closer to their original counterparts. (TTBB)
+- User pages have been reimplemented. (TTBB)
+- You can now look at all the reviews, starting from the latest. (Starz0r)
+
+### 🔄 Changed
+
+- Upgrade Axios to 1.2.4 (Starz0r)
+- Upgrade Next.js to 13.1.0 (Starz0r)
+- Upgrade Tailwind CSS to 3.2.6 (Starz0r)
+- Upgrade jsonwebtoken to 8.4.0 (Starz0r)
+
+
 Delicious Fruit [client, weeping] 1.0.0-preview.1 (2025-08-26)
 ==============================================================
 
