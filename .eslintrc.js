@@ -125,6 +125,7 @@ module.exports = {
 		"semi": "off",
 		"radix": "off",
 		"no-restricted-globals": "off",
+		"no-import-assign": "off",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
