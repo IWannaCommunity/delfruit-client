@@ -1,10 +1,11 @@
 import Review from "@/components/review";
 import { useState, useEffect, useCallback } from "react";
-import WriteReview from "@/components/game/writeReview"
+import WriteReview from "@/components/game/writeReview";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 import { useRouter } from "next/router";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
+import type { AnyElem } from "@utils/element";
 
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
@@ -29,87 +30,92 @@ type Review = {
 	tags: [];
 };
 
-export default function GameReviews(props: GameReviewsProp): JSX.Element {
+export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const [reviews, setReviews] = useState<Set<Review>>(new Set(props.reviews));
-	const [page, setPage] = useState(1);
+	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
+	const [fetchOnce, setFetchOnce] = useState<boolean>(false);
 
 	const router = useRouter();
 	const id = Number(router.query.id);
 
 	const fetchReviews = useCallback(
-			async (requestedPage: number): Promise<Set<Review>> => {
-				const res = await GAMES_API_CLIENT.getGameReviews(
-					id, // id
-					undefined,
-					true,
-					true,
-					requestedPage, // page number
-					5, // limit
-				);
-	
-				const newData: Set<Review> = (res.data ?? []).map((r: any) => ({
-					id: Number(r.id),
-					game_id: Number(r.game_id),
-					user_name: r.user_name,
-					game_name: r.game_name,
-					date_created: formatDate(new Date(r.date_created)),
-					comment: r.comment,
-					rating: (r.rating === null) ? null : Number(r.rating/10).toFixed(1),
-					difficulty: (r.difficulty === null) ? null : Number(r.difficulty),
-					like_count: Number(r.like_count),
-					owner_review: r.owner_review === 1,
-					tags: r.tags
-				}));
-	
-				return newData;
-			},[id]
-		);
-		
-		useEffect(() => {
-			if (!router.isReady) return;
-	
-			let isCancelled = false;
-	
-			const fetchAndSet = async () => {
-				const firstPage = await fetchReviews(1);
-				if (!isCancelled) {
-					setReviews(firstPage);
-					setPage(1);
-					setHasMore(firstPage.size > 0);
-				}
-			};
-	
-			fetchAndSet();
-	
-			return () => {
-				isCancelled = true; // cleanup
-			};
-		}, [router.isReady, fetchReviews, props.reviews]);
-	
-		const loadMore = async () => {
-			const nextPage = page + 1;
-			const moreReviews = await fetchReviews(nextPage);
-	
-			if (moreReviews.size === 0) {
-				setHasMore(false);
-				return;
+		async (requestedPage: number): Promise<ReadonlyArray<Review>> => {
+			const res = await GAMES_API_CLIENT.getGameReviews(
+				id, // id
+				undefined,
+				true,
+				true,
+				requestedPage, // page number
+				5, // limit
+			);
+
+			const newData: ReadonlyArray<Review> = (res.data ?? []).map((r: any) => ({
+				id: Number(r.id),
+				game_id: Number(r.game_id),
+				user_name: r.user_name,
+				game_name: r.game_name,
+				date_created: formatDate(new Date(r.date_created)),
+				comment: r.comment,
+				rating: r.rating === null ? null : Number(r.rating / 10).toFixed(1),
+				difficulty: r.difficulty === null ? null : Number(r.difficulty),
+				like_count: Number(r.like_count),
+				owner_review: r.owner_review === 1,
+				tags: r.tags,
+			}));
+
+			return newData;
+		},
+		[id],
+	);
+
+	useEffect(() => {
+		if (!router.isReady) return;
+
+		let isCancelled = false;
+
+		const fetchAndSet = async () => {
+			const firstPage = await fetchReviews(0);
+			if (!isCancelled) {
+				setReviews((prev) => new Set([...prev, ...firstPage]));
+				setPage(1);
+				setHasMore(firstPage.length > 0);
 			}
-	
-			setReviews((prev) => new Set([...prev, ...moreReviews]));
-			setPage(nextPage);
 		};
-		
-		const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
-			if (hasMore) loadMore();
-		});
-	
+
+		if (!fetchOnce) {
+			setFetchOnce(true);
+			fetchAndSet();
+		}
+
+		return () => {
+			isCancelled = true; // cleanup
+		};
+	}, [router.isReady, fetchReviews, reviews, fetchOnce]);
+
+	const loadMore = useCallback(async () => {
+		const nextPage = page + 1;
+		const moreReviews = await fetchReviews(nextPage);
+
+		if (moreReviews.length === 0) {
+			setHasMore(false);
+			return;
+		}
+
+		setReviews((prev) => new Set([...prev, ...moreReviews]));
+		setPage(nextPage);
+	}, [fetchReviews, page]);
+
+	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
+		if (hasMore) loadMore();
+	});
+
 	return (
 		<div>
 			<h2 className="clear-both">{reviews.size} Reviews:</h2>
-			
+
 			<WriteReview />
-			
+
 			{/* Review List */}
 			<div id="reviews">
 				{[...reviews].map((review) => {
@@ -133,10 +139,11 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 				})}
 			</div>
 			{/* Infinite scroll trigger */}
-			{
-				loaderRef && hasMore ? <div ref={loaderRef} className="h-10" /> 
-				: <span>No more reviews.</span>
-			}
+			{loaderRef && hasMore ? (
+				<div ref={loaderRef} className="h-10" />
+			) : (
+				<span>No more reviews.</span>
+			)}
 		</div>
 	);
 }

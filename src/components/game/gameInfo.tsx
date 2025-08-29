@@ -4,14 +4,16 @@ import Tag from "./tag";
 import React from "react";
 import Link from "next/link";
 import AverageBox, { getColor } from "@/components/game/averageBox";
-import {getRatingDescription, getDifficultyDescription} from "@/utils/ratingHelpers"
+import {
+	getRatingDescription,
+	getDifficultyDescription,
+} from "@/utils/ratingHelpers";
 
 type GameInfoProps = {
 	game: GameExt;
 };
 
 export default function GameInfo({ game }: GameInfoProps): JSX.Element {
-	
 	return (
 		<div className="w-[50%] float-left">
 			<h1 className="break-words">{game.name}</h1>
@@ -87,17 +89,17 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 			{/* Checkboxes */}
 			<input type="checkbox" id="chk_favourite" />
 			<span> Favourite </span>
-			<span className="favourite_alert hidden"/>
+			<span className="favourite_alert hidden" />
 			<br />
 
 			<input type="checkbox" id="chk_clear" />
 			<span> Cleared </span>
-			<span className="clear_alert hidden"/>
+			<span className="clear_alert hidden" />
 			<br />
 
 			<input type="checkbox" id="chk_bookmark" />
 			<span> Bookmark </span>
-			<span className="bookmark_alert hidden"/>
+			<span className="bookmark_alert hidden" />
 			<br />
 
 			<p>0 people favourited this game!</p>
@@ -113,3 +115,4 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 		</div>
 	);
 }
+
