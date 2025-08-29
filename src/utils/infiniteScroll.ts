@@ -13,10 +13,13 @@ export function useInfiniteScroll<T extends HTMLElement>(
       }
     }, options);
 
-    if (loaderRef.current) observer.observe(loaderRef.current);
+     const currentLoader = loaderRef.current;
+
+    if (currentLoader) observer.observe(currentLoader);
 
     return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
+      if (currentLoader) observer.unobserve(currentLoader);
+      observer.disconnect();
     };
   }, [onLoadMore, options]);
 
