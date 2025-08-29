@@ -4,7 +4,7 @@ import React from "react";
 
 type ReviewProps = {
 		user_id: number;
-		game_id: number;
+		game_id: number | null;
 		rating: number;
     difficulty: number;
 		comment: string;
@@ -25,10 +25,15 @@ export default function Review(props: ReviewProps): JSX.Element {
 			{props.owner_review && <span className="!font-bold">[Creator]</span>}
 			<br />
 
+
 			{/* GAME NAME */}
-			<span> For: </span>
-			<Link href={`/game/${props.game_id}`}>{props.game_name}</Link>
-			<br />
+			{props.game_id && (
+				<>
+					<span> For: </span>
+					<Link href={`/game/${props.game_id}`}>{props.game_name}</Link>
+					<br />
+				</>
+			)}
 
 			{/* COMMENT */}
 			<div className="review-text !wrap-break-word">
@@ -59,10 +64,10 @@ export default function Review(props: ReviewProps): JSX.Element {
 				{
 					props.rating !== null ? (
 						<span className="hearts">
-							<span style={{ width: `${170 * (props.rating / 10)}px` }}></span>
+							<span style={{ width: `${170 * (props.rating / 10)}px` }}/>
 						</span>
 				) : (
-					<span className="inline-block w-[170px] h-[16px]"></span>
+					<span className="inline-block w-[170px] h-[16px]"/>
 				)}
 				{/* DIFFICULTY */}
 				<span className="!align-middle ml-[2em] mr-[0.5em]">
@@ -71,10 +76,10 @@ export default function Review(props: ReviewProps): JSX.Element {
 				{
 					props.difficulty !== null ? (
 						<span className="stars">
-							<span style={{ width: `${170 * (props.difficulty / 100)}px` }}></span>
+							<span style={{ width: `${170 * (props.difficulty / 100)}px` }}/>
 						</span>
 				) : (
-					<span className="inline-block w-[170px] h-[16px]"></span>
+					<span className="inline-block w-[170px] h-[16px]"/>
 				)}
 				{/* DATE */}
 				<div className="!absolute !right-[0px] !top-[0px] !p-[0.5em] !text-right">

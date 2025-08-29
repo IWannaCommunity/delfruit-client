@@ -7,7 +7,6 @@ import { CompositeApi, GameExt } from "delfruit-swagger-cg-sdk";
 import { Config } from "@/utils/config";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import type { NextPage } from "next";
 import { formatDate } from "@/utils/formatDate";
 import Footer from "@/components/footer";
 import { AnyElem } from "@/utils/element";
@@ -69,7 +68,7 @@ export default function Game(): AnyElem {
 					game.reviews?.map((review) => ({
 						id: review.id,
 						user_id: review.user_id,
-						game_id: review.game_id,
+						game_id: null,
 						rating:
 							review.rating === null
 								? null
