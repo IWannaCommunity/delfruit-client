@@ -34,7 +34,6 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const [reviews, setReviews] = useState<Set<Review>>(new Set(props.reviews));
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
-	const [fetchOnce, setFetchOnce] = useState<boolean>(false);
 
 	const router = useRouter();
 	const id = Number(router.query.id);
@@ -69,31 +68,9 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 		[id],
 	);
 
-	useEffect(() => {
+	const loadMore = useCallback(async () => {
 		if (!router.isReady) return;
 
-		let isCancelled = false;
-
-		const fetchAndSet = async () => {
-			const firstPage = await fetchReviews(0);
-			if (!isCancelled) {
-				setReviews((prev) => new Set([...prev, ...firstPage]));
-				setPage(1);
-				setHasMore(firstPage.length > 0);
-			}
-		};
-
-		if (!fetchOnce) {
-			setFetchOnce(true);
-			fetchAndSet();
-		}
-
-		return () => {
-			isCancelled = true; // cleanup
-		};
-	}, [router.isReady, fetchReviews, reviews, fetchOnce]);
-
-	const loadMore = useCallback(async () => {
 		const nextPage = page + 1;
 		const moreReviews = await fetchReviews(nextPage);
 
@@ -104,7 +81,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 		setReviews((prev) => new Set([...prev, ...moreReviews]));
 		setPage(nextPage);
-	}, [fetchReviews, page]);
+	}, [fetchReviews, page, router.isReady]);
 
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
 		if (hasMore) loadMore();
