@@ -7,10 +7,6 @@ import { formatDate } from "@/utils/formatDate";
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
 
-type GameListProps = {
-    games: GameProps[];
-};
-
 export default function GameList(): JSX.Element {
 	
 	const [games, setGames] = useState<GameProps[]>([]);

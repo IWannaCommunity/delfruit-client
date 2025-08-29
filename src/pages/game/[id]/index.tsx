@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import type { NextPage } from "next";
 import { formatDate } from "@/utils/formatDate";
 import Footer from "@/components/footer";
+import { AnyElem } from "@/utils/element";
 
 const CFG: Config = require("@/config.json");
 
@@ -25,14 +26,14 @@ function makeScrnshotURL(gameId: number, screenshotId: number): URL {
 	);
 }
 
-export default function Game(): NextPage {
+export default function Game(): AnyElem {
 	const [details, setDetails] = useState<GameExt>(null);
 	const [images, setImages] = useState<
 		Array<{ src: URL | string; alt: string }>
 	>([]);
 
 	const router = useRouter();
-	const { id } = router.query;
+	const id = Number(router.query.id);
 
 	useEffect(() => {
 		if (!id) {

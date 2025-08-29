@@ -1,138 +1,120 @@
-import Image from "next/image";
 import Review from "@/components/review";
-import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
-import React from "react";
-import Link from "next/link";
-import { useState } from "react";
-import {getRatingDescription, getDifficultyDescription} from "@/utils/ratingHelpers"
+import { useState, useEffect, useCallback } from "react";
+import WriteReview from "@/components/game/writeReview"
+import { GamesApi } from "delfruit-swagger-cg-sdk";
+import { formatDate } from "@/utils/formatDate";
+import { useRouter } from "next/router";
+import { useInfiniteScroll } from "@/utils/infiniteScroll";
+
+const CFG: Config = require("@/config.json");
+const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
 
 type GameReviewsProp = {
-	reviews: ReviewT[];
+	reviews: Review[];
+};
+
+type Review = {
+	id: number;
+	user_id: number;
+	user_name: string;
+	game_id: number;
+	game_name: string;
+	comment: string;
+	date_created: Date | null;
+	removed: boolean;
+	difficulty: number | null;
+	rating: number | null;
+	like_count: number;
+	owner_review: boolean;
+	tags: [];
 };
 
 export default function GameReviews(props: GameReviewsProp): JSX.Element {
+	const [reviews, setReviews] = useState<Review[]>([]);
+	const [page, setPage] = useState(0);
+	const [hasMore, setHasMore] = useState(true);
+
+	const router = useRouter();
+	const id = Number(router.query.id);
+
+	const fetchReviews = useCallback(
+			async (requestedPage: number): Promise<Review[]> => {
+				const res = await GAMES_API_CLIENT.getGameReviews(
+					id, // id
+					undefined,
+					true,
+					true,
+					requestedPage, // page number
+					5, // limit
+				);
 	
-	const [showWrite, setShowWrite] = useState(false);
-	const [rating, setRating] = useState(-0.1);
-	const [difficulty, setDifficulty] = useState(-1);
+				const newData: Review[] = (res.data ?? []).map((r: any) => ({
+					id: Number(r.id),
+					game_id: Number(r.game_id),
+					user_name: r.user_name,
+					game_name: r.game_name,
+					date_created: formatDate(new Date(r.date_created)),
+					comment: r.comment,
+					rating: (r.rating === null) ? null : Number(r.rating/10).toFixed(1),
+					difficulty: (r.difficulty === null) ? null : Number(r.difficulty),
+					like_count: Number(r.like_count),
+					owner_review: r.owner_review === 1,
+					tags: r.tags
+				}));
+	
+				return newData;
+			},[id]
+		);
+		
+		useEffect(() => {
+			if (!router.isReady) return;
+
+			setReviews(props.reviews);
+	
+			let isCancelled = false;
+	
+			const fetchAndSet = async () => {
+				const firstPage = await fetchReviews(1);
+				if (!isCancelled) {
+					setReviews(firstPage);
+					setPage(1);
+					setHasMore(firstPage.length > 0);
+				}
+			};
+	
+			fetchAndSet();
+	
+			return () => {
+				isCancelled = true; // cleanup
+			};
+		}, [router.isReady, fetchReviews, props.reviews]);
+	
+		const loadMore = async () => {
+			const nextPage = page + 1;
+			const moreReviews = await fetchReviews(nextPage);
+	
+			if (moreReviews.length === 0) {
+				setHasMore(false);
+				return;
+			}
+	
+			setReviews((prev) => [...prev, ...moreReviews]);
+			setPage(nextPage);
+		};
+		
+		const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
+			if (hasMore) loadMore();
+		});
 	
 	return (
 		<div>
-			<h2 className="clear-both">{props.reviews.length} Reviews:</h2>
+			<h2 className="clear-both">{reviews.length} Reviews:</h2>
 			
-			{/* Write Review Button */}
-			{!showWrite && (
-				<div 
-					id="myreviewtoggle"
-					onClick={() => setShowWrite(true)}
-				>
-					<Image
-						src="/images/pencil.png"
-						width={24}
-						height={24}
-						alt="Write Review"
-					/>
-					<span className="leading-[26px]">Write a Review</span>
-				</div>
-			)}
-			
-			{/* Hide Button */}
-			{showWrite && (
-        <button
-          onClick={() => setShowWrite(false)}
-          className="text-sm text-gray-600 hover:text-black"
-        >
-					Hide
-        </button>
-      )}
-			
-			{/* Review Rules */}
-			{showWrite && (
-				<div id="myreview" className="mt-4">
-					<span className="font-bold">My Review</span>
-					<ul>
-						<li>
-							<span>Make sure to follow the </span>
-							<Link href="/">rules</Link>
-							<span> for reviewing games when writing your review.</span>
-						</li>
-						<li>Make sure to properly tag your spoilers with the spoiler tag:</li>
-						<li className="list-none">
-							<ul>
-								<li>'[spoiler]This game has apples![spoiler]'</li>
-							</ul>
-						</li>
-						<li>
-							Please do not intentionally give games a review that would be
-							considered sarcastic, troll, or off-topic. (You are allowed to be
-							funny with your comments.)
-						</li>
-						<li>
-							When reviewing a game please try to point out what you
-							liked/disliked about it and how it could be improved.
-						</li>
-						<li>
-							When rating a game, we ask that you have cleared it first (or at
-							least given it a fair attempt) before reviewing.
-						</li>
-					</ul>
-					
-					{/* Rating Slider */}
-					<div className="mt-4">
-						<span className="font-medium">My Rating: </span>
-						<span id="ratingSpan">{rating !== -0.1 ? rating : "None"} {getRatingDescription(rating)}</span>
-					</div>
-					<input
-						type="range"
-						min={-0.1}
-						max={10}
-						step={0.1}
-						value={rating}
-						onChange={(e) => setRating(parseFloat(e.target.value))}
-						id="rating"
-						className="review-slider ui-slider-horizontal"
-					/>
-
-					{/* Difficulty Slider */}
-					<div className="mt-4">
-						<span className="font-medium">My Difficulty: </span>
-						<span id="diffSpan">{difficulty !== -1 ? difficulty : "None"} {getDifficultyDescription(difficulty)}</span>
-					</div>
-					<input
-						type="range"
-						min={-1}
-						max={100}
-						step={1}
-						value={difficulty}
-						onChange={(e) => setDifficulty(parseInt(e.target.value))}
-						id="difficulty"
-						className="review-slider ui-slider-horizontal mb-10"
-					/>
-					
-					{/* Comment box */}
-					<textarea
-						maxLength="50000"
-						id="mycomment"
-						placeholder="Tell everyone what you thought of the game!"
-					></textarea>
-					<br />
-					
-					{/* Tags */}
-					<span>
-						Tags (separate with spaces, 30 characters per tag, max of 10):
-					</span>
-					<br />
-					<input className="w-full" type="text" name="tags" id="tags" />
-					<span className="tags_alert"></span>
-					<br />
-					<input type="button" id="update_button" value="Update My Review" />
-					<span className="ajax_alert !hidden"></span>
-				</div>
-			)}
+			<WriteReview />
 			
 			{/* Review List */}
 			<div id="reviews">
-				{props.reviews.map((review) => {
+				{reviews.map((review) => {
 					return (
 						<Review
 							key={review.id}
@@ -152,6 +134,8 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 					);
 				})}
 			</div>
+			{/* Infinite scroll trigger */}
+			{loaderRef && <div ref={loaderRef} className="h-10" />}
 		</div>
 	);
 }
