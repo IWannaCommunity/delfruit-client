@@ -58,13 +58,27 @@ export default function Header(): AnyElem {
 				>
 					Advanced...
 				</Link>
-				{!session.active && (
-					<p className="!mt-[1em]">
-						<Link href="/login">Login</Link>
-						<Whitespace />
-						<Link href="/register">Register</Link>
-					</p>
-				)}
+				<p className="!mt-[1em]">
+					{!session.active ? (
+						<>
+							<Link href="/login">Login</Link>
+							<Whitespace />
+							<Link href="/register">Register</Link>
+						</>
+					) : (
+						<>
+							{session.username}
+							<Whitespace />
+							<Link className="" href="/messages">
+								Messages
+							</Link>
+							<Whitespace />
+							<Link href="/">Profile</Link>
+							<Whitespace />
+							<Link href="/login/logout">Logout</Link>
+						</>
+					)}
+				</p>
 			</div>
 			<div className="!clear-both">
 				<Link className="navbutton2" href="/">
