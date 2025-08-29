@@ -8,18 +8,18 @@ type ReviewProps = {
 		rating: number;
     difficulty: number;
 		comment: string;
-		date_created: Date;
+		date_created: string;
 		removed: boolean;
     user_name: string;
     game_name: string;
     like_count: number;
-		owner_review?: boolean;
-    tags?: string[];
+		owner_review: boolean;
+    tags?: string[{}];
 };
 
 export default function Review(props: ReviewProps): JSX.Element {
 	return (
-		<div className={props.owner_review ? "owner-review" : "review"}>
+		<div className={`review ${props.owner_review ? "owner-review" : ""}`}>
 			{/* AUTHOR */}
 			<Link href={`/user/${props.user_id}`}>{props.user_name}</Link>
 			{props.owner_review && <span className="!font-bold">[Creator]</span>}
@@ -36,9 +36,11 @@ export default function Review(props: ReviewProps): JSX.Element {
 			)}
 
 			{/* COMMENT */}
-			<div className="review-text !wrap-break-word">
-				<span>{props.comment}</span>
-			</div>
+			{props.comment !== "" && (
+				<div className="review-text !wrap-break-word">
+					<span>{props.comment}</span>
+				</div>
+			)}
 
 			{/* TAGS */}
 			{props.tags && props.tags.length > 0 && (

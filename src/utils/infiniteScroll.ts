@@ -13,7 +13,7 @@ export function useInfiniteScroll<T extends HTMLElement>(
       }
     }, options);
 
-     const currentLoader = loaderRef.current;
+    const currentLoader = loaderRef.current;
 
     if (currentLoader) observer.observe(currentLoader);
 
