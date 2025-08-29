@@ -75,29 +75,29 @@ export default function GameList(): JSX.Element {
 								rating_count={game.rating_count}
 							/>
 						);
-				})}
-			</tbody>
-	</table>
-	<br />
-	<table>
-			<tbody>
-				<tr>
-					<td className="!text-center">
-						<Link className="text-base" href="/search?q=ALL">
-							Full List
-						</Link>
-					</td>
-					<td className="!text-center">
-						<Link className="text-base" href="/">
-							Random Game!
-						</Link>
-					</td>
-					<td className="!text-center">
-						<Link className="text-base" href="/userlist">
-							User List
-						</Link>
-					</td>
-				</tr>
+					})}
+				</tbody>
+			</table>
+			<br />
+			<table>
+				<tbody>
+					<tr>
+						<td className="!text-center">
+							<Link className="text-base" href="/search?q=ALL">
+								Full List
+							</Link>
+						</td>
+						<td className="!text-center">
+							<Link className="text-base" href="/">
+								Random Game!
+							</Link>
+						</td>
+						<td className="!text-center">
+							<Link className="text-base" href="/userlist">
+								User List
+							</Link>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 			<br />

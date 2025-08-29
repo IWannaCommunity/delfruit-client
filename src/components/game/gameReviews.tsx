@@ -30,15 +30,15 @@ type Review = {
 };
 
 export default function GameReviews(props: GameReviewsProp): JSX.Element {
-	const [reviews, setReviews] = useState<Review[]>([]);
-	const [page, setPage] = useState(0);
+	const [reviews, setReviews] = useState<Set<Review>>(new Set(props.reviews));
+	const [page, setPage] = useState(1);
 	const [hasMore, setHasMore] = useState(true);
 
 	const router = useRouter();
 	const id = Number(router.query.id);
 
 	const fetchReviews = useCallback(
-			async (requestedPage: number): Promise<Review[]> => {
+			async (requestedPage: number): Promise<Set<Review>> => {
 				const res = await GAMES_API_CLIENT.getGameReviews(
 					id, // id
 					undefined,
@@ -48,7 +48,7 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 					5, // limit
 				);
 	
-				const newData: Review[] = (res.data ?? []).map((r: any) => ({
+				const newData: Set<Review> = (res.data ?? []).map((r: any) => ({
 					id: Number(r.id),
 					game_id: Number(r.game_id),
 					user_name: r.user_name,
@@ -68,8 +68,6 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 		
 		useEffect(() => {
 			if (!router.isReady) return;
-
-			setReviews(props.reviews);
 	
 			let isCancelled = false;
 	
@@ -78,7 +76,7 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 				if (!isCancelled) {
 					setReviews(firstPage);
 					setPage(1);
-					setHasMore(firstPage.length > 0);
+					setHasMore(firstPage.size > 0);
 				}
 			};
 	
@@ -93,12 +91,12 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 			const nextPage = page + 1;
 			const moreReviews = await fetchReviews(nextPage);
 	
-			if (moreReviews.length === 0) {
+			if (moreReviews.size === 0) {
 				setHasMore(false);
 				return;
 			}
 	
-			setReviews((prev) => [...prev, ...moreReviews]);
+			setReviews((prev) => new Set([...prev, ...moreReviews]));
 			setPage(nextPage);
 		};
 		
@@ -108,13 +106,13 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 	
 	return (
 		<div>
-			<h2 className="clear-both">{reviews.length} Reviews:</h2>
+			<h2 className="clear-both">{reviews.size} Reviews:</h2>
 			
 			<WriteReview />
 			
 			{/* Review List */}
 			<div id="reviews">
-				{reviews.map((review) => {
+				{[...reviews].map((review) => {
 					return (
 						<Review
 							key={review.id}
@@ -135,7 +133,10 @@ export default function GameReviews(props: GameReviewsProp): JSX.Element {
 				})}
 			</div>
 			{/* Infinite scroll trigger */}
-			{loaderRef && <div ref={loaderRef} className="h-10" />}
+			{
+				loaderRef && hasMore ? <div ref={loaderRef} className="h-10" /> 
+				: <span>No more reviews.</span>
+			}
 		</div>
 	);
 }
