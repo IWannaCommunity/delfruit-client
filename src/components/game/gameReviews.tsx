@@ -51,7 +51,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 			const newData: ReadonlyArray<Review> = (res.data ?? []).map((r: any) => ({
 				id: Number(r.id),
-				game_id: r.game_id,
+				game_id: null,
 				user_name: r.user_name,
 				game_name: r.game_name,
 				date_created: formatDate(new Date(r.date_created)),
