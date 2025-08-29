@@ -1,4 +1,19 @@
-Delicious Fruit [client, weeping] 1.0.0-preview.2 (2025-08-28)
+Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.3 (2025-08-29)
+==============================================================
+
+### ➕ Added
+
+- Reviews are now lazily loaded on individual game pages. (TTBB)
+
+### 🔄 Changed
+
+- Session handling is slightly better. (Starz0r)
+- Upgrade Axios to 1.2.5 (Starz0r)
+- Upgrade Next.js to 13.1.1 (Starz0r)
+- Upgrade Tailwind CSS to 3.2.7 (Starz0r)
+
+
+Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.2 (2025-08-28)
 ==============================================================
 
 ### ➕ Added
@@ -15,7 +30,7 @@ Delicious Fruit [client, weeping] 1.0.0-preview.2 (2025-08-28)
 - Upgrade jsonwebtoken to 8.4.0 (Starz0r)
 
 
-Delicious Fruit [client, weeping] 1.0.0-preview.1 (2025-08-26)
+Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.1 (2025-08-26)
 ==============================================================
 
 ### ➕ Added
@@ -24,18 +39,18 @@ Delicious Fruit [client, weeping] 1.0.0-preview.1 (2025-08-26)
 
 ### 🔄 Changed
 
-- Upgrade Axios to 1.2.3
-- Upgrade Next.js to 13.0.7
-- Upgrade Node.js to 16.20.2
-- Upgrade Tailwind CSS to 3.2.5
-- Upgrade TypeScript to 5.1.6
-- Upgrade jsonwebtoken to 8.3.0
+- Upgrade Axios to 1.2.3 (Starz0r)
+- Upgrade Next.js to 13.0.7 (Starz0r)
+- Upgrade Node.js to 16.20.2 (Starz0r)
+- Upgrade Tailwind CSS to 3.2.5 (Starz0r)
+- Upgrade TypeScript to 5.1.6 (Starz0r)
+- Upgrade jsonwebtoken to 8.3.0 (Starz0r)
 - Individual game pages now display their screenshots. (Starz0r)
 - Reviews, Home page, the Image Carousel, individual Game pages, and Tags look closer to their original counterpart. (TTBB)
 - Search page is slightly more performant. (Starz0r, TTBB)
 
 
-Delicious Fruit [client, weeping] 1.0.0-preview.0 (2025-08-22)
+Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.0 (2025-08-22)
 ====================================
 
 ### ➕ Added
