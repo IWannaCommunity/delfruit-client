@@ -22,6 +22,7 @@ export default function Login(): NextPage {
 		evt.preventDefault();
 
 		const frmData = new FormData(evt.currentTarget);
+		frmData.set("notARobot", 386);
 		// TODO: check if we've actually logged in
 		const resp = await AUTHAPI.postLogin(
 			Object.fromEntries(frmData) as any as UserCredentials,
@@ -55,7 +56,13 @@ export default function Login(): NextPage {
 										Remember Me
 									</label>
 								</p>
-								<input id="form" type="hidden" name="form" value="1" />
+								<input
+									id="form"
+									type="number"
+									name="notARobot"
+									defaultValue={1}
+									hidden
+								/>
 								<button type="submit">Login</button>
 							</form>
 							<Link href="/">Forgot Password?</Link>
