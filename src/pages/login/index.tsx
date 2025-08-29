@@ -3,12 +3,13 @@ import Header from "@/components/header";
 import Whitespace from "@/components/whitespace";
 import { useSessionContext } from "@/utils/hooks";
 import { AuthenticationApi, UserCredentials } from "delfruit-swagger-cg-sdk";
-import { FormEvent } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { Config } from "@/utils/config";
 import Link from "next/link";
 import { NextPage } from "next";
+import Footer from "@/components/footer";
 
 const CFG: Config = require("@/config.json");
 
@@ -17,6 +18,19 @@ const AUTHAPI = new AuthenticationApi(void 0, CFG.apiURL.toString());
 export default function Login(): NextPage {
 	const [session, setSession] = useSessionContext();
 	const router = useRouter();
+	const [successfulLogin, setSuccessfulLogin] = useState<boolean>(false);
+	const [idempotency, setIdempotency] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (Cookies.get("loggedInSuccessfully") !== undefined) {
+			setSuccessfulLogin(true);
+			Cookies.remove("loggedInSuccessfully");
+			setTimeout(() => {
+				router.push("/");
+			}, 5000);
+		}
+		setIdempotency(true);
+	}, [router]);
 
 	async function attemptLogin(evt: FormEvent<HTMLFormElement>) {
 		evt.preventDefault();
@@ -28,6 +42,9 @@ export default function Login(): NextPage {
 			Object.fromEntries(frmData) as any as UserCredentials,
 		);
 		Cookies.set("session", resp.data.token);
+		Cookies.set("loggedInSuccessfully", "1", {
+			expires: new Date(Date.now() + 5000),
+		});
 		router.reload();
 	}
 
@@ -40,40 +57,49 @@ export default function Login(): NextPage {
 				<div id="container">
 					<Header />
 					<div id="content">
-						<div>
-							<form onSubmit={attemptLogin}>
-								<p>
-									<label htmlFor="username">Username:</label>
-									<input id="username" type="text" name="username" />
-								</p>
-								<p>
-									<label htmlFor="password">Password:</label>
-									<input id="password" type="password" name="password" />
-								</p>
-								<p>
-									<label>
-										<input type="checkbox" name="rememberme" />
-										Remember Me
-									</label>
-								</p>
-								<input
-									id="form"
-									type="number"
-									name="notARobot"
-									defaultValue={1}
-									hidden
-								/>
-								<button type="submit">Login</button>
-							</form>
-							<Link href="/">Forgot Password?</Link>
-						</div>
-						<div>
-							Don't have an account? It only takes 10 seconds to register, and
-							then you can get started using Delicious-Fruit!
-							<Whitespace />
-							<Link href="/register">Register Now!</Link>
-						</div>
+						{idempotency && !session.active ? (
+							<>
+								<div>
+									<form onSubmit={attemptLogin}>
+										<p>
+											<label htmlFor="username">Username:</label>
+											<input id="username" type="text" name="username" />
+										</p>
+										<p>
+											<label htmlFor="password">Password:</label>
+											<input id="password" type="password" name="password" />
+										</p>
+										<p>
+											<label>
+												<input type="checkbox" name="rememberme" />
+												Remember Me
+											</label>
+										</p>
+										<input
+											id="form"
+											type="number"
+											name="notARobot"
+											defaultValue={1}
+											hidden
+										/>
+										<button type="submit">Login</button>
+									</form>
+									<Link href="/">Forgot Password?</Link>
+								</div>
+								<div>
+									Don't have an account? It only takes 10 seconds to register,
+									and then you can get started using Delicious-Fruit!
+									<Whitespace />
+									<Link href="/register">Register Now!</Link>
+								</div>
+							</>
+						) : successfulLogin ? (
+							<p>You have been logged in, redirecting...</p>
+						) : (
+							<p>You are already logged in.</p>
+						)}
 					</div>
+					<Footer />
 				</div>
 			</body>
 		</>
