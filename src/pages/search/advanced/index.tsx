@@ -13,6 +13,9 @@ export default function AdvancedSearch(): NextPage {
 	useEffect(() => {
 		const datepicker = require("jquery-ui/ui/widgets/datepicker");
 		const slider = require("jquery-ui/ui/widgets/slider");
+
+		$.uiBackCompat = false;
+
 		$("#rating").slider({
 			min: 0,
 			max: 10,
