@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { AnyElem } from "@/utils/element";
-import { useSessionContext } from "@/utils/session";
+import { useSessionContext } from "@/utils/hooks";
 import Whitespace from "./whitespace";
 import Link from "next/link";
 import { useRouter } from "next/router";

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Header from "@/components/header";
 import Whitespace from "@/components/whitespace";
-import { useSessionContext } from "@/utils/session";
+import { useSessionContext } from "@/utils/hooks";
 import { AuthenticationApi, UserCredentials } from "delfruit-swagger-cg-sdk";
 import { FormEvent } from "react";
 import Cookies from "js-cookie";

@@ -1,6 +1,6 @@
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { SessionContextProvider } from "../utils/session";
+import { SessionContextProvider } from "@/utils/hooks";
 
 export default function MyApp({
 	Component,
