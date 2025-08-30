@@ -1,4 +1,5 @@
 const path = require("node:path");
+const webpack = require("webpack");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -19,23 +20,29 @@ const nextConfig = {
 		ignoreBuildErrors: true,
 	},
 	output: "standalone",
-	webpack: (cfg, opt) => {
+	webpack:  (cfg, opt) => {
 		cfg.externals.push({
-		  jquery: "jQuery",
-		  "jquery-ui": "jquery-ui",
 		  "isomorphic-dompurify": "DOMPurify",
 		});
 		
-		/*cfg.resolve.push({
+		cfg.plugins.push(new webpack.ProvidePlugin({
+			DOMPurify: "isomorphic-dompurify",
+		}))
+		
+		cfg.resolve = {
 			alias: {
-				'@*': path.resolve(__dirname, "./src/"),
+				"@": path.resolve(__dirname, "./src"),
+				"jquery": "jquery/src/jquery",
+				...cfg.resolve.alias,
 			},
-		});*/
+			extensions: [".js", ".ts", ".mjs", ".mts.", ".jsx", ".tsx", ".mjsx", ".mtsx", "..."]
+		};
 		
 		cfg.module.rules.push({
 			test: /\.md/,
 			use: [opt.defaultLoaders.babel, {loader: "raw-loader", options: {esModule: false}}]
 		});
+
 		return cfg;
 	},
 };
@@ -49,27 +56,3 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 module.exports = withBundleAnalyzer(
 	withTM(nextConfig)
 );
-
-
-/*
-		externals: {
-		  jquery: "jQuery",
-		  "jquery-ui": "jquery-ui",
-		},
-		resolve: {
-			alias: {
-				'@*': path.resolve(__dirname, "./src/"),
-			},
-		},
-		module: {
-			rules: [
-				{
-					test: /\.md/i,
-					use: "raw-loader",
-					options: {
-						esModule: false,
-					},
-				}
-			],
-		}
-*/

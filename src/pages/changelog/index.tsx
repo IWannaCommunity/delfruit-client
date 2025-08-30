@@ -9,7 +9,7 @@ import { marked } from "marked";
 export default function Changelog(): AnyElem {
 	const news = marked.parse(News);
 	// DANGER: this is where I would sanitize the HTML (if Webpack didn't suck complete ass)
-	// DOMPurify.sanitize(news)
+	// DOMPurify.sanitize(news);
 
 	return (
 		<>

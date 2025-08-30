@@ -3,16 +3,15 @@ import Whitespace from "@/components/whitespace";
 import { NextPage } from "next";
 import Head from "next/head";
 import React, { useEffect, useState } from "react";
-import * as $ from "jquery";
-import jQuery from "jquery";
 
 export default function AdvancedSearch(): NextPage {
 	const [rating, setRatingRange] = useState<[number, number]>([0, 10]);
 	const [difficulty, setDifficultyRange] = useState<[number, number]>([0, 100]);
 
 	useEffect(() => {
-		const datepicker = require("jquery-ui/ui/widgets/datepicker");
-		const slider = require("jquery-ui/ui/widgets/slider");
+		require("jquery");
+		require("jquery-ui/ui/widgets/datepicker");
+		require("jquery-ui/ui/widgets/slider");
 
 		$.uiBackCompat = false;
 

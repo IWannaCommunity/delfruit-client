@@ -18,7 +18,7 @@
       "./typings"
     ],
 	"paths": {
-		"@*": ["./src/*"]
+		"@*": ["./src*"]
 	},
     "esModuleInterop": true,
     "experimentalDecorators": true,
