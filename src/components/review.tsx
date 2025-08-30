@@ -1,23 +1,30 @@
 import Tag from "./game/tag";
 import Link from "next/link";
 import React from "react";
+import { useState } from "react";
 
 type ReviewProps = {
 		user_id: number;
 		game_id: number | null;
 		rating: number;
-    difficulty: number;
+		difficulty: number;
 		comment: string;
 		date_created: string;
 		removed: boolean;
-    user_name: string;
-    game_name: string;
-    like_count: number;
+		user_name: string;
+		game_name: string;
+		like_count: number;
 		owner_review: boolean;
-    tags?: string[{}];
+		tags: string[];
 };
 
 export default function Review(props: ReviewProps): JSX.Element {
+	const [expanded, setExpanded] = useState(false);
+
+	const maxLength = 500;
+	const shouldTruncate = props.comment.length > maxLength;
+	const displayText = expanded || !shouldTruncate ? props.comment : props.comment.slice(0, maxLength) + "...";
+
 	return (
 		<div className={`review ${props.owner_review ? "owner-review" : ""}`}>
 			{/* AUTHOR */}
@@ -37,8 +44,19 @@ export default function Review(props: ReviewProps): JSX.Element {
 
 			{/* COMMENT */}
 			{props.comment !== "" && (
-				<div className="review-text !wrap-break-word">
-					<span>{props.comment}</span>
+				<div>
+					<div className="review-text !wrap-break-word">
+						<span>{displayText}</span>
+					</div>
+
+					{shouldTruncate && (
+						<a
+							className="standalone underline cursor-pointer"
+							onClick={() => setExpanded(!expanded)}
+						>
+							{expanded ? "Show less" : "Read more"}
+						</a>
+					)}
 				</div>
 			)}
 
@@ -46,7 +64,7 @@ export default function Review(props: ReviewProps): JSX.Element {
 			{props.tags && props.tags.length > 0 && (
 				<div className="!mb-[0px]">
 					<span> Tagged as: </span>
-					{props.tags?.map((tag) => {
+					{props.tags.map((tag: any) => {
 						return <Tag name={tag.name} key={tag.id} />;
 					})}
 				</div>

@@ -21,7 +21,7 @@ type Review = {
 	game_id: null;
 	game_name: string;
 	comment: string;
-	date_created: Date | null;
+	date_created: string;
 	removed: boolean;
 	difficulty: number | null;
 	rating: number | null;
@@ -51,6 +51,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 			const newData: ReadonlyArray<Review> = (res.data ?? []).map((r: any) => ({
 				id: Number(r.id),
+				user_id: Number(r.user_id),
 				game_id: null,
 				user_name: r.user_name,
 				game_name: r.game_name,
