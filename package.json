@@ -1,6 +1,6 @@
 {
   "name": "weeping-higan",
-  "version": "1.0.0-preview.4",
+  "version": "1.0.0-preview.5",
   "private": true,
   "engines": {
     "node": ">=16"
@@ -19,11 +19,13 @@
     "clsx": "2.0.0",
     "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#93a1543e013e417c8d0f6e46eb2794995800e2ce",
     "emoji-mart": "5.5.2",
+    "isomorphic-dompurify": "1.4.0",
     "jquery": "3.6.4",
     "jquery-ui": "1.12.0",
     "js-cookie": "3.0.5",
     "jsonwebtoken": "8.4.0",
     "lodash": "4.17.21",
+    "marked": "9.0.0",
     "next": "13.1.2",
     "next-transpile-modules": "10.0.0",
     "overlayscrollbars": "2.1.1",
@@ -59,6 +61,7 @@
     "eslint-plugin-react": "7.33.0",
     "eslint-plugin-react-hooks": "4.6.2",
     "postcss": "8.4.21",
+    "raw-loader": "4.0.2",
     "swagger-typescript-api": "12.0.4",
     "tailwindcss": "3.3.0",
     "typescript": "5.1.6",

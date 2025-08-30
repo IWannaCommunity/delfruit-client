@@ -1,3 +1,20 @@
+Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.4 (2025-08-30)
+====================================================================
+
+### ➕ Added
+
+- Compose message page has been reimplemented. (TTBB)
+- Successfully logging in now redirects you back to the Home page, after some time has passed. (Starz0r)
+
+### 🔄 Changed
+
+- Session handling is slightly better. (Starz0r)
+- Tag count is now correctly displayed along with Tags no longer repeating and being duplicated on individual Game pages. (Starz0r)
+- Upgraded Axios to 1.2.6 (Starz0r)
+- Upgraded Next.js to 13.1.2 (Starz0r)
+- Upgraded Tailwind CSS to 3.3.0 (Starz0r)
+
+
 Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.3 (2025-08-29)
 ==============================================================
 
