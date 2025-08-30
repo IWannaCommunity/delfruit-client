@@ -1,7 +1,7 @@
 import { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
-import Footer from "@components/footer";
-import Header from "@components/header";
+import Footer from "@/components/footer";
+import Header from "@/components/header";
 import Cookies from "js-cookie";
 import Head from "next/head";
 import { useRouter } from "next/router";

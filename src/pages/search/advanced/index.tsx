@@ -1,10 +1,10 @@
 import Header from "@/components/header";
 import Whitespace from "@/components/whitespace";
-import { NextPage } from "next";
+import type { AnyElem } from "@/utils/element";
 import Head from "next/head";
 import React, { useEffect, useState } from "react";
 
-export default function AdvancedSearch(): NextPage {
+export default function AdvancedSearch(): AnyElem {
 	const [rating, setRatingRange] = useState<[number, number]>([0, 10]);
 	const [difficulty, setDifficultyRange] = useState<[number, number]>([0, 100]);
 

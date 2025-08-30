@@ -54,13 +54,9 @@ export default function Game(): AnyElem {
 					? formatDate(new Date(game.dateCreated))
 					: null,
 				rating:
-					game.rating === null
-						? null
-						: Number(game.rating / 10).toFixed(1),
+					game.rating === null ? null : Number(game.rating / 10).toFixed(1),
 				difficulty:
-					game.difficulty === null
-						? null
-						: Number(game.difficulty).toFixed(1),
+					game.difficulty === null ? null : Number(game.difficulty).toFixed(1),
 				urlSpdrn: game.urlSpdrn,
 				tags: game.tags,
 
@@ -74,9 +70,7 @@ export default function Game(): AnyElem {
 								? null
 								: Number(review.rating / 10).toFixed(1),
 						difficulty:
-							review.difficulty === null 
-								? null 
-								: Number(review.difficulty),
+							review.difficulty === null ? null : Number(review.difficulty),
 						comment: review.comment,
 						date_created: formatDate(new Date(review.date_created)),
 						removed: review.removed,
