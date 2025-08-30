@@ -23,10 +23,10 @@ export default function Home(): AnyElem {
 						<p className="notes">Showing 5 of 115447</p>
 						<ReviewList page={0} limit={5} />
 					</div>
-					<Link className="standalone" href="/">
+					<Link className="standalone" href="/reviews/0">
 						Read more reviews!
 					</Link>
-				</div>{" "}
+				</div>
 				<Footer />
 			</div>
 		</div>

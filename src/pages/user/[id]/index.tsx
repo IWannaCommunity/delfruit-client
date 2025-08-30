@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Header from "@/components/header";
-import { NextPage } from "next";
+import Footer from "@/components/footer";
+import { AnyElem } from "@/utils/element";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
@@ -13,7 +14,7 @@ import { UsersApi } from "delfruit-swagger-cg-sdk";
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());
 
-export default function User(): NextPage {
+export default function User(): AnyElem {
 	const [activeTab, setActiveTab] = useState<"profile" | "ratings" | "reviews" | "games" | "favorites" | "clearList">("profile");
 	const [name, setName] = useState("");
 	
@@ -73,6 +74,7 @@ export default function User(): NextPage {
 						</div>
 					</div>
 				</div>
+				<Footer />
 			</div>
 		</div>
 	);
