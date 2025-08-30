@@ -1,12 +1,12 @@
 import Head from "next/head";
-import Header from "../../components/header";
+import Header from "@/components/header";
 import Footer from "@/components/footer";
-import MessageTable from "../../components/messages/messageTable";
+import MessageTable from "@/components/messages/messageTable";
 import { MessagesApi } from "delfruit-swagger-cg-sdk";
 import { useEffect, useState } from "react";
 import { AnyElem } from "@/utils/element";
 
-const CFG: Config = require("../../config.json");
+const CFG: Config = require("@/config.json");
 const MESSAGES_API_CLIENT = new MessagesApi(undefined, CFG.apiURL.toString());
 
 export default function MessagePage(): AnyElem {

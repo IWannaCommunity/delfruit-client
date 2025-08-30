@@ -2,9 +2,9 @@ import { AnyElem } from "@/utils/element";
 import ReviewList from "@/components/home/reviewList";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Footer from "@components/footer";
+import Footer from "@/components/footer";
 import Head from "next/head";
-import Header from "@components/header";
+import Header from "@/components/header";
 
 export default function Reviews(): AnyElem {
 	const [page, setPage] = useState<number>(0);

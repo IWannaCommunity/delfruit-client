@@ -13,6 +13,7 @@ const GAMES_API_CLIENT: GamesApi = new GamesApi(undefined, CFG.apiURL.toString()
 type Game = {
 	id: number;
 	name: string;
+	sortname: string;
 	date_created: Date | null;
 	difficulty: number | string;
 	rating: number | string;
@@ -20,20 +21,20 @@ type Game = {
 };
 
 const gameColumns: Column<Game>[] = [
-  {
-    key: "name",
-    label: "Name",
-    render: (value, row) => (
-      <Link href="/game/[id]" as={`/game/${row.id}`}>
-        {value}
-      </Link>
-    ),
-  },
-  {
-    key: "date_created",
-    label: "Release Date",
-    render: (value) => (value ? formatDate(value as Date) : "Unknown")
-  },
+	{
+		key: "name",
+		label: "Name",
+		render: (value, row) => (
+			<Link href="/game/[id]" as={`/game/${row.id}`}>
+				{value}
+			</Link>
+		),
+	},
+	{
+		key: "date_created",
+		label: "Release Date",
+		render: (value) => (value ? formatDate(value as Date) : "Unknown")
+	},
 	{ 
 		key: "difficulty", 
 		label: "Difficulty",

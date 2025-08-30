@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { DataTable, Column, SortConfig } from "@/components/DataTable";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
@@ -16,7 +14,7 @@ type Review = {
 	game_id: number;
 	game_name: string;
 	comment: string;
-	date_created: Date | null;
+	date_created: string;
 	difficulty: number | null;
 	rating: number | null;
 	like_count: number;
@@ -26,75 +24,74 @@ type Review = {
 
 export default function Reviews({userID}: Number): JSX.Element {
 	const [reviews, setReviews] = useState<Review[]>([]);
-  const [sortConfig, setSortConfig] = useState<SortConfig<Review> | null>(null);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
+	const [page, setPage] = useState(0);
+	const [hasMore, setHasMore] = useState(true);
 
-  const router = useRouter();
+	const router = useRouter();
 	
-  const fetchReviews = useCallback(
-    async (requestedPage: number, sort: SortConfig<Review> | null): Promise<Review[]> => {
-      const res = await USERS_API_CLIENT.getUsersReviews(
-        userID, // id
-        requestedPage, // page number
-        10, // limit
-      );
+	const fetchReviews = useCallback(
+		async (requestedPage: number): Promise<Review[]> => {
+			const res = await USERS_API_CLIENT.getUsersReviews(
+				userID, // id
+				requestedPage, // page number
+				10, // limit
+			);
 
-      const newData: Review[] = (res.data ?? []).map((r: any) => ({
-        id: Number(r.id),
+			const newData: Review[] = (res.data ?? []).map((r: any) => ({
+				id: Number(r.id),
 				game_id: Number(r.game_id),
 				user_name: r.user_name,
-        game_name: r.game_name,
+				game_name: r.game_name,
 				date_created: formatDate(new Date(r.date_created)),
 				comment: r.comment,
-        rating: (r.rating === null) ? null : Number(r.rating/10).toFixed(1),
+				rating: (r.rating === null) ? null : Number(r.rating/10).toFixed(1),
 				difficulty: (r.difficulty === null) ? null : Number(r.difficulty),
 				like_count: Number(r.like_count),
 				owner_review: r.owner_review === 1,
 				tags: r.tags
-      }));
+			}));
 
-      return newData;
-    },[]
-  );
+			return newData;
+		},[]
+	);
 	
-  useEffect(() => {
-    if (!router.isReady) return;
+	useEffect(() => {
+		if (!router.isReady) return;
 
-    let isCancelled = false;
+		let isCancelled = false;
 
-    const fetchAndSet = async () => {
-      const firstPage = await fetchReviews(0, sortConfig);
-      if (!isCancelled) {
-        setReviews(firstPage);
-        setPage(0);
-        setHasMore(firstPage.length > 0);
-      }
-    };
+		const fetchAndSet = async () => {
+			const firstPage = await fetchReviews(0);
+			if (!isCancelled) {
+				setReviews(firstPage);
+				setPage(0);
+				setHasMore(firstPage.length > 0);
+			}
+		};
 
-    fetchAndSet();
+		fetchAndSet();
 
-    return () => {
-      isCancelled = true; // cleanup
-    };
-  }, [sortConfig, router.isReady, fetchReviews]);
+		return () => {
+			isCancelled = true; // cleanup
+		};
+	}, [router.isReady, fetchReviews]);
 
-  const loadMore = async () => {
-    const nextPage = page + 1;
-    const moreReviews = await fetchReviews(nextPage, sortConfig);
+	const loadMore = async () => {
+		const nextPage = page + 1;
+		const moreReviews = await fetchReviews(nextPage);
 
-    if (moreReviews.length === 0) {
-      setHasMore(false);
-      return;
-    }
+		if (moreReviews.length === 0) {
+			setHasMore(false);
+			return;
+		}
 
-    setReviews((prev) => [...prev, ...moreReviews]);
-    setPage(nextPage);
-  };
+		setReviews((prev) => [...prev, ...moreReviews]);
+		setPage(nextPage);
+	};
 	
-  const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
-    if (hasMore) loadMore();
-  });
+	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
+		if (hasMore) loadMore();
+	});
 	
 	return(
 		<div className="px-[1.5em]">
@@ -115,6 +112,8 @@ export default function Reviews({userID}: Number): JSX.Element {
 					/>
 				);
 			})}
+			{/* Infinite scroll trigger */}
+			{loaderRef && <div ref={loaderRef} className="h-40" />}
 		</div>
 	);
 }

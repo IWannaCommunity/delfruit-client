@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
-import Whitespace from "./whitespace";
+import Whitespace from "@/components/whitespace";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";

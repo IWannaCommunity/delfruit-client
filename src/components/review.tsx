@@ -1,4 +1,4 @@
-import Tag from "./game/tag";
+import Tag from "@/components/game/tag";
 import Link from "next/link";
 import React from "react";
 import { useState } from "react";

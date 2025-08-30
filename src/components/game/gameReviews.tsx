@@ -1,11 +1,11 @@
 import Review from "@/components/review";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import WriteReview from "@/components/game/writeReview";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 import { useRouter } from "next/router";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
-import type { AnyElem } from "@utils/element";
+import type { AnyElem } from "@/utils/element";
 
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
