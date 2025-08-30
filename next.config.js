@@ -19,16 +19,24 @@ const nextConfig = {
 		ignoreBuildErrors: true,
 	},
 	output: "standalone",
-	webpack: {
-		externals: {
+	webpack: (cfg, opt) => {
+		cfg.externals.push({
 		  jquery: "jQuery",
 		  "jquery-ui": "jquery-ui",
-		},
-		resolve: {
+		  "isomorphic-dompurify": "DOMPurify",
+		});
+		
+		/*cfg.resolve.push({
 			alias: {
 				'@*': path.resolve(__dirname, "./src/"),
 			},
-		},
+		});*/
+		
+		cfg.module.rules.push({
+			test: /\.md/,
+			use: [opt.defaultLoaders.babel, {loader: "raw-loader", options: {esModule: false}}]
+		});
+		return cfg;
 	},
 };
 
@@ -41,3 +49,27 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 module.exports = withBundleAnalyzer(
 	withTM(nextConfig)
 );
+
+
+/*
+		externals: {
+		  jquery: "jQuery",
+		  "jquery-ui": "jquery-ui",
+		},
+		resolve: {
+			alias: {
+				'@*': path.resolve(__dirname, "./src/"),
+			},
+		},
+		module: {
+			rules: [
+				{
+					test: /\.md/i,
+					use: "raw-loader",
+					options: {
+						esModule: false,
+					},
+				}
+			],
+		}
+*/
