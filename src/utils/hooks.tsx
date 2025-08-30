@@ -20,7 +20,6 @@ function useSession(): [
 	} catch (e) {
 		console.log("If you only see this once then it should be ok!");
 		console.error(e);
-		return;
 	}
 	const [session, setSession] = useState<Session>({
 		active: false,
