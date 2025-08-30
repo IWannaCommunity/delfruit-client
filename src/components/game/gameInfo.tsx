@@ -109,10 +109,9 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 			<div>
 				<h2>Tags:</h2>
 				{game.tags.map((tag) => (
-					<Tag key={tag.id} name={tag.name} count={game.tags.length} />
+					<Tag key={tag.id} name={tag.name} count={tag.count} />
 				))}
 			</div>
 		</div>
 	);
 }
-
