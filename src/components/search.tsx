@@ -67,7 +67,7 @@ const matchesLetterFilter = (gameName: string, letter: string): boolean => {
  */
 export default function Search(): JSX.Element {
 	const [games, setGames] = useState<Set<Game>>(new Set());
-	const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+	const [sortConfig, setSortConfig] = useState<SortConfig<Game> | null>(null);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 
@@ -83,15 +83,16 @@ export default function Search(): JSX.Element {
 		query.q = (letter === "ALL") ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
 	};
-	
-	// NOTE: Letter filtering/sorting is currently broken until there is a backend fix
+
 	const fetchGames = useCallback(
-		async (requestedPage: number, sort: SortConfig | null): Promise<Game[]> => {
+		async (requestedPage: number, sort: SortConfig<Game> | null): Promise<Game[]> => {
 			const res = await GAMES_API_CLIENT.getGames(
 				undefined, // authorization
 				undefined, // id
 				undefined, // removed
 				searchQuery || undefined, // name
+				activeLetter === "ALL" ? undefined : activeLetter, // nameStartsWith,
+				undefined, // nameExp
 				undefined, // tags
 				undefined, // author
 				undefined, // ownerUserID

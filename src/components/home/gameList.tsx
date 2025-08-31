@@ -15,26 +15,28 @@ export default function GameList(): JSX.Element {
 		
 		(async () => {
 			const resp = await GAMES_API_CLIENT.getGames(
-				undefined,
-				undefined,
-				false,
-				undefined,
-				undefined,
-				undefined,
-				undefined,
-				undefined,
-				undefined,
+				undefined, // authorization
+				undefined, // id
+				false, // removed
+				undefined, // name
+				undefined, // nameStartsWith,
+				undefined, // nameExp
+				undefined, // tags
+				undefined, // author
+				undefined, // ownerUserID
+				undefined, // hasDownload
+				undefined, // createdFrom
 				new Date(Date.now()), // createdTo
-				undefined,
-				undefined,
-				undefined,
-				undefined,
-				undefined,
-				undefined,
-				0,
-				25,
-				"date_created",
-				"desc",
+				undefined, // clearedByUserID
+				undefined, // reviewedByUserID
+				undefined, // ratingFrom
+				undefined, // ratingTo
+				undefined, // difficultyFrom
+				undefined, // difficultyTo
+				0, // page number
+				25, // limit
+				"date_created", // orderCol
+				"desc", // orderDir
 			);
 
 			const gameProps: GameProps[] = resp.data.map((game) => ({
