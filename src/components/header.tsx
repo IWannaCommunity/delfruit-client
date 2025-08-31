@@ -16,6 +16,8 @@ export default function Header(): AnyElem {
 			pathname: "/search",
 			query: search ? { s: search } : {},
 		});
+
+		setSearch("");
 	};
 
 	return (

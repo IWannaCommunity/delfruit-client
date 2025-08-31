@@ -50,15 +50,6 @@ const gameColumns: Column<Game>[] = [
 ];
 // #endregion
 
-// #region Letter Filtering Logic
-const matchesLetterFilter = (gameName: string, letter: string): boolean => {
-	const lowerName = gameName.toLowerCase().trim();
-	const lowerLetter = letter.toLowerCase();
-
-	return lowerName.startsWith(lowerLetter);
-};
-// #endregion
-
 // #region Component
 /*
  * The search component of the site.
@@ -74,15 +65,19 @@ export default function Search(): JSX.Element {
 	const router = useRouter();
 
 	const searchQuery = (router.query.s as string) ?? "";
-	const activeLetter = (router.query.q as string) ?? "";
+	const activeLetter = (router.query.l as string) ?? "";
 
 	const handleLetterNavigation = (letter: string) => {
 		const query: Record<string, string> = {};
 		if (searchQuery.trim()) query.s = searchQuery.trim();
 
-		query.q = (letter === "ALL") ? "ALL" : letter;
+		query.l = (letter === "ALL") ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
 	};
+
+	const clearSearch = () => {
+		router.push({pathname: "/search"});
+	}
 
 	const fetchGames = useCallback(
 		async (requestedPage: number, sort: SortConfig<Game> | null): Promise<Game[]> => {
@@ -120,12 +115,6 @@ export default function Search(): JSX.Element {
 				rating: (g.rating === null) ? "N/A" : Number(g.rating/10).toFixed(1),
 				rating_count: Number(g.rating_count),
 			}));
-
-			if (activeLetter.trim() && activeLetter !== "ALL") {
-				newData = newData.filter((g) =>
-					matchesLetterFilter(g.sortname, activeLetter),
-				);
-			}
 
 			return newData;
 		},
@@ -207,6 +196,13 @@ export default function Search(): JSX.Element {
 				>
 					ALL
 				</span>
+				<button 
+					type="button"
+					onClick={() => clearSearch()}
+					className="font-bold cursor-pointer ml-auto"
+				>
+					CLEAR
+				</button>
 			</p>
 
 			<p className="!font-bold mb-2">
