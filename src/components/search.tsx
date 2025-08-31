@@ -57,7 +57,7 @@ const gameColumns: Column<Game>[] = [
  * @returns JSX.Element
  */
 export default function Search(): JSX.Element {
-	const [games, setGames] = useState<Set<Game>>(new Set());
+	const [games, setGames] = useState<Game[]>([]);
 	const [sortConfig, setSortConfig] = useState<SortConfig<Game> | null>(null);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
@@ -73,11 +73,15 @@ export default function Search(): JSX.Element {
 
 		query.l = (letter === "ALL") ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
-	};
+	}
 
 	const clearSearch = () => {
 		router.push({pathname: "/search"});
 	}
+
+	const dedupeGames = (games: Game[]): Game[] => {
+    return Array.from(new Map(games.map((g) => [g.id, g])).values());
+  };
 
 	const fetchGames = useCallback(
 		async (requestedPage: number, sort: SortConfig<Game> | null): Promise<Game[]> => {
@@ -125,7 +129,7 @@ export default function Search(): JSX.Element {
 		if (!router.isReady) return;
 
 		if (!searchQuery.trim() && !activeLetter.trim()) {
-			setGames(new Set());
+			setGames([]);
 			setHasMore(false);
 			return;
 		}
@@ -135,7 +139,7 @@ export default function Search(): JSX.Element {
 		const fetchAndSet = async () => {
 			const firstPage = await fetchGames(0, sortConfig);
 			if (!isCancelled) {
-				setGames(new Set(firstPage));
+				setGames(firstPage);
 				setPage(0);
 				setHasMore(firstPage.length > 0);
 			}
@@ -157,7 +161,7 @@ export default function Search(): JSX.Element {
 			return;
 		}
 		
-		setGames((prev) => new Set([...prev, ...moreGames]));
+		setGames((prev) => dedupeGames([...prev, ...moreGames]));
 		setPage(nextPage);
 	};
 
@@ -214,13 +218,13 @@ export default function Search(): JSX.Element {
 					{searchQuery && ` Containing "${searchQuery}"`}
 				</span>
 				<span className="ml-[1em]">
-					({games.size} {games.size === 1 ? "result" : "results"})
+					({games.length} {games.length === 1 ? "result" : "results"})
 				</span>
 			</p>
 
 			<div className="overflow-x-auto">
 				<DataTable
-					data={[...games]}
+					data={games}
 					columns={gameColumns}
 					sortConfig={sortConfig}
 					onSortChange={setSortConfig}
