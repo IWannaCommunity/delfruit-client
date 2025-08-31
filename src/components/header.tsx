@@ -1,7 +1,6 @@
 import Image from "next/image";
 import type { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
-import Whitespace from "@/components/whitespace";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -31,8 +30,7 @@ export default function Header(): AnyElem {
 							width={21}
 							height={24}
 						/>
-						<Whitespace />
-						Delicious Fruit
+						<span className="ml-2">Delicious Fruit</span>
 					</h1>
 				</Link>
 				<br />
@@ -49,13 +47,13 @@ export default function Header(): AnyElem {
 				/>
 				<button
 					type="submit"
-					className="styled-button-1 !ml-[0.35em]"
+					className="styled-button-1 ml-1"
 					onClick={handleSearch}
 				>
 					Search
 				</button>
 				<Link
-					className="styled-button-1 !inline-block !h-[12px] !ml-[0.35em]"
+					className="styled-button-1 !inline-block !h-[12px] ml-1"
 					href="/search/advanced"
 				>
 					Advanced...
@@ -63,50 +61,40 @@ export default function Header(): AnyElem {
 				<p className="!mt-[1em]">
 					{!session.active ? (
 						<>
-							<Link href="/login">Login</Link>
-							<Whitespace />
+							<Link className="mr-1" href="/login">Login</Link>
 							<Link href="/register">Register</Link>
 						</>
 					) : (
 						<>
-							{session.username}
-							<Whitespace />
-							<Link className="" href="/messages">
+							<span className="mr-1">{session.username}</span>
+							<Link className="mr-1" href="/messages">
 								Messages
 							</Link>
-							<Whitespace />
-							<Link href="/">Profile</Link>
-							<Whitespace />
+							<Link className="mr-1" href="/">Profile</Link>
 							<Link href="/login/logout">Logout</Link>
 						</>
 					)}
 				</p>
 			</div>
 			<div className="!clear-both">
-				<Link className="navbutton2" href="/">
+				<Link className="navbutton2 mr-1" href="/">
 					Fangames
 				</Link>
-				<Whitespace />
-				<a className="navbutton2" href="https://iwannacommunity.com/forum/">
+				<a className="navbutton2 mr-1" href="https://iwannacommunity.com/forum/">
 					Forums
 				</a>
-				<Whitespace />
-				<a className="navbutton2" href="https://www.iwannawiki.com">
+				<a className="navbutton2 mr-1" href="https://www.iwannawiki.com">
 					Wiki
 				</a>
-				<Whitespace />
-				<a className="navbutton2" href="https://www.twitch.tv/team/thewannabes">
+				<a className="navbutton2 mr-1" href="https://www.twitch.tv/team/thewannabes">
 					Twitch Team
 				</a>
-				<Whitespace />
-				<Link className="navbutton2" href="/">
+				<Link className="navbutton2 mr-1" href="/">
 					Bingo
 				</Link>
-				<Whitespace />
 				<a className="navbutton2" href="https://www.fangam.es/intro">
 					Intro
 				</a>
-				<Whitespace />
 				<form className="!float-right">
 					<select id="language" name="locale">
 						<option defaultValue="en_US">English</option>
@@ -124,8 +112,7 @@ export default function Header(): AnyElem {
 							</>
 						)}
 					</select>
-					<Whitespace />
-					<input type="submit" value="Submit" />
+					<input className="ml-1" type="submit" value="Submit" />
 				</form>
 			</div>
 		</div>
