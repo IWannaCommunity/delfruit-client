@@ -5,6 +5,7 @@ import { GamesApi } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 import { useRouter } from "next/router";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
+import { dedupeArray } from "@/utils/dedupeArray";
 import type { AnyElem } from "@/utils/element";
 
 const CFG: Config = require("@/config.json");
@@ -31,7 +32,7 @@ type Review = {
 };
 
 export default function GameReviews(props: GameReviewsProp): AnyElem {
-	const [reviews, setReviews] = useState<Set<Review>>(new Set(props.reviews));
+	const [reviews, setReviews] = useState<Review[]>(props.reviews);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 
@@ -56,6 +57,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 				user_name: r.user_name,
 				game_name: r.game_name,
 				date_created: formatDate(new Date(r.date_created)),
+				removed: r.removed,
 				comment: r.comment,
 				rating: r.rating === null ? null : Number(r.rating / 10).toFixed(1),
 				difficulty: r.difficulty === null ? null : Number(r.difficulty),
@@ -80,7 +82,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 			return;
 		}
 
-		setReviews((prev) => new Set([...prev, ...moreReviews]));
+		setReviews((prev) => dedupeArray([...prev, ...moreReviews], (r) => r.id));
 		setPage(nextPage);
 	}, [fetchReviews, page, router.isReady]);
 
@@ -90,13 +92,13 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 	return (
 		<div>
-			<h2 className="clear-both">{reviews.size} Reviews:</h2>
+			<h2 className="clear-both">{reviews.length} Reviews:</h2>
 
 			<WriteReview />
 
 			{/* Review List */}
 			<div id="reviews">
-				{[...reviews].map((review) => {
+				{reviews.map((review) => {
 					return (
 						<Review
 							key={review.id}

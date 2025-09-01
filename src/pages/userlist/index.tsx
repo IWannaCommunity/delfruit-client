@@ -4,6 +4,7 @@ import Footer from "@/components/footer";
 import { useRouter } from "next/router";
 import React, { useEffect, useState, useCallback } from "react";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
+import { dedupeArray } from "@/utils/dedupeArray";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
@@ -102,7 +103,7 @@ export default function UserList(): AnyElem {
 			return;
 		}
 
-		setUsers((prev) => [...prev, ...moreUsers]);
+		setUsers((prev) => dedupeArray([...prev, ...moreUsers], (u) => u.id));
 		setPage(nextPage);
 	};
 	

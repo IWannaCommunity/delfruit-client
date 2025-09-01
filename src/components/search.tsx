@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
+import { dedupeArray } from "@/utils/dedupeArray";
 import { formatDate } from "@/utils/formatDate";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
@@ -78,10 +79,6 @@ export default function Search(): JSX.Element {
 	const clearSearch = () => {
 		router.push({pathname: "/search"});
 	}
-
-	const dedupeGames = (games: Game[]): Game[] => {
-    return Array.from(new Map(games.map((g) => [g.id, g])).values());
-  };
 
 	const fetchGames = useCallback(
 		async (requestedPage: number, sort: SortConfig<Game> | null): Promise<Game[]> => {
@@ -161,7 +158,7 @@ export default function Search(): JSX.Element {
 			return;
 		}
 		
-		setGames((prev) => dedupeGames([...prev, ...moreGames]));
+		setGames((prev) => dedupeArray([...prev, ...moreGames], (g) => g.id));
 		setPage(nextPage);
 	};
 
