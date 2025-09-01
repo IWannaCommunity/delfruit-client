@@ -1,3 +1,5 @@
+// Feel free to replace any/all of this
+
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
@@ -22,7 +24,7 @@ type Review = {
 	tags: [];
 };
 
-export default function Reviews({userID}: Number): JSX.Element {
+export default function Reviews(): JSX.Element {
 	const [reviews, setReviews] = useState<Review[]>([]);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);

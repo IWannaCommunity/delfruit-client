@@ -1,3 +1,5 @@
+// Feel free to replace any/all of this
+
 import Link from "next/link";
 import { DataTable, Column, SortConfig } from "@/components/dataTable";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
@@ -37,7 +39,7 @@ const ratingColumns: Column<Rating>[] = [
 	}
 ];
 
-export default function Ratings({userID}: Number): JSX.Element {
+export default function Ratings(): JSX.Element {
 	const [ratings, setRatings] = useState<Rating[]>([]);
   const [sortConfig, setSortConfig] = useState<SortConfig<Rating> | null>(null);
   const [page, setPage] = useState(0);

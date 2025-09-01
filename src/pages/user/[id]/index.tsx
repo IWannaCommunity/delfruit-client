@@ -6,17 +6,28 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import TabBar from "@/components/tabBar";
-import Profile from "@/components/user/profile";
+import Profile, { UserProps } from "@/components/user/profile";
 import Ratings from "@/components/user/ratings";
 import Reviews from "@/components/user/reviews";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
+import { formatDate } from "@/utils/formatDate";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());
 
+export type UserTabValue =
+  | "profile"
+  | "ratings"
+  | "reviews"
+  | "games"
+  | "favorites"
+  | "clearList";
+
 export default function User(): AnyElem {
-	const [activeTab, setActiveTab] = useState<"profile" | "ratings" | "reviews" | "games" | "favorites" | "clearList">("profile");
-	const [name, setName] = useState("");
+	const [activeTab, setActiveTab] = useState<UserTabValue>("profile");
+	const [user, setUser] = useState<UserProps>();
+
+	const router = useRouter();
 	
 	const tabs = [
     { label: "User Profile", value: "profile" },
@@ -25,20 +36,35 @@ export default function User(): AnyElem {
 		{ label: "Games", value: "games" },
 		{ label: "Favorites List", value: "favorites" },
 		{ label: "Clear List", value: "clearList" },
-  ];
-	
-	const router = useRouter();
-	const { id } = router.query;
+  ] as const;
 	
 	useEffect(() => {
-		if (!id) { return; }
+		if (!router.isReady) return;
+
+		const id = Number(router.query.id);
+		
+		// Anti-trolling measures
+		if (isNaN(id) || id < 0) {
+			router.replace({ pathname: "/user/[id]", query: { id: 0 } });
+			return;
+		}
 
 		(async () => {
 			const resp = await USERS_API_CLIENT.getUser(id);
-			const user_name = resp.data.name;
-			setName(user_name);
+			const user = resp.data;
+			const newData: UserProps = {
+				id: user.id,
+				name: user.name,
+				dateCreated: user.dateCreated ? formatDate(new Date(user.dateCreated)) : null,
+				twitchLink: user.twitchLink,
+				youtubeLink: user.youtubeLink,
+				twitterLink: user.twitterLink,
+				bio: user.bio,
+				isAdmin: user.isAdmin === 1,
+			};
+			setUser(newData);
 		})();
-	}, [id]);
+	}, [router, router.isReady, router.query.id]);
 	
 	return (
 		<div>
@@ -48,7 +74,7 @@ export default function User(): AnyElem {
 			<div id="container">
 				<Header />
 				<div id="content">
-					<h2>{name}'s Profile</h2>
+					<h2>{user ? `${user.name}'s Profile` : "Loading Profile..."}</h2>
 					<Link href="/">Send a PM</Link>
 					<br/>
 					<input type="checkbox" id="a_follow"/>
@@ -60,16 +86,16 @@ export default function User(): AnyElem {
 						<div className="border border-gray-400 rounded-md p-[0.25em]">
 						
 							{/* Tabs */}
-							<TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+							<TabBar<UserTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 							
 							{/* Profile */}
-							{activeTab === "profile" && <Profile />}
+							{activeTab === "profile" && user && <Profile/>}
 							
 							{/* Ratings */}
-							{activeTab === "ratings" && id && <Ratings userID={id}/>}
+							{/* activeTab === "ratings" && user && <Ratings/> */}
 							
 							{/* Reviews */}
-							{activeTab === "reviews" && id && <Reviews userID={id}/>}
+							{/* activeTab === "reviews" && user && <Reviews/> */}
 							
 						</div>
 					</div>

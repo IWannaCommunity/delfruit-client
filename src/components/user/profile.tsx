@@ -1,5 +1,16 @@
 import Link from "next/link";
 
+export type UserProps = {
+	id: number,
+	name: string,
+	dateCreated: string | null,
+	twitchLink: string,
+	youtubeLink: string,
+	twitterLink: string,
+	bio: string,
+	isAdmin: boolean
+};
+
 export default function Profile(): JSX.Element {
 
 	return(
