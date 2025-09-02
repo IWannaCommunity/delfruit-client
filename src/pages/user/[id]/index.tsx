@@ -6,10 +6,11 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import TabBar from "@/components/helpers/tabBar";
-import Profile, { UserProps } from "@/components/user/profile";
+import Profile from "@/components/user/profile";
 import Ratings from "@/components/user/ratings";
-import Reviews from "@/components/user/reviews";
+import UserReviews from "@/components/user/userReviews";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
+import { UserExt } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 
 const CFG: Config = require("@/config.json");
@@ -25,7 +26,7 @@ export type UserTabValue =
 
 export default function User(): AnyElem {
 	const [activeTab, setActiveTab] = useState<UserTabValue>("profile");
-	const [user, setUser] = useState<UserProps>();
+	const [user, setUser] = useState<UserExt>();
 
 	const router = useRouter();
 	
@@ -50,9 +51,9 @@ export default function User(): AnyElem {
 		}
 
 		(async () => {
-			const resp = await USERS_API_CLIENT.getUser(id);
+			const resp = await USERS_API_CLIENT.getUserCompositeAll(id);
 			const user = resp.data;
-			const newData: UserProps = {
+			const newData: UserExt = {
 				id: user.id,
 				name: user.name,
 				dateCreated: user.dateCreated ? formatDate(new Date(user.dateCreated)) : null,
@@ -60,7 +61,10 @@ export default function User(): AnyElem {
 				youtubeLink: user.youtubeLink,
 				twitterLink: user.twitterLink,
 				bio: user.bio,
-				isAdmin: user.isAdmin === 1,
+				token: user.token,
+				reviewCount: user.reviewCount,
+				ratingsCount: user.ratingsCount,
+				screenshotCount: user.screenshotCount
 			};
 			setUser(newData);
 		})();
@@ -89,13 +93,13 @@ export default function User(): AnyElem {
 							<TabBar<UserTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 							
 							{/* Profile */}
-							{activeTab === "profile" && user && <Profile/>}
+							{activeTab === "profile" && user && <Profile user={user}/>}
 							
 							{/* Ratings */}
 							{/* activeTab === "ratings" && user && <Ratings/> */}
 							
 							{/* Reviews */}
-							{/* activeTab === "reviews" && user && <Reviews/> */}
+							{activeTab === "reviews" && user && <UserReviews/>}
 							
 						</div>
 					</div>
