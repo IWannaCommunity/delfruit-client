@@ -52,6 +52,7 @@ export default function ReviewList(props: ReviewListProps): AnyElem {
 			{reviews.map((review) => {
 				return (
 					<Review
+						key={review.id}
 						id={review.id}
 						user_id={review.user_id}
 						user_name={review.user_name}

@@ -85,6 +85,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 				{reviews.map((review) => {
 					return (
 						<Review
+							key={review.id}
 							id={review.id}
 							user_id={review.user_id}
 							game_id={review.game_id}

@@ -90,6 +90,7 @@ export default function UserReviews(): JSX.Element {
 			{reviews.map((review) => {
 				return (
 					<Review
+						key={review.id}
 						id={review.id}
 						user_name={review.user_name}
 						user_id={review.user_id}
