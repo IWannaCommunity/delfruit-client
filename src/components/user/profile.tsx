@@ -29,21 +29,21 @@ export default function Profile({ user }: UserInfoProps): JSX.Element {
 			{user.twitchLink && (
 				<>
 					<Image src="images/twitch16.png" alt="" width={16} height={16}/>
-					<Link href={user.twitchLink}>Twitch Stream</Link>
+					<a href={user.twitchLink}>Twitch Stream</a>
 					<br/>
 				</>
 			)}
 			{user.youtubeLink && (
 				<>
 					<Image src="images/youtube16.png" alt="" width={16} height={16}/>
-					<Link href={user.youtubeLink}>Youtube Channel</Link>
+					<a href={user.youtubeLink}>Youtube Channel</a>
 					<br/>
 				</>
 			)}
 			{user.twitterLink && (
 				<>
 					<Image src="images/twitter16.png" alt="" width={16} height={16}/>
-					<Link href={user.twitterLink}>Twittter</Link>
+					<a href={user.twitterLink}>Twittter</a>
 					<br/>
 				</>
 			)}
