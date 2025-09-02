@@ -66,7 +66,7 @@ export default function GameList(): JSX.Element {
 						<th>Rating</th>
 						<th># of Ratings</th>
 					</tr>
-					{games?.map((game, idx) => {
+					{games?.map((game) => {
 						return (
 							<Game
 								key={game.id}
@@ -86,7 +86,7 @@ export default function GameList(): JSX.Element {
 				<tbody>
 					<tr>
 						<td className="!text-center">
-							<Link className="text-base" href="/search?q=ALL">
+							<Link className="text-base" href="/search?l=ALL">
 								Full List
 							</Link>
 						</td>
