@@ -1,11 +1,25 @@
 import { AnyElem } from "@/utils/element";
 import Image from "next/image";
 
-export default function UploadScreenshot(): AnyElem {
+export type GameProps = {
+	id: number,
+	name: string
+}
+
+type UploadScreenshotProps = {
+	game: GameProps
+}
+
+export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyElem {
+
+	if (!game) {
+		return <h4>Loading...</h4>;
+	}
+
 	return (
 		<>
 			<h1>Screenshot Upload</h1>
-			<h2>I wanna be the test</h2>
+			<h2>{game.name}</h2>
 			<form>
 				<div>
 					<Image src="/images/noimage.png" alt="" width={200} height={150}/>

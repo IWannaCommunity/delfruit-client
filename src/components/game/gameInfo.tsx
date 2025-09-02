@@ -3,6 +3,7 @@ import { GameExt } from "delfruit-swagger-cg-sdk";
 import Tag from "@/components/game/tag";
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import AverageBox, { getColor } from "@/components/game/averageBox";
 import {
 	getRatingDescription,
@@ -14,12 +15,15 @@ type GameInfoProps = {
 };
 
 export default function GameInfo({ game }: GameInfoProps): JSX.Element {
+
+	const router = useRouter();
+
 	return (
 		<div className="w-[50%] float-left">
 			<h1 className="break-words">{game.name}</h1>
 
 			<h2 id="creator-label" className="mb-[13px]">
-				Creator:{" "}
+				<span>Creator: </span>
 				{game.author.map((author, index) => (
 					<React.Fragment key={author}>
 						<Link href="/">{author}</Link>
@@ -70,7 +74,7 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 			)}
 
 			<br />
-			<Link className="standalone" href="/">
+			<Link className="standalone" href={`/screenshot/upload/${Number(router.query.id)}`}>
 				<Image
 					src="/images/camera.png"
 					className="absolute ml-[2px]"
