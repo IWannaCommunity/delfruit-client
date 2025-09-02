@@ -1,6 +1,5 @@
 import Review from "@/components/review";
 import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
-import Link from "next/link";
 import { ReviewsApi } from "delfruit-swagger-cg-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
@@ -15,7 +14,7 @@ type ReviewListProps = {
 };
 
 export default function ReviewList(props: ReviewListProps): AnyElem {
-	const [reviews, setReviews] = useState<Review[]>([]);
+	const [reviews, setReviews] = useState<ReviewT[]>([]);
 
 	const fetchReviews = useCallback(async () => {
 		const resp = await REVIEWS_API_CLIENT.getReviews(props.page, props.limit);
@@ -26,7 +25,7 @@ export default function ReviewList(props: ReviewListProps): AnyElem {
 		(async () => {
 			const newReviews = await fetchReviews();
 
-			const reviewProps: ReviewProps[] = newReviews.map((review) => ({
+			const reviewProps: ReviewT[] = newReviews.map((review) => ({
 				id: review.id,
 				user_id: review.user_id,
 				game_id: review.game_id,
@@ -53,7 +52,7 @@ export default function ReviewList(props: ReviewListProps): AnyElem {
 			{reviews.map((review) => {
 				return (
 					<Review
-						key={review.id}
+						id={review.id}
 						user_id={review.user_id}
 						user_name={review.user_name}
 						comment={review.comment}
@@ -64,6 +63,8 @@ export default function ReviewList(props: ReviewListProps): AnyElem {
 						like_count={review.like_count}
 						game_name={review.game_name}
 						game_id={review.game_id}
+						owner_review={review.owner_review}
+						removed={review.removed}
 					/>
 				);
 			})}

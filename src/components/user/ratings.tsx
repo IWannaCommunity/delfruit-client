@@ -1,5 +1,3 @@
-// Feel free to replace any/all of this
-
 import Link from "next/link";
 import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
 import { UsersApi } from "delfruit-swagger-cg-sdk";

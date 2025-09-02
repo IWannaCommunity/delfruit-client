@@ -2,23 +2,9 @@ import Tag from "@/components/game/tag";
 import Link from "next/link";
 import React from "react";
 import { useState } from "react";
+import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 
-type ReviewProps = {
-		user_id: number;
-		game_id: number | null;
-		rating: number;
-		difficulty: number;
-		comment: string;
-		date_created: string;
-		removed: boolean;
-		user_name: string;
-		game_name: string;
-		like_count: number;
-		owner_review: boolean;
-		tags: string[];
-};
-
-export default function Review(props: ReviewProps): JSX.Element {
+export default function Review(props: ReviewT): JSX.Element {
 	const [expanded, setExpanded] = useState(false);
 
 	const maxLength = 500;

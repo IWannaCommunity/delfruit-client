@@ -1,7 +1,7 @@
 import Review from "@/components/review";
 import { useState, useCallback } from "react";
 import WriteReview from "@/components/game/writeReview";
-import { GamesApi } from "delfruit-swagger-cg-sdk";
+import { GamesApi, Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 import { useRouter } from "next/router";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
@@ -12,27 +12,11 @@ const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
 
 type GameReviewsProp = {
-	reviews: Review[];
-};
-
-type Review = {
-	id: number;
-	user_id: number;
-	user_name: string;
-	game_id: null;
-	game_name: string;
-	comment: string;
-	date_created: string;
-	removed: boolean;
-	difficulty: number | null;
-	rating: number | null;
-	like_count: number;
-	owner_review: boolean;
-	tags: [];
+	reviews: ReviewT[];
 };
 
 export default function GameReviews(props: GameReviewsProp): AnyElem {
-	const [reviews, setReviews] = useState<Review[]>(props.reviews);
+	const [reviews, setReviews] = useState<ReviewT[]>(props.reviews);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 
@@ -40,7 +24,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const id = Number(router.query.id);
 
 	const fetchReviews = useCallback(
-		async (requestedPage: number): Promise<ReadonlyArray<Review>> => {
+		async (requestedPage: number): Promise<ReadonlyArray<ReviewT>> => {
 			const res = await GAMES_API_CLIENT.getGameReviews(
 				id, // id
 				undefined,
@@ -50,7 +34,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 				5, // limit
 			);
 
-			const newData: ReadonlyArray<Review> = (res.data ?? []).map((r: any) => ({
+			const newData: ReadonlyArray<ReviewT> = (res.data ?? []).map((r: any) => ({
 				id: Number(r.id),
 				user_id: Number(r.user_id),
 				game_id: null,
@@ -101,7 +85,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 				{reviews.map((review) => {
 					return (
 						<Review
-							key={review.id}
+							id={review.id}
 							user_id={review.user_id}
 							game_id={review.game_id}
 							rating={review.rating}
