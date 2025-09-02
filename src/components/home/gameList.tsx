@@ -16,19 +16,20 @@ export default function GameList(): JSX.Element {
 		(async () => {
 			const resp = await GAMES_API_CLIENT.getGames(
 				undefined, // authorization
+				undefined, // q
 				undefined, // id
 				false, // removed
 				undefined, // name
-				undefined, // nameStartsWith,
+				undefined, // nameStartsWith
 				undefined, // nameExp
 				undefined, // tags
 				undefined, // author
-				undefined, // ownerUserID
+				undefined, // ownerUserId
 				undefined, // hasDownload
 				undefined, // createdFrom
 				new Date(Date.now()), // createdTo
-				undefined, // clearedByUserID
-				undefined, // reviewedByUserID
+				undefined, // clearedByUserId
+				undefined, // reviewedByUserId
 				undefined, // ratingFrom
 				undefined, // ratingTo
 				undefined, // difficultyFrom
@@ -36,7 +37,7 @@ export default function GameList(): JSX.Element {
 				0, // page number
 				25, // limit
 				"date_created", // orderCol
-				"desc", // orderDir
+				"desc" // orderDir
 			);
 
 			const gameProps: GameProps[] = resp.data.map((game) => ({

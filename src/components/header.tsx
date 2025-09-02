@@ -13,7 +13,7 @@ export default function Header(): AnyElem {
 	const handleSearch = () => {
 		router.push({
 			pathname: "/search",
-			query: search ? { s: search } : {},
+			query: search ? { q: search } : {},
 		});
 
 		setSearch("");

@@ -65,12 +65,12 @@ export default function Search(): JSX.Element {
 
 	const router = useRouter();
 
-	const searchQuery = (router.query.s as string) ?? "";
+	const searchQuery = (router.query.q as string) ?? "";
 	const activeLetter = (router.query.l as string) ?? "";
 
 	const handleLetterNavigation = (letter: string) => {
 		const query: Record<string, string> = {};
-		if (searchQuery.trim()) query.s = searchQuery.trim();
+		if (searchQuery.trim()) query.q = searchQuery.trim();
 
 		query.l = (letter === "ALL") ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
@@ -84,9 +84,10 @@ export default function Search(): JSX.Element {
 		async (requestedPage: number, sort: SortConfig<Game> | null): Promise<Game[]> => {
 			const res = await GAMES_API_CLIENT.getGames(
 				undefined, // authorization
+				searchQuery, // query
 				undefined, // id
 				undefined, // removed
-				searchQuery || undefined, // name
+				undefined, // name
 				activeLetter === "ALL" ? undefined : activeLetter, // nameStartsWith,
 				undefined, // nameExp
 				undefined, // tags
