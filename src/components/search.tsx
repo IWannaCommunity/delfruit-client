@@ -5,7 +5,7 @@ import { dedupeArray } from "@/utils/dedupeArray";
 import { formatDate } from "@/utils/formatDate";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
-import { DataTable, Column, SortConfig } from "@/components/dataTable";
+import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
 
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT: GamesApi = new GamesApi(undefined, CFG.apiURL.toString());

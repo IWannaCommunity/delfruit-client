@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import TabBar from "@/components/tabBar";
+import TabBar from "@/components/helpers/tabBar";
 
 // #region Test data
 type Message = {

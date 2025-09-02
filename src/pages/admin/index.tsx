@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import type { NextPage } from "next";
-import { Column, DataTable } from "@/components/dataTable";
+import { Column, DataTable } from "@/components/helpers/dataTable";
 import { ReportsApi } from "delfruit-swagger-cg-sdk";
 import { Config } from "@/utils/config";
 import Head from "next/head";

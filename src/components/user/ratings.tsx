@@ -1,7 +1,7 @@
 // Feel free to replace any/all of this
 
 import Link from "next/link";
-import { DataTable, Column, SortConfig } from "@/components/dataTable";
+import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";

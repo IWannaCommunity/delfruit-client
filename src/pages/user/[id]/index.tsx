@@ -5,7 +5,7 @@ import { AnyElem } from "@/utils/element";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import TabBar from "@/components/tabBar";
+import TabBar from "@/components/helpers/tabBar";
 import Profile, { UserProps } from "@/components/user/profile";
 import Ratings from "@/components/user/ratings";
 import Reviews from "@/components/user/reviews";
