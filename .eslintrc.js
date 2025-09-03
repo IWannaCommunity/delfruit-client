@@ -126,6 +126,7 @@ module.exports = {
 		"radix": "off",
 		"no-restricted-globals": "off",
 		"no-import-assign": "off",
+		"no-unused-expressions": "off",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
