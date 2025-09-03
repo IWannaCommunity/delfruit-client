@@ -67,8 +67,8 @@ export default function Search(): JSX.Element {
 	const activeLetter = (router.query.l as string) ?? "";
 	const searchAuthor = (router.query.author as string) ?? "";
 	const searchHasDownload = (router.query.hasDownload as string) ?? "";
-	const searchCreatedFrom = (router.query.hasCreatedFrom as string) ?? "";
-	const searchCreatedTo = (router.query.hasCreatedTo as string) ?? "";
+	const searchCreatedFrom = (router.query.createdFrom as string) ?? "";
+	const searchCreatedTo = (router.query.createdTo as string) ?? "";
 	const searchRatingFrom = (router.query.ratingFrom as string) ?? "";
 	const searchRatingTo = (router.query.ratingTo as string) ?? "";
 	const searchDifficultyFrom = (router.query.difficultyFrom as string) ?? "";
@@ -78,6 +78,13 @@ export default function Search(): JSX.Element {
 		const query: Record<string, string> = {};
 		if (searchQuery.trim()) query.q = searchQuery.trim();
 		if (searchAuthor.trim()) query.author = searchAuthor.trim();
+		if (searchHasDownload.trim()) query.hasDownload = searchHasDownload.trim();
+		if (searchCreatedFrom.trim()) query.createdFrom = searchCreatedFrom.trim();
+		if (searchCreatedTo.trim()) query.createdTo = searchCreatedTo.trim();
+		if (searchRatingFrom.trim()) query.ratingFrom = searchRatingFrom.trim();
+		if (searchRatingTo.trim()) query.ratingTo = searchRatingTo.trim();
+		if (searchDifficultyFrom.trim()) query.difficultyFrom = searchDifficultyFrom.trim();
+		if (searchDifficultyTo.trim()) query.difficultyTo = searchDifficultyTo.trim();
 
 		query.l = letter === "ALL" ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
@@ -174,6 +181,13 @@ export default function Search(): JSX.Element {
 		searchQuery,
 		searchAuthor,
 		activeLetter,
+		searchHasDownload,
+		searchCreatedFrom,
+		searchCreatedTo,
+		searchRatingFrom,
+		searchRatingTo,
+		searchDifficultyFrom,
+		searchDifficultyTo,
 		sortConfig,
 		router.isReady,
 		fetchGames,
@@ -237,16 +251,68 @@ export default function Search(): JSX.Element {
 			</p>
 
 			<p className="!font-bold mb-2">
-				Showing search results:
-				<span className="ml-[1em]">
-					{activeLetter && ` Starting with "${activeLetter}"`}
-				</span>
-				<span className="ml-[1em]">
-					{searchQuery && ` Containing "${searchQuery}"`}
-				</span>
-				<span className="ml-[1em]">
-					{searchAuthor && ` By "${searchAuthor}"`}
-				</span>
+				Showing results...
+				<br/>
+				{activeLetter && (
+					<>
+						<span className="ml-[1em]">
+							Starting with: "{activeLetter}"
+						</span>
+						<br/>
+					</>
+				)}
+				{searchQuery && (
+					<>
+						<span className="ml-[1em]">
+							Containing: "{searchQuery}"
+						</span>
+						<br/>
+					</>
+				)}
+				{searchAuthor && (
+					<>
+						<span className="ml-[1em]">
+							By: "{searchAuthor}"
+						</span>
+						<br/>
+					</>
+				)}
+				{(searchCreatedFrom || searchCreatedTo) && (
+					<>
+						<span className="ml-[1em]">
+							Created between: {searchCreatedFrom === "" ? "any" : searchCreatedFrom}`
+						</span>
+						<span> - </span>
+						<span className="ml-1">
+							{searchCreatedTo === "" ? "any" : searchCreatedTo}
+						</span>
+						<br/>
+					</>
+				)}
+				{(searchRatingFrom || searchRatingTo) && (
+					<>
+						<span className="ml-[1em]">
+							Rating: [{searchRatingFrom === "" ? "any" : searchRatingFrom}
+						</span>
+						<span> - </span>
+						<span className="ml-1">
+							{searchRatingTo === "" ? "any" : searchRatingTo}]
+						</span>
+						<br/>
+					</>
+				)}
+				{(searchDifficultyFrom || searchDifficultyTo) && (
+					<>
+						<span className="ml-[1em]">
+							Difficulty: [{searchDifficultyFrom === "" ? "any" : searchDifficultyFrom}
+						</span>
+						<span> - </span>
+						<span className="ml-1">
+							{searchDifficultyTo === "" ? "any" : searchDifficultyTo}]
+						</span>
+						<br/>
+					</>
+				)}
 				<span className="ml-[1em]">
 					({games.length} {games.length === 1 ? "result" : "results"})
 				</span>
@@ -258,8 +324,13 @@ export default function Search(): JSX.Element {
 					columns={gameColumns}
 					sortConfig={sortConfig}
 					onSortChange={setSortConfig}
-					loaderRef={loaderRef}
 				/>
+				{/* Infinite scroll trigger */}
+				{loaderRef && hasMore ? (
+					<div ref={loaderRef} className="h-10" />
+				) : (
+					<span>No more results.</span>
+				)}
 			</div>
 		</div>
 	);
