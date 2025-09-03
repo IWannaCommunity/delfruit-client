@@ -67,10 +67,12 @@ export default function Search(): JSX.Element {
 
 	const searchQuery = (router.query.q as string) ?? "";
 	const activeLetter = (router.query.l as string) ?? "";
+	const searchAuthor = (router.query.author as string) ?? "";
 
 	const handleLetterNavigation = (letter: string) => {
 		const query: Record<string, string> = {};
 		if (searchQuery.trim()) query.q = searchQuery.trim();
+		if (searchAuthor.trim()) query.author = searchAuthor.trim();
 
 		query.l = (letter === "ALL") ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
@@ -84,14 +86,14 @@ export default function Search(): JSX.Element {
 		async (requestedPage: number, sort: SortConfig<Game> | null): Promise<Game[]> => {
 			const res = await GAMES_API_CLIENT.getGames(
 				undefined, // authorization
-				searchQuery, // query
+				searchQuery === "" ? undefined : searchQuery, // query
 				undefined, // id
 				undefined, // removed
 				undefined, // name
 				activeLetter === "ALL" ? undefined : activeLetter, // nameStartsWith,
 				undefined, // nameExp
 				undefined, // tags
-				undefined, // author
+				searchAuthor === "" ? undefined : searchAuthor, // author
 				undefined, // ownerUserID
 				undefined, // hasDownload
 				undefined, // createdFrom
@@ -120,13 +122,13 @@ export default function Search(): JSX.Element {
 
 			return newData;
 		},
-		[activeLetter, searchQuery],
+		[activeLetter, searchQuery, searchAuthor],
 	);
 
 	useEffect(() => {
 		if (!router.isReady) return;
 
-		if (!searchQuery.trim() && !activeLetter.trim()) {
+		if (!searchQuery.trim() && !activeLetter.trim() && !searchAuthor.trim()) {
 			setGames([]);
 			setHasMore(false);
 			return;
@@ -148,7 +150,7 @@ export default function Search(): JSX.Element {
 		return () => {
 			isCancelled = true; // cleanup useEffect
 		};
-	}, [searchQuery, activeLetter, sortConfig, router.isReady, fetchGames]);
+	}, [searchQuery, searchAuthor, activeLetter, sortConfig, router.isReady, fetchGames]);
 
 	const loadMore = async () => {
 		const nextPage = page + 1;
@@ -214,6 +216,9 @@ export default function Search(): JSX.Element {
 				</span>
 				<span className="ml-[1em]">
 					{searchQuery && ` Containing "${searchQuery}"`}
+				</span>
+				<span className="ml-[1em]">
+					{searchAuthor && ` By "${searchAuthor}"`}
 				</span>
 				<span className="ml-[1em]">
 					({games.length} {games.length === 1 ? "result" : "results"})

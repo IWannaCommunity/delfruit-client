@@ -26,7 +26,7 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 				<span>Creator: </span>
 				{game.author.map((author, index) => (
 					<React.Fragment key={author}>
-						<Link href="/">{author}</Link>
+						<Link href={`/search/?author=${author}`}>{author}</Link>
 						{index < game.author.length - 1 && ", "}
 					</React.Fragment>
 				))}
