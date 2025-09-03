@@ -2,49 +2,127 @@ import Header from "@/components/header";
 import Whitespace from "@/components/whitespace";
 import type { AnyElem } from "@/utils/element";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function AdvancedSearch(): AnyElem {
-	const [rating, setRatingRange] = useState<[number, number]>([0, 10]);
-	const [difficulty, setDifficultyRange] = useState<[number, number]>([0, 100]);
+	const router = useRouter();
+
+	const [specifiedRating, toggleSpecifiedRating] = useState<boolean>(false);
+	const [ratingRange, setRatingRange] = useState<[number, number]>([0, 100]);
+	const [specifiedDifficulty, toggleSpecifiedDifficulty] =
+		useState<boolean>(false);
+	const [difficultyRange, setDifficultyRange] = useState<[number, number]>([
+		0, 100,
+	]);
+	const [requireDL, setRequireDL] = useState<number | 0 | 1 | -1 | undefined>(
+		undefined,
+	);
+	const [createdFrom, setCreatedFrom] = useState<string, undefined>(undefined);
+	const [createdTo, setCreatedTo] = useState<string, undefined>(undefined);
+
+	const uiSetRatingRange = useDebouncedCallback((value) => {
+		setRatingRange(value);
+	}, 10);
+	const uiSetDifficultyRange = useDebouncedCallback((value) => {
+		setDifficultyRange(value);
+	}, 10);
+	const uiSetCreatedFrom = useDebouncedCallback((value) => {
+		setCreatedFrom(value);
+	}, 10);
+	const uiSetCreatedTo = useDebouncedCallback((value) => {
+		setCreatedTo(value);
+	}, 10);
 
 	useEffect(() => {
 		require("jquery");
 		require("jquery-ui/ui/widgets/datepicker");
 		require("jquery-ui/ui/widgets/slider");
+	}, []);
 
+	useEffect(() => {
 		$.uiBackCompat = false;
 
 		$("#rating").slider({
 			min: 0,
-			max: 10,
-			values: ["0", "10"],
+			max: 100,
+			values: ratingRange,
 			step: 1,
 			range: true,
-			disabled: false,
+			disabled: !specifiedRating,
 			change: (evt, ui) => {
-				setRatingRange([ui.values[0], ui.values[1]]);
+				uiSetRatingRange([ui.values[0], ui.values[1]]);
 			},
 			slide: (evt, ui) => {
-				setRatingRange([ui.values[0], ui.values[1]]);
+				uiSetRatingRange([ui.values[0], ui.values[1]]);
 			},
 		});
 
 		$("#difficulty").slider({
 			min: 0,
 			max: 100,
-			values: ["0", "100"],
+			values: difficultyRange,
 			step: 1,
 			range: true,
-			disabled: false,
+			disabled: !specifiedDifficulty,
 			change: (evt, ui) => {
-				setRatingRange([ui.values[0], ui.values[1]]);
+				uiSetDifficultyRange([ui.values[0], ui.values[1]]);
 			},
 			slide: (evt, ui) => {
-				setRatingRange([ui.values[0], ui.values[1]]);
+				uiSetDifficultyRange([ui.values[0], ui.values[1]]);
 			},
 		});
-	}, []);
+
+		$("#from").datepicker({
+			defaultDate: "-0d",
+			changeMonth: true,
+			numberOfMonths: 3,
+			dateFormat: "yy-mm-dd",
+			onClose: (selectedDate) => {
+				$("#from").datepicker("option", "maxDate", selectedDate);
+				uiSetCreatedFrom(selectedDate);
+			},
+		});
+
+		$("#to").datepicker({
+			defaultDate: "-0d",
+			changeMonth: true,
+			numberOfMonths: 3,
+			dateFormat: "yy-mm-dd",
+			onClose: (selectedDate) => {
+				$("#to").datepicker("option", "maxDate", selectedDate);
+				uiSetCreatedTo(selectedDate);
+			},
+		});
+	}, [
+		ratingRange,
+		difficultyRange,
+		specifiedRating,
+		specifiedDifficulty,
+		uiSetRatingRange,
+		uiSetDifficultyRange,
+		uiSetCreatedFrom,
+		uiSetCreatedTo,
+	]);
+
+	async function startSearch(evt: FormEvent<HTMLFormElement>) {
+		evt.preventDefault();
+
+		const searchParams = new URLSearchParams();
+		// TODO: set these all at once
+		specifiedRating && searchParams.set("ratingTo", String(ratingRange[0]));
+		specifiedRating && searchParams.set("ratingFrom", String(ratingRange[1]));
+		specifiedDifficulty &&
+			searchParams.set("difficultyTo", String(difficultyRange[0]));
+		specifiedDifficulty &&
+			searchParams.set("difficultyFrom", String(difficultyRange[1]));
+		requireDL && searchParams.set("hasDownload", String(requireDL));
+		createdFrom && searchParams.set("createdFrom", createdFrom);
+		createdTo && searchParams.set("createdTo", createdTo);
+
+		router.push(`/search?${searchParams}`);
+	}
 
 	return (
 		<div>
@@ -55,7 +133,7 @@ export default function AdvancedSearch(): AnyElem {
 				<Header />
 				<div id="content">
 					<h2>Advanced Search</h2>
-					<form>
+					<form onSubmit={startSearch}>
 						<fieldset>
 							<div>
 								<label htmlFor="title">Game Title:</label>
@@ -65,7 +143,7 @@ export default function AdvancedSearch(): AnyElem {
 									type="text"
 									placeholder="I wanna be the Guy Remastered"
 									name="title"
-									value=""
+									defaultValue=""
 								/>
 							</div>
 
@@ -77,25 +155,55 @@ export default function AdvancedSearch(): AnyElem {
 									type="text"
 									placeholder="Cherry Treehouse"
 									name="author"
-									value=""
+									defaultValue=""
 								/>
 							</div>
 
 							<label htmlFor="clear-any">
-								<input id="dorate" type="checkbox" name="rated" /> Specify
-								Rating
+								<input
+									id="dorate"
+									type="checkbox"
+									name="rated"
+									onChange={async (evt) => {
+										toggleSpecifiedRating(evt.currentTarget.checked);
+									}}
+								/>{" "}
+								Specify Rating
 							</label>
 							<div>
-								Rating: <span id="ratingSpan" />
+								Rating:{" "}
+								{!specifiedRating ? (
+									"Any"
+								) : (
+									<>
+										{ratingRange[0] / 10} - {ratingRange[1] / 10}
+									</>
+								)}
+								<span id="ratingSpan" />
 							</div>
 							<div className="p-0 ml-2 mr-2 mb-4" id="rating" />
 
 							<label htmlFor="clear-any">
-								<input id="dodiff" type="checkbox" name="diffd" /> Specify
-								Difficulty
+								<input
+									id="dodiff"
+									type="checkbox"
+									name="diffd"
+									onChange={async (evt) => {
+										toggleSpecifiedDifficulty(evt.currentTarget.checked);
+									}}
+								/>{" "}
+								Specify Difficulty
 							</label>
 							<div>
-								Difficulty: <span id="diffSpan" />
+								Difficulty:{" "}
+								{!specifiedDifficulty ? (
+									"Any"
+								) : (
+									<>
+										{difficultyRange[0]} - {difficultyRange[1]}
+									</>
+								)}
+								<span id="diffSpan" />
 							</div>
 							<div className="p-0 ml-2 mr-2" id="difficulty" />
 							<br />
@@ -194,9 +302,36 @@ export default function AdvancedSearch(): AnyElem {
 								<div>
 									<label htmlFor="dl">Require Download Link:</label>
 									<label htmlFor="dl">
-										<input id="dl" type="radio" name="dl" value="0" /> Either
-										<input id="dl" type="radio" name="dl" value="1" /> Yes
-										<input id="dl" type="radio" name="dl" value="-1" /> No
+										<input
+											id="dl"
+											type="radio"
+											name="dl"
+											value="0"
+											onChange={async () => {
+												setRequireDL(0);
+											}}
+										/>{" "}
+										Either
+										<input
+											id="dl"
+											type="radio"
+											name="dl"
+											value="1"
+											onChange={async () => {
+												setRequireDL(1);
+											}}
+										/>{" "}
+										Yes
+										<input
+											id="dl"
+											type="radio"
+											name="dl"
+											value="-1"
+											onChange={async () => {
+												setRequireDL(-1);
+											}}
+										/>{" "}
+										No
 									</label>
 								</div>
 								{/* #endregion */}

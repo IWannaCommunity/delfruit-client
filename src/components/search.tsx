@@ -8,7 +8,10 @@ import Link from "next/link";
 import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
 
 const CFG: Config = require("@/config.json");
-const GAMES_API_CLIENT: GamesApi = new GamesApi(undefined, CFG.apiURL.toString());
+const GAMES_API_CLIENT: GamesApi = new GamesApi(
+	undefined,
+	CFG.apiURL.toString(),
+);
 
 // #region Types
 type Game = {
@@ -34,20 +37,15 @@ const gameColumns: Column<Game>[] = [
 	{
 		key: "date_created",
 		label: "Release Date",
-		render: (value) => (value ? formatDate(value as Date) : "Unknown")
+		render: (value) => (value ? formatDate(value as Date) : "Unknown"),
 	},
-	{ 
-		key: "difficulty", 
+	{
+		key: "difficulty",
 		label: "Difficulty",
-		render: (value) => (value)
+		render: (value) => value,
 	},
-	{ key: "rating", 
-		label: "Rating",
-		render: (value) => (value)
-	},
-	{ key: "rating_count", 
-		label: "# of Ratings"
-	}
+	{ key: "rating", label: "Rating", render: (value) => value },
+	{ key: "rating_count", label: "# of Ratings" },
 ];
 // #endregion
 
@@ -68,22 +66,32 @@ export default function Search(): JSX.Element {
 	const searchQuery = (router.query.q as string) ?? "";
 	const activeLetter = (router.query.l as string) ?? "";
 	const searchAuthor = (router.query.author as string) ?? "";
+	const searchHasDownload = (router.query.hasDownload as string) ?? "";
+	const searchCreatedFrom = (router.query.hasCreatedFrom as string) ?? "";
+	const searchCreatedTo = (router.query.hasCreatedTo as string) ?? "";
+	const searchRatingFrom = (router.query.ratingFrom as string) ?? "";
+	const searchRatingTo = (router.query.ratingTo as string) ?? "";
+	const searchDifficultyFrom = (router.query.difficultyFrom as string) ?? "";
+	const searchDifficultyTo = (router.query.difficultyTo as string) ?? "";
 
 	const handleLetterNavigation = (letter: string) => {
 		const query: Record<string, string> = {};
 		if (searchQuery.trim()) query.q = searchQuery.trim();
 		if (searchAuthor.trim()) query.author = searchAuthor.trim();
 
-		query.l = (letter === "ALL") ? "ALL" : letter;
+		query.l = letter === "ALL" ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
-	}
+	};
 
 	const clearSearch = () => {
-		router.push({pathname: "/search"});
-	}
+		router.push({ pathname: "/search" });
+	};
 
 	const fetchGames = useCallback(
-		async (requestedPage: number, sort: SortConfig<Game> | null): Promise<Game[]> => {
+		async (
+			requestedPage: number,
+			sort: SortConfig<Game> | null,
+		): Promise<Game[]> => {
 			const res = await GAMES_API_CLIENT.getGames(
 				undefined, // authorization
 				searchQuery === "" ? undefined : searchQuery, // query
@@ -95,15 +103,15 @@ export default function Search(): JSX.Element {
 				undefined, // tags
 				searchAuthor === "" ? undefined : searchAuthor, // author
 				undefined, // ownerUserID
-				undefined, // hasDownload
-				undefined, // createdFrom
-				undefined, // createdTo
+				searchHasDownload === "" ? undefined : Boolean(searchHasDownload), // hasDownload
+				searchCreatedFrom === "" ? undefined : new Date(searchCreatedFrom), // createdFrom
+				searchCreatedTo === "" ? undefined : new Date(searchCreatedTo), // createdTo
 				undefined, // clearedByUserID
 				undefined, // reviewedByUserID
-				undefined, // ratingFrom
-				undefined, // ratingTo
-				undefined, // difficultyFrom
-				undefined, // difficultyTo
+				searchRatingFrom === "" ? undefined : Number(searchRatingFrom), // ratingFrom
+				searchRatingTo === "" ? undefined : Number(searchRatingTo), // ratingTo
+				searchDifficultyFrom === "" ? undefined : Number(searchDifficultyFrom), // difficultyFrom
+				searchDifficultyTo === "" ? undefined : Number(searchDifficultyTo), // difficultyTo
 				requestedPage, // page number
 				50, // limit
 				sort?.column === "name" ? "sortname" : sort?.column, // orderCol
@@ -115,14 +123,26 @@ export default function Search(): JSX.Element {
 				name: g.name,
 				sortname: g.sortname,
 				date_created: g.date_created ? new Date(g.date_created) : null,
-				difficulty: (g.difficulty === null) ? "N/A" : Number(g.difficulty).toFixed(1),
-				rating: (g.rating === null) ? "N/A" : Number(g.rating/10).toFixed(1),
+				difficulty:
+					g.difficulty === null ? "N/A" : Number(g.difficulty).toFixed(1),
+				rating: g.rating === null ? "N/A" : Number(g.rating / 10).toFixed(1),
 				rating_count: Number(g.rating_count),
 			}));
 
 			return newData;
 		},
-		[activeLetter, searchQuery, searchAuthor],
+		[
+			searchQuery,
+			activeLetter,
+			searchAuthor,
+			searchHasDownload,
+			searchCreatedFrom,
+			searchCreatedTo,
+			searchRatingFrom,
+			searchRatingTo,
+			searchDifficultyFrom,
+			searchDifficultyTo,
+		],
 	);
 
 	useEffect(() => {
@@ -150,7 +170,14 @@ export default function Search(): JSX.Element {
 		return () => {
 			isCancelled = true; // cleanup useEffect
 		};
-	}, [searchQuery, searchAuthor, activeLetter, sortConfig, router.isReady, fetchGames]);
+	}, [
+		searchQuery,
+		searchAuthor,
+		activeLetter,
+		sortConfig,
+		router.isReady,
+		fetchGames,
+	]);
 
 	const loadMore = async () => {
 		const nextPage = page + 1;
@@ -160,7 +187,7 @@ export default function Search(): JSX.Element {
 			setHasMore(false);
 			return;
 		}
-		
+
 		setGames((prev) => dedupeArray([...prev, ...moreGames], (g) => g.id));
 		setPage(nextPage);
 	};
@@ -168,7 +195,7 @@ export default function Search(): JSX.Element {
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
 		if (hasMore) loadMore();
 	});
-	
+
 	return (
 		<div
 			id="content"
@@ -200,7 +227,7 @@ export default function Search(): JSX.Element {
 				>
 					ALL
 				</span>
-				<button 
+				<button
 					type="button"
 					onClick={() => clearSearch()}
 					className="font-bold cursor-pointer ml-auto"
