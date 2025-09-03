@@ -370,8 +370,4 @@ export default function Search(): JSX.Element {
 		</div>
 	);
 }
-
-function setErrorMessage(arg0: string) {
-	throw new Error("Function not implemented.");
-}
 // #endregion

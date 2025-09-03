@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 type InfiniteScrollOptions = IntersectionObserverInit & {
-  enabled?: boolean; // ✅ gate observing
+  enabled?: boolean;
 };
 
 export function useInfiniteScroll<T extends HTMLElement>(
