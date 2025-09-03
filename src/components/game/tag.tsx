@@ -2,6 +2,7 @@ import { AnyElem } from "@/utils/element";
 import Link from "next/link";
 
 type TagProps = {
+	id: number;
 	name: string;
 	count?: number | null;
 };
@@ -9,7 +10,7 @@ type TagProps = {
 export default function Tag(props: TagProps): AnyElem {
 	return (
 		<>
-			<Link href="/" className={`tag mr-[0.35em] ${props.name === "Impossible" ? "impossible-tag" : ""}`}>
+			<Link href={`/search/?tags=${props.id}`} className={`tag mr-[0.35em] ${props.name === "Impossible" ? "impossible-tag" : ""}`}>
 				{props.name} {props.count ? `(${props.count})` : ""}
 			</Link>
 		</>
