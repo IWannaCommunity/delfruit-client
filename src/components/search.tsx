@@ -60,6 +60,7 @@ export default function Search(): JSX.Element {
 	const [sortConfig, setSortConfig] = useState<SortConfig<Game> | null>(null);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
+	const [initialized, setInitialized] = useState(false);
 
 	const router = useRouter();
 
@@ -103,44 +104,48 @@ export default function Search(): JSX.Element {
 			requestedPage: number,
 			sort: SortConfig<Game> | null,
 		): Promise<Game[]> => {
-			const res = await GAMES_API_CLIENT.getGames(
-				undefined, // authorization
-				searchQuery === "" ? undefined : searchQuery, // query
-				undefined, // id
-				undefined, // removed
-				undefined, // name
-				activeLetter === "ALL" || !activeLetter ? undefined : activeLetter, // nameStartsWith,
-				undefined, // nameExp
-				searchTags === "" ? undefined : searchTags, // tags
-				searchAuthor === "" ? undefined : searchAuthor, // author
-				undefined, // ownerUserID
-				searchHasDownload === "" ? undefined : Boolean(searchHasDownload), // hasDownload
-				searchCreatedFrom === "" ? undefined : new Date(searchCreatedFrom), // createdFrom
-				searchCreatedTo === "" ? undefined : new Date(searchCreatedTo), // createdTo
-				undefined, // clearedByUserID
-				undefined, // reviewedByUserID
-				searchRatingFrom === "" ? undefined : Number(searchRatingFrom), // ratingFrom
-				searchRatingTo === "" ? undefined : Number(searchRatingTo), // ratingTo
-				searchDifficultyFrom === "" ? undefined : Number(searchDifficultyFrom), // difficultyFrom
-				searchDifficultyTo === "" ? undefined : Number(searchDifficultyTo), // difficultyTo
-				requestedPage, // page number
-				50, // limit
-				sort?.column === "name" ? "sortname" : sort?.column, // orderCol
-				sort?.direction, // orderDir
-			);
+			try {
+				const res = await GAMES_API_CLIENT.getGames(
+					undefined, // authorization
+					searchQuery === "" ? undefined : searchQuery, // query
+					undefined, // id
+					undefined, // removed
+					undefined, // name
+					activeLetter === "ALL" || !activeLetter ? undefined : activeLetter, // nameStartsWith,
+					undefined, // nameExp
+					searchTags === "" ? undefined : searchTags, // tags
+					searchAuthor === "" ? undefined : searchAuthor, // author
+					undefined, // ownerUserID
+					searchHasDownload === "" ? undefined : Boolean(searchHasDownload), // hasDownload
+					searchCreatedFrom === "" ? undefined : new Date(searchCreatedFrom), // createdFrom
+					searchCreatedTo === "" ? undefined : new Date(searchCreatedTo), // createdTo
+					undefined, // clearedByUserID
+					undefined, // reviewedByUserID
+					searchRatingFrom === "" ? undefined : Number(searchRatingFrom), // ratingFrom
+					searchRatingTo === "" ? undefined : Number(searchRatingTo), // ratingTo
+					searchDifficultyFrom === "" ? undefined : Number(searchDifficultyFrom), // difficultyFrom
+					searchDifficultyTo === "" ? undefined : Number(searchDifficultyTo), // difficultyTo
+					requestedPage, // page number
+					50, // limit
+					sort?.column === "name" ? "sortname" : sort?.column, // orderCol
+					sort?.direction, // orderDir
+				);
 
-			let newData: Game[] = (res.data ?? []).map((g: any) => ({
-				id: Number(g.id),
-				name: g.name,
-				sortname: g.sortname,
-				date_created: g.date_created ? new Date(g.date_created) : null,
-				difficulty:
-					g.difficulty === null ? "N/A" : Number(g.difficulty).toFixed(1),
-				rating: g.rating === null ? "N/A" : Number(g.rating / 10).toFixed(1),
-				rating_count: Number(g.rating_count),
-			}));
+				let newData: Game[] = (res.data ?? []).map((g: any) => ({
+					id: Number(g.id),
+					name: g.name,
+					sortname: g.sortname,
+					date_created: g.date_created ? new Date(g.date_created) : null,
+					difficulty:
+						g.difficulty === null ? "N/A" : Number(g.difficulty).toFixed(1),
+					rating: g.rating === null ? "N/A" : Number(g.rating / 10).toFixed(1),
+					rating_count: Number(g.rating_count),
+				}));
 
-			return newData;
+				return newData;
+			} catch (error) {
+				return [];
+			}
 		},
 		[
 			searchQuery,
@@ -188,6 +193,7 @@ export default function Search(): JSX.Element {
 				setGames(firstPage);
 				setPage(0);
 				setHasMore(firstPage.length > 0);
+				setInitialized(true);
 			}
 		};
 
@@ -226,9 +232,10 @@ export default function Search(): JSX.Element {
 		setPage(nextPage);
 	};
 
-	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
-		if (hasMore) loadMore();
-	});
+	const loaderRef = useInfiniteScroll<HTMLDivElement>(
+		() => { if (hasMore) loadMore(); },
+		{ enabled: initialized }
+	);
 
 	return (
 		<div
@@ -362,5 +369,9 @@ export default function Search(): JSX.Element {
 			</div>
 		</div>
 	);
+}
+
+function setErrorMessage(arg0: string) {
+	throw new Error("Function not implemented.");
 }
 // #endregion

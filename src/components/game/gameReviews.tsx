@@ -19,7 +19,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const [reviews, setReviews] = useState<ReviewT[]>(props.reviews);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
-
+	const [initialized, setInitialized] = useState(props.reviews.length > 0);
 	const router = useRouter();
 	const id = Number(router.query.id);
 
@@ -68,11 +68,13 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 		setReviews((prev) => dedupeArray([...prev, ...moreReviews], (r) => r.id));
 		setPage(nextPage);
+		setInitialized(true);
 	}, [fetchReviews, page, router.isReady]);
 
-	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
-		if (hasMore) loadMore();
-	});
+	const loaderRef = useInfiniteScroll<HTMLDivElement>(
+		() => { if (hasMore) loadMore(); },
+		{ enabled: initialized }
+	);
 
 	return (
 		<div>
