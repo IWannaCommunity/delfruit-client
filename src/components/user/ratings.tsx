@@ -115,7 +115,6 @@ export default function Ratings(): JSX.Element {
 					columns={ratingColumns}
 					sortConfig={sortConfig}
 					onSortChange={setSortConfig}
-					loaderRef={loaderRef}
 				/>
 			</div>
 

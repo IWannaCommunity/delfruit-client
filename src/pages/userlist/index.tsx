@@ -120,14 +120,18 @@ export default function UserList(): AnyElem {
 				<Header />
 				<div id="content" className="px-4 sm:px-6 lg:px-8 min-h-screen scrollbar-gutter-stable">
 					<h2>User List</h2>
-
 					<DataTable
 						data={users}
 						columns={userColumns}
 						sortConfig={sortConfig}
 						onSortChange={setSortConfig}
-						loaderRef={loaderRef}
 					/>
+					{/* Infinite scroll trigger */}
+					{loaderRef && hasMore ? (
+						<div ref={loaderRef} className="h-10" />
+					) : (
+						<span>No more results.</span>
+					)}
 				</div>
 				<Footer />
 			</div>

@@ -13,15 +13,13 @@ type DataTableProps<T> = {
 	columns: Column<T>[];
 	sortConfig: SortConfig<T> | null;
 	onSortChange: (newConfig: SortConfig<T>) => void;
-	loaderRef?: React.RefObject<HTMLDivElement>;
 };
 
 export function DataTable<T extends { id: number | string }>({
 	data,
 	columns,
 	sortConfig,
-	onSortChange,
-	loaderRef,
+	onSortChange
 }: DataTableProps<T>) {
 	const handleSort = (column: keyof T) => {
 		if (sortConfig?.column === column) {
@@ -70,8 +68,6 @@ export function DataTable<T extends { id: number | string }>({
 					))}
 				</tbody>
 			</table>
-			{/* Infinite scroll trigger */}
-			{loaderRef && <div ref={loaderRef} className="h-40" />}
 		</>
 	);
 }
