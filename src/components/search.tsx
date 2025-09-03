@@ -64,7 +64,9 @@ export default function Search(): JSX.Element {
 	const router = useRouter();
 
 	const searchQuery = (router.query.q as string) ?? "";
-	const activeLetter = (router.query.l as string) ?? "";
+	const activeLetter = router.isReady
+		? ((router.query.l as string) ?? "")
+		: undefined;
 	const searchAuthor = (router.query.author as string) ?? "";
 	const searchHasDownload = (router.query.hasDownload as string) ?? "";
 	const searchCreatedFrom = (router.query.createdFrom as string) ?? "";
@@ -73,6 +75,7 @@ export default function Search(): JSX.Element {
 	const searchRatingTo = (router.query.ratingTo as string) ?? "";
 	const searchDifficultyFrom = (router.query.difficultyFrom as string) ?? "";
 	const searchDifficultyTo = (router.query.difficultyTo as string) ?? "";
+	const searchTags = (router.query.tags as string) ?? "";
 
 	const handleLetterNavigation = (letter: string) => {
 		const query: Record<string, string> = {};
@@ -85,6 +88,7 @@ export default function Search(): JSX.Element {
 		if (searchRatingTo.trim()) query.ratingTo = searchRatingTo.trim();
 		if (searchDifficultyFrom.trim()) query.difficultyFrom = searchDifficultyFrom.trim();
 		if (searchDifficultyTo.trim()) query.difficultyTo = searchDifficultyTo.trim();
+		if (searchTags.trim()) query.tags = searchTags.trim();
 
 		query.l = letter === "ALL" ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
@@ -105,9 +109,9 @@ export default function Search(): JSX.Element {
 				undefined, // id
 				undefined, // removed
 				undefined, // name
-				activeLetter === "ALL" ? undefined : activeLetter, // nameStartsWith,
+				activeLetter === "ALL" || !activeLetter ? undefined : activeLetter, // nameStartsWith,
 				undefined, // nameExp
-				undefined, // tags
+				searchTags === "" ? undefined : searchTags, // tags
 				searchAuthor === "" ? undefined : searchAuthor, // author
 				undefined, // ownerUserID
 				searchHasDownload === "" ? undefined : Boolean(searchHasDownload), // hasDownload
@@ -149,13 +153,28 @@ export default function Search(): JSX.Element {
 			searchRatingTo,
 			searchDifficultyFrom,
 			searchDifficultyTo,
+			searchTags
 		],
 	);
 
 	useEffect(() => {
 		if (!router.isReady) return;
 
-		if (!searchQuery.trim() && !activeLetter.trim() && !searchAuthor.trim()) {
+		const hasFilters = [
+			searchQuery,
+			activeLetter,
+			searchAuthor,
+			searchTags,
+			searchHasDownload,
+			searchCreatedFrom,
+			searchCreatedTo,
+			searchRatingFrom,
+			searchRatingTo,
+			searchDifficultyFrom,
+			searchDifficultyTo,
+		].some((value) => value.trim() !== "");
+
+		if (!hasFilters) {
 			setGames([]);
 			setHasMore(false);
 			return;
@@ -178,20 +197,21 @@ export default function Search(): JSX.Element {
 			isCancelled = true; // cleanup useEffect
 		};
 	}, [
-		searchQuery,
-		searchAuthor,
-		activeLetter,
-		searchHasDownload,
-		searchCreatedFrom,
-		searchCreatedTo,
-		searchRatingFrom,
-		searchRatingTo,
-		searchDifficultyFrom,
-		searchDifficultyTo,
-		sortConfig,
-		router.isReady,
-		fetchGames,
-	]);
+			searchQuery,
+			activeLetter,
+			searchAuthor,
+			searchTags,
+			searchHasDownload,
+			searchCreatedFrom,
+			searchCreatedTo,
+			searchRatingFrom,
+			searchRatingTo,
+			searchDifficultyFrom,
+			searchDifficultyTo,
+			sortConfig,
+			router.isReady,
+			fetchGames
+		]);
 
 	const loadMore = async () => {
 		const nextPage = page + 1;
@@ -309,6 +329,14 @@ export default function Search(): JSX.Element {
 						<span> - </span>
 						<span className="ml-1">
 							{searchDifficultyTo === "" ? "any" : searchDifficultyTo}]
+						</span>
+						<br/>
+					</>
+				)}
+				{searchTags && (
+					<>
+						<span className="ml-[1em]">
+							Tagged as: "{searchTags}"
 						</span>
 						<br/>
 					</>
