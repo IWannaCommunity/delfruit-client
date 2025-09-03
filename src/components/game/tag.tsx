@@ -10,7 +10,7 @@ type TagProps = {
 export default function Tag(props: TagProps): AnyElem {
 	return (
 		<>
-			<Link href={`/search/?tags=${props.id}`} className={`tag mr-[0.35em] ${props.name === "Impossible" ? "impossible-tag" : ""}`}>
+			<Link href={`/search/?tags=${props.name}`} className={`tag mr-[0.35em] ${props.name === "Impossible" ? "impossible-tag" : ""}`}>
 				{props.name} {props.count ? `(${props.count})` : ""}
 			</Link>
 		</>
