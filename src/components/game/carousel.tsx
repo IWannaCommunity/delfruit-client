@@ -1,9 +1,14 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 type CarouselProps = {
-	images: { src: URL | string; alt?: string }[];
+	images: { 
+		id: number, 
+		src: string, 
+		alt?: string,
+		user_name: string
+	}[];
 };
 
 export default function Carousel({ images }: CarouselProps): JSX.Element {
@@ -12,7 +17,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 	const thumbsRef = useRef<HTMLDivElement>(null);
 
 	const hasImages = images.length > 0;
-	const thumbWidth = 120;
+	const thumbWidth = 122;
 
 	const scrollThumbnails = (index: number) => {
 		if (!thumbsRef.current) return;
@@ -34,13 +39,13 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 		});
 	};
 
-	const next = () => {
+	const next = useCallback(() => {
 		setCurrent((prev) => {
 			const nextIndex = (prev + 1) % images.length;
 			scrollThumbnails(nextIndex);
 			return nextIndex;
 		});
-	};
+	}, [images.length]);
 
 	const prev = () => {
 		setCurrent((prev) => {
@@ -57,7 +62,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 			next();
 		}, 5000);
 		return () => clearInterval(interval);
-	}, [hasImages, paused]);
+	}, [hasImages, paused, next]);
 
 	// Keep thumbnails synced when the index changes
 	useEffect(() => {
@@ -81,7 +86,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 							<div className="relative h-full w-full">
 								{images.map((img, index) => (
 									<Image
-										key={index}
+										key={img.id}
 										src={img.src}
 										alt={img.alt || `Screenshot ${index + 1}`}
 										width={350}
@@ -106,7 +111,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 							<a
 								className="absolute block bg-no-repeat h-full w-[50px] top-[10px] left-[10px] cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
 								style={{
-									backgroundImage: `url(/images/prev.png)`,
+									backgroundImage: "url(/images/prev.png)",
 									backgroundPositionX: "left",
 									backgroundPositionY: "45%",
 								}}
@@ -114,13 +119,13 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 									e.preventDefault();
 									prev();
 								}}
-							></a>
+							/>
 
 							{/* Next */}
 							<a
 								className="absolute block bg-no-repeat h-full w-[50px] top-[10px] right-[10px] cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
 								style={{
-									backgroundImage: `url(/images/next.png)`,
+									backgroundImage: "url(/images/next.png)",
 									backgroundPositionX: "right",
 									backgroundPositionY: "45%",
 								}}
@@ -128,7 +133,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 									e.preventDefault();
 									next();
 								}}
-							></a>
+							/>
 
 							{/* Counter */}
 							<span className="absolute bottom-[45px] left-[15px] bg-black bg-opacity-[0.7] text-[11px] text-center text-white p-[3px] rounded-[5px] opacity-0 group-hover:opacity-100 transition-opacity">
@@ -137,7 +142,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 
 							{/* Caption */}
 							<div className="absolute border border-solid border-[#141414] bg-black bg-opacity-[0.7] text-[11px] text-[#fafafa] text-right p-[4px] bottom-[30px] right-[10px] block opacity-0 group-hover:opacity-100 transition-opacity">
-								by User
+								by {images[current].user_name}
 							</div>
 						</>
 					)}
@@ -165,7 +170,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 							<ul className="overflow-hidden relative top-[0px] m-[0px] p-[0px] left-[0px] h-[75px] flex">
 								{images.map((img, index) => (
 									<li
-										key={index}
+										key={img.id}
 										className="list-none mr-[10px] w-[99px] h-[74px] overflow-hidden p-[3px] ml-[5px] my-[0px] border border-solid border-[#e5e5e5] cursor-pointer"
 										onClick={() => setCurrent(index)}
 									>

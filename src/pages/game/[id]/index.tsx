@@ -28,7 +28,7 @@ function makeScrnshotURL(gameId: number, screenshotId: number): URL {
 export default function Game(): AnyElem {
 	const [details, setDetails] = useState<GameExt>(null);
 	const [images, setImages] = useState<
-		Array<{ src: URL | string; alt: string }>
+		Array<{ id: number, src: string; alt: string, user_name: string }>
 	>([]);
 
 	const router = useRouter();
@@ -84,8 +84,10 @@ export default function Game(): AnyElem {
 
 			const carouselProps =
 				game.screenshots.map((scrnShot) => ({
+					id: scrnShot.id,
 					src: makeScrnshotURL(scrnShot.gameId, scrnShot.id).toString(),
 					alt: "",
+					user_name: scrnShot.user_name
 				})) || [];
 			setDetails(gameProps);
 			setImages(carouselProps);
