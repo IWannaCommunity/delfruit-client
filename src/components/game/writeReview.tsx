@@ -30,6 +30,7 @@ export default function GameReviews(): JSX.Element {
 			{/* Hide Button */}
 			{showWrite && (
 				<button
+				type="button"
 					onClick={() => setShowWrite(false)}
 					className="text-sm text-gray-600 hover:text-black"
 				>
@@ -79,6 +80,7 @@ export default function GameReviews(): JSX.Element {
 						max={10}
 						step={0.1}
 						value={rating}
+						defaultValue={-0.1}
 						onChange={(e) => setRating(parseFloat(e.target.value))}
 						id="rating"
 						className="review-slider ui-slider-horizontal"
@@ -95,6 +97,7 @@ export default function GameReviews(): JSX.Element {
 						max={100}
 						step={1}
 						value={difficulty}
+						defaultValue={-1}
 						onChange={(e) => setDifficulty(parseInt(e.target.value))}
 						id="difficulty"
 						className="review-slider ui-slider-horizontal mb-10"
@@ -102,10 +105,10 @@ export default function GameReviews(): JSX.Element {
 					
 					{/* Comment box */}
 					<textarea
-						maxLength="50000"
+						maxLength={50000}
 						id="mycomment"
 						placeholder="Tell everyone what you thought of the game!"
-					></textarea>
+					/>
 					<br />
 					
 					{/* Tags */}
@@ -114,10 +117,10 @@ export default function GameReviews(): JSX.Element {
 					</span>
 					<br />
 					<input className="w-full" type="text" name="tags" id="tags" />
-					<span className="tags_alert"></span>
+					<span className="tags_alert"/>
 					<br />
 					<input type="button" id="update_button" value="Update My Review" />
-					<span className="ajax_alert !hidden"></span>
+					<span className="ajax_alert !hidden"/>
 				</div>
 			)}
 		</>
