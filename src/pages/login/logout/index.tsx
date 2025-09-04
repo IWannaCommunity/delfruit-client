@@ -33,22 +33,20 @@ export default function Logout(): AnyElem {
 	}, [session.active, router]);
 
 	return (
-		<>
+		<div>
 			<Head>
 				<title>Logout - Delicious Fruit</title>
 			</Head>
-			<body>
-				<div id="container">
-					<Header />
-					<div id="content">
-						{idempotency &&
-							(recentlySignedOut
-								? "You have been logged out."
-								: "You are not logged in.")}
-					</div>
-					<Footer />
+			<div id="container">
+				<Header />
+				<div id="content">
+					{idempotency &&
+						(recentlySignedOut
+							? "You have been logged out."
+							: "You are not logged in.")}
 				</div>
-			</body>
-		</>
+				<Footer />
+			</div>
+		</div>
 	);
 }
