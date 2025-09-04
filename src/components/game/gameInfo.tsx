@@ -72,8 +72,26 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 					[Download Not Available]
 				</span>
 			)}
-
 			<br />
+
+			{/* Speedrun Leaderboard */}
+			{game.urlSpdrn && (
+				<>
+					<Link className="standalone" href={game.urlSpdrn}>
+						<Image
+							src="/images/stopwatch.png"
+							className="absolute ml-[2px]"
+							width={14}
+							height={14}
+							alt="stopwatch"
+						/>
+						<span>&nbsp;&nbsp;&nbsp;&nbsp; Speedrun Leaderboards</span>
+					</Link>
+					<br />
+				</>
+			)}
+
+			{/* Upload Screenshot */}
 			<Link className="standalone" href={`/screenshot/upload/${Number(router.query.id)}`}>
 				<Image
 					src="/images/camera.png"
@@ -85,6 +103,8 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 				<span>&nbsp;&nbsp;&nbsp;&nbsp; Upload a Screenshot</span>
 			</Link>
 			<br />
+
+			{/* Report Game */}
 			<Link className="standalone" href="/">
 				Report Game or Suggest Edit
 			</Link>
