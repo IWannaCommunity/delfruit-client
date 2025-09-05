@@ -82,23 +82,21 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 					onMouseLeave={() => setPaused(false)}
 				>
 					{hasImages ? (
-						<Link href="/">
-							<div className="relative h-full w-full">
-								{images.map((img, index) => (
-									<Link key={img.id} href={`/screenshot/${img.id}`}>
-										<Image
-											src={img.src}
-											alt={img.alt || `Screenshot ${index + 1}`}
-											width={350}
-											height={250}
-											className={`absolute top-0 left-0 h-full max-w-[350px] 
-										object-contain transition-opacity duration-500 ease-in-out 
-										${current === index ? "opacity-100" : "opacity-0"}`}
-										/>
-									</Link>
-								))}
-							</div>
-						</Link>
+						<div className="relative h-full w-full">
+							{images.map((img, index) => (
+								<Link key={img.id} href={`/screenshot/${img.id}`}>
+									<Image
+										src={img.src}
+										alt={img.alt || `Screenshot ${index + 1}`}
+										width={350}
+										height={250}
+										className={`absolute top-0 left-0 h-full max-w-[350px] 
+									object-contain transition-opacity duration-500 ease-in-out 
+									${current === index ? "opacity-100" : "opacity-0"}`}
+									/>
+								</Link>
+							))}
+						</div>
 					) : (
 						<div className="text-center text-gray-500 p-6">
 							No Screenshots for this game... Why not add one?

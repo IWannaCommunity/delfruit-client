@@ -1,5 +1,12 @@
 import { AnyElem } from "@/utils/element";
 import Image from "next/image";
+import { useSessionContext } from "@/utils/hooks";
+import { useState } from "react";
+import { GamesApi } from "delfruit-swagger-cg-sdk";
+import Link from "next/link";
+
+const CFG: Config = require("@/config.json");
+const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
 
 export type GameProps = {
 	id: number,
@@ -11,38 +18,97 @@ type UploadScreenshotProps = {
 }
 
 export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyElem {
+	const [session, setSession] = useSessionContext();
+	const [loading, setLoading] = useState(false);
+	const [success, setSuccess] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [description, setDescription] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
 	if (!game) {
 		return <h4>Loading...</h4>;
 	}
 
+	async function handleSubmit(e: React.FormEvent) {
+			e.preventDefault();
+			setLoading(true);
+			setError(null);
+	
+			try {
+				if (!file) { throw new Error("Please select a file"); }
+
+				const token = session.token;
+	
+				await GAMES_API_CLIENT.postGameScreenshotForm(description, file, `Bearer ${token}`, game.id);
+
+				setSuccess(true);
+				setError(null);
+			} catch (err: any) {
+				setError("Failed to upload screenshot. Please try again.");
+			} finally {
+				setLoading(false);
+			}
+		}
+
 	return (
 		<>
 			<h1>Screenshot Upload</h1>
-			<h2>{game.name}</h2>
-			<form>
+			<h2>
+				<Link className="no-underline" href={`/game/${game.id}`}>
+					{game.name}
+				</Link>
+			</h2>
+			<form onSubmit={handleSubmit}>
 				<div>
-					<Image src="/images/noimage.png" alt="" width={200} height={150}/>
+					{file ? (
+						<img
+							src={URL.createObjectURL(file)}
+							alt="Screenshot Preview"
+							width={200}
+							height={150}
+							onLoad={(e) => { URL.revokeObjectURL((e.target as HTMLImageElement).src); }}
+						/>
+					) : (
+						<Image src="/images/noimage.png" alt="Placeholder" width={200} height={150}/>
+					)}
 				</div>
 				<hr/>
 				<div>
 					<span> Description: (100 character max)</span>
 					<br/>
-					<input className="w-full" type="text"/>
-					<span>0 / 100 characters</span>
+					<input 
+						className="w-full" 
+						type="text"
+						maxLength={100}
+						value={description}
+						onChange={(e) => setDescription(e.target.value)}
+					/>
+					<span>{description.length} / 100 characters</span>
 				</div>
 				<div>
 					<div>
 						<p>
 							Select an image to upload: (max filesize: 1MB, max image size: 1024x768, JPG/PNG only)
 						</p>
-						<input type="file"/>
+						<input 
+							type="file"
+							accept="image/png,image/jpeg"
+							onChange={(e) => {
+								if (e.target.files?.[0]) {
+									setFile(e.target.files[0]);
+									setSuccess(false);
+								}
+							}}
+						/>
 						<br/>
-						<input type="submit" value="Upload"/>
-						<input type="hidden" value="45712"/>
+						<input type="submit" value={loading ? "Uploading..." : "Upload"} />
+						{success && !error && (
+							<span className="text-green-600 ml-1">
+								Screenshot successfully uploaded!
+							</span>
+						)}
 						<br/>
 					</div>
-					<div className="hidden"/>
 					<p className="mb-0">
 						The best screenshots include the title screen & a couple of
 						representative screens from the game.
@@ -85,7 +151,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 					</p>
 				</div>
 			</form>
-			<h4 className="hidden">Loading...</h4>
+			{error && <span className="text-red-600"> {error}</span>}
 		</>
 	);
 }
