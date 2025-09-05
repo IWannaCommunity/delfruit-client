@@ -178,9 +178,9 @@ export default function GameReviews({ onReviewUpdated, existingReview }: WriteRe
 					<span className="tags_alert"/>
 					<br />
 					<input 
-						type="button" 
-						id="update_button" 
-						value={loading ? "Submitting..." : "Update My Review"}
+						type="button"
+						id="update_button"
+						value={existingReview ? "Update Review" : "Submit Review"}
 						disabled={loading}
 						onClick={handleSubmit}
 					/>
