@@ -3,11 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 
 type CarouselProps = {
-	images: { 
-		id: number, 
-		src: string, 
-		alt?: string,
-		user_name: string
+	images: {
+		id: number;
+		src: string;
+		alt?: string;
+		user_name: string;
 	}[];
 };
 
@@ -85,16 +85,17 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 						<Link href="/">
 							<div className="relative h-full w-full">
 								{images.map((img, index) => (
-									<Image
-										key={img.id}
-										src={img.src}
-										alt={img.alt || `Screenshot ${index + 1}`}
-										width={350}
-										height={250}
-										className={`absolute top-0 left-0 h-full max-w-[350px] 
+									<Link key={img.id} href={`/screenshot/${img.id}`}>
+										<Image
+											src={img.src}
+											alt={img.alt || `Screenshot ${index + 1}`}
+											width={350}
+											height={250}
+											className={`absolute top-0 left-0 h-full max-w-[350px] 
 										object-contain transition-opacity duration-500 ease-in-out 
 										${current === index ? "opacity-100" : "opacity-0"}`}
-									/>
+										/>
+									</Link>
 								))}
 							</div>
 						</Link>
@@ -195,4 +196,3 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 		</div>
 	);
 }
-

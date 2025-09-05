@@ -10,25 +10,16 @@ import { useRouter } from "next/router";
 import { formatDate } from "@/utils/formatDate";
 import Footer from "@/components/footer";
 import { AnyElem } from "@/utils/element";
+import { makeScrnshotURL } from "@/utils/url";
 
 const CFG: Config = require("@/config.json");
 
 const APICLIENT = new CompositeApi(undefined, CFG.apiURL.toString());
 
-function makeScrnshotURL(gameId: number, screenshotId: number): URL {
-	const screenshotIdAsUInt32: number = screenshotId >>> 0;
-
-	return new URL(
-		`${CFG.screenshotURLPrefix.toString()}/${gameId}_${screenshotIdAsUInt32
-			.toString(16)
-			.padStart(8, "0")}`,
-	);
-}
-
 export default function Game(): AnyElem {
 	const [details, setDetails] = useState<GameExt>(null);
 	const [images, setImages] = useState<
-		Array<{ id: number, src: string; alt: string, user_name: string }>
+		Array<{ id: number; src: string; alt: string; user_name: string }>
 	>([]);
 
 	const router = useRouter();
@@ -87,7 +78,7 @@ export default function Game(): AnyElem {
 					id: scrnShot.id,
 					src: makeScrnshotURL(scrnShot.gameId, scrnShot.id).toString(),
 					alt: "",
-					user_name: scrnShot.user_name
+					user_name: scrnShot.user_name,
 				})) || [];
 			setDetails(gameProps);
 			setImages(carouselProps);
