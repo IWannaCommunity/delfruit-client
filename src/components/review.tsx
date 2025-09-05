@@ -8,7 +8,7 @@ export default function Review(props: ReviewT): JSX.Element {
 	const [expanded, setExpanded] = useState(false);
 
 	const maxLength = 500;
-	const shouldTruncate = props.comment.length > maxLength;
+	const shouldTruncate = props.comment ? props.comment.length > maxLength : false;
 	const displayText = expanded || !shouldTruncate ? props.comment : props.comment.slice(0, maxLength) + "...";
 
 	return (
@@ -29,7 +29,7 @@ export default function Review(props: ReviewT): JSX.Element {
 			)}
 
 			{/* COMMENT */}
-			{props.comment !== "" && (
+			{(props.comment !== "" && props.comment !== null) && (
 				<div>
 					<div className="review-text !wrap-break-word">
 						<span>{displayText}</span>
