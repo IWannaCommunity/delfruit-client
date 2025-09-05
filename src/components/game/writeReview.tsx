@@ -23,7 +23,7 @@ export default function GameReviews({ onReviewUpdated, existingReview }: WriteRe
 	const [tags, setTags] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [session, setSession] = useSessionContext();
+	const [session] = useSessionContext();
 
 	const router = useRouter();
 	const gameId = Number(router.query.id);
