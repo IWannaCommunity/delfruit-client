@@ -1,14 +1,65 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {getRatingDescription, getDifficultyDescription} from "@/utils/ratingHelpers"
+import { getRatingDescription, getDifficultyDescription } from "@/utils/ratingHelpers"
+import { ReviewsApi, Review as ReviewT } from "delfruit-swagger-cg-sdk";
+import { useRouter } from "next/router";
+import { useSessionContext } from "@/utils/hooks";
 
-export default function GameReviews(): JSX.Element {
+const CFG: Config = require("@/config.json");
+const REVIEWS_API_CLIENT = new ReviewsApi(undefined, CFG.apiURL.toString());
+
+type WriteReviewProps = {
+  onReviewUpdated: () => void;
+	existingReview?: ReviewT | null;
+};
+
+export default function GameReviews({ onReviewUpdated, existingReview }: WriteReviewProps): JSX.Element {
 
 	const [showWrite, setShowWrite] = useState(false);
-	const [rating, setRating] = useState(-0.1);
-	const [difficulty, setDifficulty] = useState(-1);
-	
+	const [rating, setRating] = useState(existingReview?.rating ?? -0.1);
+	const [difficulty, setDifficulty] = useState(existingReview?.difficulty ?? -1);
+	const [comment, setComment] = useState(existingReview?.comment ?? "");
+	const [tags, setTags] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [session, setSession] = useSessionContext();
+
+	const router = useRouter();
+	const gameId = Number(router.query.id);
+
+	async function handleSubmit() {
+		setLoading(true);
+		setError(null);
+
+		try {
+			const body: ReviewT = {
+				rating: rating >= 0 ? rating : undefined,
+				difficulty: difficulty >= 0 ? difficulty : undefined,
+				comment
+			};
+
+			const token = session.token;
+
+			await REVIEWS_API_CLIENT.putGameReview(body, `Bearer ${token}`, gameId);
+			
+			onReviewUpdated();
+			setShowWrite(false);
+		} catch (err: any) {
+			setError("Failed to submit review. Please try again.");
+		} finally {
+			setLoading(false);
+		}
+	}
+
+	useEffect(() => {
+		if (existingReview) {
+			setRating(existingReview.rating ?? -0.1);
+			setDifficulty(existingReview.difficulty ?? -1);
+			setComment(existingReview.comment ?? "");
+		}
+	}, [existingReview]);
+
 	return(
 		<>
 			{/* Write Review Button */}
@@ -106,6 +157,8 @@ export default function GameReviews(): JSX.Element {
 						maxLength={50000}
 						id="mycomment"
 						placeholder="Tell everyone what you thought of the game!"
+						value={comment}
+						onChange={(e) => setComment(e.target.value)}
 					/>
 					<br />
 					
@@ -114,11 +167,24 @@ export default function GameReviews(): JSX.Element {
 						Tags (separate with spaces, 30 characters per tag, max of 10):
 					</span>
 					<br />
-					<input className="w-full" type="text" name="tags" id="tags" />
+					<input 
+						className="w-full"
+						type="text"
+						name="tags"
+						id="tags"
+						value={tags}
+						onChange={(e) => setTags(e.target.value)}
+					/>
 					<span className="tags_alert"/>
 					<br />
-					<input type="button" id="update_button" value="Update My Review" />
-					<span className="ajax_alert !hidden"/>
+					<input 
+						type="button" 
+						id="update_button" 
+						value={loading ? "Submitting..." : "Update My Review"}
+						disabled={loading}
+						onClick={handleSubmit}
+					/>
+					{error && <span className="text-red-600"> {error}</span>}
 				</div>
 			)}
 		</>

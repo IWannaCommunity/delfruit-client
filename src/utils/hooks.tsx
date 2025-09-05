@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 export interface Session {
 	active: boolean;
 	username: string;
+	user_id: number;
 	admin: boolean;
 	token: string;
 }
@@ -24,6 +25,7 @@ function useSession(): [
 	const [session, setSession] = useState<Session>({
 		active: false,
 		username: "Guest",
+		user_id: null,
 		admin: false,
 		token: "",
 	});
@@ -37,9 +39,10 @@ function useSession(): [
 		const sessionToken = jwt.decode(sessionCookie);
 		const username = sessionToken["username"];
 		const admin = sessionToken["admin"];
+		const userId = Number(sessionToken["sub"]); // If your IDE says this is deprecated, it is literally stupid (thanks vscode)
 
-		setSession({ active: true, username, admin, token: sessionCookie });
-
+		setSession({ active: true, username, user_id: userId, admin, token: sessionCookie });
+		
 		return;
 	}, []);
 	return [session, setSession];

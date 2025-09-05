@@ -26,8 +26,11 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const router = useRouter();
 	const id = Number(router.query.id);
 
+	const userId = session.user_id;
+	const userReview = reviews.find(r => r.user_id === userId) || null;
+
 	const fetchReviews = useCallback(
-		async (requestedPage: number): Promise<ReadonlyArray<ReviewT>> => {
+		async (requestedPage: number): Promise<ReviewT[]> => {
 			const res = await GAMES_API_CLIENT.getGameReviews(
 				id, // id
 				undefined,
@@ -37,7 +40,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 				5, // limit
 			);
 
-			const newData: ReadonlyArray<ReviewT> = (res.data ?? []).map((r: any) => ({
+			const newData: ReviewT[] = (res.data ?? []).map((r: any) => ({
 				id: Number(r.id),
 				user_id: Number(r.user_id),
 				game_id: null,
@@ -83,7 +86,18 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 		<div>
 			<h2 className="clear-both">{reviews.length} Reviews:</h2>
 
-			{session.active && (<WriteReview />)}
+			{session.active && (
+				<WriteReview
+					existingReview={userReview}
+					onReviewUpdated={async () => {
+						const fresh = await fetchReviews(0);
+						setReviews(fresh);
+						setPage(0);
+						setHasMore(true);
+						setInitialized(true);
+					}}
+				/>
+			)}
 
 			{/* Review List */}
 			<div id="reviews">
