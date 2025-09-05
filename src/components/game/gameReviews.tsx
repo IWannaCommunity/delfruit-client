@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { dedupeArray } from "@/utils/dedupeArray";
 import type { AnyElem } from "@/utils/element";
+import { useSessionContext } from "@/utils/hooks";
 
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
@@ -16,10 +17,12 @@ type GameReviewsProp = {
 };
 
 export default function GameReviews(props: GameReviewsProp): AnyElem {
+	const [session, setSession] = useSessionContext();
 	const [reviews, setReviews] = useState<ReviewT[]>(props.reviews);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 	const [initialized, setInitialized] = useState(props.reviews.length > 0);
+
 	const router = useRouter();
 	const id = Number(router.query.id);
 
@@ -80,7 +83,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 		<div>
 			<h2 className="clear-both">{reviews.length} Reviews:</h2>
 
-			<WriteReview />
+			{session.active && (<WriteReview />)}
 
 			{/* Review List */}
 			<div id="reviews">

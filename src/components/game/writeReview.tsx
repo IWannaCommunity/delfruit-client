@@ -79,7 +79,6 @@ export default function GameReviews(): JSX.Element {
 						min={-0.1}
 						max={10}
 						step={0.1}
-						value={rating}
 						defaultValue={-0.1}
 						onChange={(e) => setRating(parseFloat(e.target.value))}
 						id="rating"
@@ -96,7 +95,6 @@ export default function GameReviews(): JSX.Element {
 						min={-1}
 						max={100}
 						step={1}
-						value={difficulty}
 						defaultValue={-1}
 						onChange={(e) => setDifficulty(parseInt(e.target.value))}
 						id="difficulty"

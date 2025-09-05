@@ -3,6 +3,7 @@ import { GameExt } from "delfruit-swagger-cg-sdk";
 import Tag from "@/components/game/tag";
 import React from "react";
 import Link from "next/link";
+import { useSessionContext } from "@/utils/hooks";
 import { useRouter } from "next/router";
 import AverageBox, { getColor } from "@/components/game/averageBox";
 import {
@@ -15,6 +16,7 @@ type GameInfoProps = {
 };
 
 export default function GameInfo({ game }: GameInfoProps): JSX.Element {
+	const [session, setSession] = useSessionContext();
 
 	const router = useRouter();
 
@@ -92,45 +94,51 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 			)}
 
 			{/* Upload Screenshot */}
-			<Link className="standalone" href={`/screenshot/upload/${Number(router.query.id)}`}>
-				<Image
-					src="/images/camera.png"
-					className="absolute ml-[2px]"
-					width={14}
-					height={14}
-					alt="Upload Screenshot"
-				/>
-				<span>&nbsp;&nbsp;&nbsp;&nbsp; Upload a Screenshot</span>
-			</Link>
-			<br />
+			{session.active && (
+				<>
+					<Link className="standalone" href={`/screenshot/upload/${Number(router.query.id)}`}>
+						<Image
+							src="/images/camera.png"
+							className="absolute ml-[2px]"
+							width={14}
+							height={14}
+							alt="Upload Screenshot"
+						/>
+						<span>&nbsp;&nbsp;&nbsp;&nbsp; Upload a Screenshot</span>
+					</Link>
+					<br />
 
-			{/* Report Game */}
-			<Link className="standalone" href="/">
-				Report Game or Suggest Edit
-			</Link>
-			<br />
+					{/* Report Game */}
+					<Link className="standalone" href="/">
+						Report Game or Suggest Edit
+					</Link>
+					<br />
 
-			{/* Checkboxes */}
-			<input type="checkbox" id="chk_favourite" />
-			<span> Favourite </span>
-			<span className="favourite_alert hidden" />
-			<br />
+					{/* Checkboxes */}
+					<input type="checkbox" id="chk_favourite" />
+					<span> Favourite </span>
+					<span className="favourite_alert hidden" />
+					<br />
 
-			<input type="checkbox" id="chk_clear" />
-			<span> Cleared </span>
-			<span className="clear_alert hidden" />
-			<br />
+					<input type="checkbox" id="chk_clear" />
+					<span> Cleared </span>
+					<span className="clear_alert hidden" />
+					<br />
 
-			<input type="checkbox" id="chk_bookmark" />
-			<span> Bookmark </span>
-			<span className="bookmark_alert hidden" />
-			<br />
-
-			<p>0 people favourited this game!</p>
-			<p>Date Submitted: {game.dateCreated}</p>
+					<input type="checkbox" id="chk_bookmark" />
+					<span> Bookmark </span>
+					<span className="bookmark_alert hidden" />
+					<br />
+				</>
+			)}
+			<br/>
+			<span className="leading-[1.5] mt-5">0 people favourited this game!</span>
+			<br/>
+			<span className="leading-[1.5]">Date Submitted: {game.dateCreated}</span>
+			<br/>
 
 			{/* Tags */}
-			<div>
+			<div className="mt-5">
 				<h2>Tags:</h2>
 				{game.tags.map((tag) => (
 					<Tag 
