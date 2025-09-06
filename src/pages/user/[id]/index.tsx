@@ -12,6 +12,7 @@ import UserReviews from "@/components/user/userReviews";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
+import { useSessionContext } from "@/utils/hooks";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());
@@ -27,6 +28,7 @@ export type UserTabValue =
 export default function User(): AnyElem {
 	const [activeTab, setActiveTab] = useState<UserTabValue>("profile");
 	const [user, setUser] = useState<UserExt>();
+	const [session] = useSessionContext();
 
 	const router = useRouter();
 	
@@ -79,12 +81,16 @@ export default function User(): AnyElem {
 				<Header />
 				<div id="content">
 					<h2>{user ? `${user.name}'s Profile` : "Loading Profile..."}</h2>
-					<Link href="/">Send a PM</Link>
-					<br/>
-					<input type="checkbox" id="a_follow"/>
-					<span> Follow this user! </span>
-					<span className="follow_alert display-none"/>
-					<br/>
+					{session.active && (
+						<>
+							<Link href="/">Send a PM</Link>
+							<br/>
+							<input type="checkbox" id="a_follow"/>
+							<span> Follow this user! </span>
+							<span className="follow_alert display-none"/>
+							<br/>
+						</>
+					)}
 					
 					<div className="border border-solid border-gray-400 rounded-md bg-white text-[1.1em] font-verdana">
 						<div className="border border-gray-400 rounded-md p-[0.25em]">
