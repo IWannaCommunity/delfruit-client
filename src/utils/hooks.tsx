@@ -41,7 +41,13 @@ function useSession(): [
 		const admin = sessionToken["admin"];
 		const userId = Number(sessionToken["sub"]); // If your IDE says this is deprecated, it is literally stupid (thanks vscode)
 
-		setSession({ active: true, username, user_id: userId, admin, token: sessionCookie });
+		setSession({
+			active: true,
+			username,
+			user_id: userId,
+			admin,
+			token: sessionCookie,
+		});
 
 		return;
 	}, []);
@@ -151,4 +157,27 @@ export function useEffectAsync(
 		() => ({ result, error, isLoading }),
 		[result, error, isLoading],
 	);
+}
+
+/**
+ * Hook that only runs when the component mounts.
+ * @description This hook only runs with the component mounts. The implementation it
+ * self is very simple as it's just a wrapper around useEffect. The entirety of this
+ * is mostly a visual and contextual hint that the callback inside should only ever
+ * be ran "once", and ran at mount. By ensuring a dependency list cannot be passed
+ * it ensure that it will only ever run once. However, this also requires that
+ * the effect contained inside does not require any outside depedencies, and that
+ * the function it's self is mostly pure. Just because this only runs "once", does
+ * not mean it only ever runs "once". If your component has other useEffect hooks,
+ * then this hook will re-run, and if it has dependencies, then they WILL be stale.
+ * @param {React.EffectCallback} effect - The callback to be ran on mount.
+ * @returns {void}
+ */
+export function useMount(effect: React.EffectCallback): void {
+	// QUEST: unsure why passing in a callback from a function parameter
+	// to be used would count as a dependency, as I assume that would be
+	// cyclic, but perhaps I'm wrong?
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	return useEffect(effect, []);
 }

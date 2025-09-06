@@ -1,1 +1,0 @@
-Changelog is now embedded into the application. (Starz0r)

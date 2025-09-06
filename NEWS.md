@@ -1,3 +1,20 @@
+Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.5 (2025-09-05)
+====================================================================
+
+### ➕ Added
+
+- Changelog is now embedded into the application. (Starz0r)
+- Reviews can now be published or edited. (TTBB)
+- Screenshot pages has been implemented, and the functionality has been added. (Starz0r)
+- Uploading screenshot page has been implemented, and the functionality has been added. (TTBB)
+
+### 🔄 Changed
+
+- Clicking on Tags now brings you to a search query with them. (TTBB)
+- Search page handling has been improved and multiple different ways. (TTBB)
+- User Profiles now show some of the their details from the database. (TTBB)
+
+
 Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.4 (2025-08-30)
 ====================================================================
 
