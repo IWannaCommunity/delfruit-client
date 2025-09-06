@@ -71,6 +71,46 @@ export default function User(): AnyElem {
 			setUser(newData);
 		})();
 	}, [router, router.isReady, router.query.id]);
+
+	const followUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (!user || !session.active || !session.token) return;
+		
+		try {
+			if (e.target.checked) {
+				// FOLLOW user
+				await USERS_API_CLIENT.putUserFollow(
+					`Bearer ${session.token}`,
+					session.user_id,
+					user.id,
+				);
+
+				const alertEl = document.querySelector(".follow_alert");
+				if (alertEl) {
+					alertEl.textContent = "You are now following this user!";
+					alertEl.classList.remove("display-none");
+				}
+			} else {
+				// UNFOLLOW user
+				await USERS_API_CLIENT.deleteUserFollow(
+					`Bearer ${session.token}`,
+					session.user_id,
+					user.id,
+				);
+
+				const alertEl = document.querySelector(".follow_alert");
+				if (alertEl) {
+					alertEl.textContent = "You unfollowed this user.";
+					alertEl.classList.remove("display-none");
+				}
+			}
+		} catch (error) {
+			const alertEl = document.querySelector(".follow_alert");
+			if (alertEl) {
+				alertEl.textContent = "Operation failed. Please try again.";
+				alertEl.classList.remove("display-none");
+			}
+		}
+	}
 	
 	return (
 		<div>
@@ -85,7 +125,7 @@ export default function User(): AnyElem {
 						<>
 							<Link href="/">Send a PM</Link>
 							<br/>
-							<input type="checkbox" id="a_follow"/>
+							<input type="checkbox" id="a_follow" onChange={followUser}/>
 							<span> Follow this user! </span>
 							<span className="follow_alert display-none"/>
 							<br/>
@@ -115,4 +155,3 @@ export default function User(): AnyElem {
 		</div>
 	);
 }
-
