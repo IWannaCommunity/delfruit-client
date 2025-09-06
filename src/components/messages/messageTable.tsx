@@ -91,7 +91,7 @@ export default function MessageTable(): JSX.Element {
 												<td>{userNames[msg.user_to_id ?? -1] ?? "Loading..."}</td>
 											)}
 											<td>
-												<Link href="/" className="text-blue-600 hover:underline">
+												<Link href={`/messages/${msg.thread_id}`} className="text-blue-600 hover:underline">
 													{msg.subject}
 												</Link>
 											</td>
