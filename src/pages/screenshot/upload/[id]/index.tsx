@@ -13,33 +13,64 @@ const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
 
 export default function ScreenshotUploadPage(): AnyElem {
 	const [game, setGame] = useState<GameProps>();
-	const [error, setError] = useState<string | null>(null);
+	const [error, setError] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [session] = useSessionContext();
 
 	const router = useRouter();
 
 	useEffect(() => {
 		if (!router.isReady) return;
-		setError(null);
 
 		const id = Number(router.query.id);
 		
 		// Anti-trolling measures
 		if (isNaN(id) || id < 0) {
-			setError("Invalid page.")
+			setError(true);
+			setLoading(false);
 			return;
 		}
 
 		(async () => {
-			const resp = await GAMES_API_CLIENT.getGame(id);
-			const user = resp.data;
-			const newData: GameProps = {
-				id: user.id,
-				name: user.name
-			};
-			setGame(newData);
+			try {
+				const resp = await GAMES_API_CLIENT.getGame(id);
+				const game = resp.data;
+
+				if (!game || !game.id) {
+					setError(true);
+					return;
+				}
+
+				const newData: GameProps = {
+					id: game.id,
+					name: game.name
+				};
+				setGame(newData);
+				setError(false);
+			} catch (err: any) {
+					if (err.response?.status === 404) {
+						setError(true);
+					}
+			} finally {
+				setLoading(false);
+			}
 		})();
 	}, [router]);
+
+	const renderContent = () => {
+		if (loading) return <span>Loading...</span>;
+		if (error) return <span className="text-red-600">Invalid Page</span>;
+		
+		return (
+			<>
+				{session.active ? (
+					<UploadScreenshot game={game}/>
+				) : (
+					<span>You must login to view this page.</span>
+				)}
+			</>
+		);
+	};
 
 	return (
 		<div>
@@ -49,13 +80,7 @@ export default function ScreenshotUploadPage(): AnyElem {
 			<div id="container">
 				<Header />
 				<div id="content">
-					{error && <span className="text-red-600 ml-1">{error}</span>}
-					{!session.active && !error && (
-						<span>You must login to view this page.</span>
-					)}
-					{session.active && !error && (
-						<UploadScreenshot game={game}/>
-					)}
+					{renderContent()}
 				</div>
 				<Footer />
 			</div>
