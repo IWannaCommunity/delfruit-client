@@ -84,7 +84,9 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 	return (
 		<div>
-			<h2 className="clear-both">{reviews.length} Reviews:</h2>
+			<h2 className="clear-both">
+				{reviews.length} {reviews.length === 1 ? "Review" : "Reviews"}:
+			</h2>
 
 			{session.active && (
 				<WriteReview
