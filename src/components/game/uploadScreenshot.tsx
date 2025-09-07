@@ -18,7 +18,7 @@ type UploadScreenshotProps = {
 }
 
 export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyElem {
-	const [session, setSession] = useSessionContext();
+	const [session] = useSessionContext();
 	const [loading, setLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -30,25 +30,61 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 	}
 
 	async function handleSubmit(e: React.FormEvent) {
-			e.preventDefault();
-			setLoading(true);
+		e.preventDefault();
+		setLoading(true);
+		setError(null);
+
+		try {
+			if (!file) { throw new Error("Please select a file"); }
+
+			const token = session.token;
+
+			await GAMES_API_CLIENT.postGameScreenshotForm(description, file, `Bearer ${token}`, game.id);
+
+			setSuccess(true);
 			setError(null);
-	
-			try {
-				if (!file) { throw new Error("Please select a file"); }
-
-				const token = session.token;
-	
-				await GAMES_API_CLIENT.postGameScreenshotForm(description, file, `Bearer ${token}`, game.id);
-
-				setSuccess(true);
-				setError(null);
-			} catch (err: any) {
-				setError("Failed to upload screenshot. Please try again.");
-			} finally {
-				setLoading(false);
-			}
+		} catch (err: any) {
+			setError("Failed to upload screenshot. Please try again.");
+		} finally {
+			setLoading(false);
 		}
+	}
+
+	function validateImageFile(
+		file: File,
+		onValid: (file: File) => void,
+		onError: (msg: string) => void
+	) {
+		const MAX_SIZE = 1048576; // 1024x1024 = 1 MB
+		const MAX_WIDTH = 1024;
+		const MAX_HEIGHT = 768;
+
+		// Check file size
+		if (file.size > MAX_SIZE) {
+			onError("File too large! Max file size is 1MB.");
+			return;
+		}
+
+		// Check dimensions
+		const img = new window.Image();
+		img.onload = () => {
+			if (img.width > MAX_WIDTH || img.height > MAX_HEIGHT) {
+				onError(`Image too large! Max dimensions are ${MAX_WIDTH}x${MAX_HEIGHT}`);
+			} else {
+				onValid(file);
+			}
+
+			// Free object URL once used
+			URL.revokeObjectURL(img.src);
+		};
+
+		img.onerror = () => {
+			onError("Invalid image file. Please try again.");
+			URL.revokeObjectURL(img.src);
+		};
+
+		img.src = URL.createObjectURL(file);
+	}
 
 	return (
 		<>
@@ -69,7 +105,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 							onLoad={(e) => { URL.revokeObjectURL((e.target as HTMLImageElement).src); }}
 						/>
 					) : (
-						<Image src="/images/noimage.png" alt="Placeholder" width={200} height={150}/>
+						<Image src="/images/noimage.png" alt="Placeholder" priority width={200} height={150}/>
 					)}
 				</div>
 				<hr/>
@@ -95,8 +131,20 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 							accept="image/png,image/jpeg"
 							onChange={(e) => {
 								if (e.target.files?.[0]) {
-									setFile(e.target.files[0]);
-									setSuccess(false);
+									const selectedFile = e.target.files[0];
+
+									validateImageFile(
+										selectedFile,
+										(validFile) => {
+											setFile(validFile);
+											setSuccess(false);
+											setError(null);
+										},
+										(errMsg) => {
+											setFile(null);
+											setError(errMsg);
+										}
+									);
 								}
 							}}
 						/>
@@ -145,7 +193,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 							Daniel Bruce
 						</a>
 						<span> from </span>
-						<a href="www.flaticon.com">
+						<a href="https://www.flaticon.com">
 							www.flaticon.com
 						</a>
 					</p>
