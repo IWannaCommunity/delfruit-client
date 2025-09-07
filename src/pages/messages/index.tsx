@@ -21,7 +21,7 @@ export default function MessagePage(): AnyElem {
 					{session.active ? (
 						<>
 							<h2>My Private Messages</h2>
-							<Link className="standalone" href="/compose">Send a message...</Link>
+							<Link className="standalone" href="/messages/compose">Send a message...</Link>
 							<MessageTable/>
 						</>
 					) : (

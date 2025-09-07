@@ -121,9 +121,9 @@ export default function User(): AnyElem {
 				<Header />
 				<div id="content">
 					<h2>{user ? `${user.name}'s Profile` : "Loading Profile..."}</h2>
-					{session.active && (
+					{session.active && user && (
 						<>
-							<Link href="/">Send a PM</Link>
+							<Link href={`/messages/compose?to=${user.id}`}>Send a PM</Link>
 							<br/>
 							<input type="checkbox" id="a_follow" onChange={followUser}/>
 							<span> Follow this user! </span>

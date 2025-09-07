@@ -2,6 +2,7 @@ import { AnyElem } from "@/utils/element";
 import { useState, useEffect } from "react";
 import { useSessionContext } from "@/utils/hooks";
 import { MessagesApi, UsersApi, Message as MessageT, UserExt as UserT } from "delfruit-swagger-cg-sdk";
+import { useRouter } from "next/router";
 
 const CFG: Config = require("@/config.json");
 const MESSAGES_API_CLIENT = new MessagesApi(undefined, CFG.apiURL.toString());
@@ -20,6 +21,9 @@ export default function ComposePage(): AnyElem {
 		subject: "",
 		message: "",
 	});
+	const [lastRecipient, setLastRecipient] = useState<string | null>(null);
+
+	const router = useRouter();
 
 	const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const { name, value } = e.target;
@@ -30,6 +34,24 @@ export default function ComposePage(): AnyElem {
 			setDropdownVisible(true);
 		}
 	}
+
+	useEffect(() => {
+		if (!router.isReady) return;
+
+		const userIdParam = router.query.to;
+		if (userIdParam) {
+			(async () => {
+				try {
+					const res = await USERS_API_CLIENT.getUser(Number(userIdParam));
+					const user = res.data;
+					setSelectedUser(user);
+					setFormData((prev) => ({ ...prev, to: user.name }));
+				} catch (err) {
+					setError("User not found.");
+				}
+			})();
+		}
+	}, [router.isReady, router.query.to, session.token]);
 
 	useEffect(() => {
     if (!dropdownVisible || !formData.to || formData.to.length < 2) {
@@ -102,7 +124,9 @@ export default function ComposePage(): AnyElem {
 
 		try {
 			await MESSAGES_API_CLIENT.postMessage(message, `Bearer ${session.token}`);
+			setLastRecipient(selectedUser?.name ?? null);
 			setFormData({ to: "", subject: "", message: "" });
+			setSelectedUser(null);
 			setSuccess(true);
 			setError(null);
 		} catch (error) {
@@ -167,7 +191,7 @@ export default function ComposePage(): AnyElem {
 				<div>
 					<button type="submit">Send</button>
 					{error && !success && <span className="text-red-600 ml-1">{error}</span>}
-					{success && !error && <span className="text-green-600 ml-1">Message sent!</span>}
+					{success && !error && <span className="text-green-600 ml-1">Message sent to {lastRecipient}!</span>}
 				</div>
 			</form>
 		</>
