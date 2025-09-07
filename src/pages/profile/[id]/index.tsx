@@ -5,7 +5,7 @@ import { AnyElem } from "@/utils/element";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import TabBar from "@/components/helpers/tabBar";
-import Profile from "@/components/user/profile";
+import UserProfile from "@/components/user/userProfile";
 import ProfileActions from "@/components/user/profileActions";
 import Ratings from "@/components/user/ratings";
 import UserReviews from "@/components/user/userReviews";
@@ -17,7 +17,7 @@ import { useSessionContext } from "@/utils/hooks";
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());
 
-export type UserTabValue =
+export type ProfileTabValue =
   | "profile"
   | "ratings"
   | "reviews"
@@ -25,8 +25,8 @@ export type UserTabValue =
   | "favorites"
   | "clearList";
 
-export default function User(): AnyElem {
-	const [activeTab, setActiveTab] = useState<UserTabValue>("profile");
+export default function Profile(): AnyElem {
+	const [activeTab, setActiveTab] = useState<ProfileTabValue>("profile");
 	const [user, setUser] = useState<UserExt>();
 	const [error, setError] = useState(false);
 	const [loading, setLoading] = useState(true);
@@ -95,10 +95,10 @@ export default function User(): AnyElem {
 					<div className="border border-gray-400 rounded-md p-[0.25em]">
 				
 						{/* Tabs */}
-						<TabBar<UserTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+						<TabBar<ProfileTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 					
 						{/* Profile */}
-						{activeTab === "profile" && user && <Profile user={user}/>}
+						{activeTab === "profile" && user && <UserProfile user={user}/>}
 						
 						{/* Ratings */}
 						{/* activeTab === "ratings" && user && <Ratings/> */}

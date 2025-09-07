@@ -6,7 +6,7 @@ type UserInfoProps = {
 	user: UserExt;
 };
 
-export default function Profile({ user }: UserInfoProps): JSX.Element {
+export default function UserProfile({ user }: UserInfoProps): JSX.Element {
 
 	return(
 		<div className="px-[1.5em] text-black">
