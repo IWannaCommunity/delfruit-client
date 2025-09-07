@@ -35,7 +35,10 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 		setError(null);
 
 		try {
-			if (!file) { throw new Error("Please select a file"); }
+			if (!file) { 
+				setError("Please select a file.");
+				return;
+			}
 
 			const token = session.token;
 
@@ -43,6 +46,8 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 
 			setSuccess(true);
 			setError(null);
+			setFile(null);
+			setDescription("");
 		} catch (err: any) {
 			setError("Failed to upload screenshot. Please try again.");
 		} finally {
@@ -124,7 +129,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 				<div>
 					<div>
 						<p>
-							Select an image to upload: (max filesize: 1MB, max image size: 1024x768, JPG/PNG only)
+							Select an image to upload: (max file size: 1MB, max image size: 1024x768, JPG/PNG only)
 						</p>
 						<input 
 							type="file"
