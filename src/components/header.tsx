@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 
 export default function Header(): AnyElem {
-	const [session, setSession] = useSessionContext();
+	const [session] = useSessionContext();
 	const router = useRouter();
 	const [search, setSearch] = useState("");
 
@@ -70,7 +70,7 @@ export default function Header(): AnyElem {
 							<Link className="mr-1" href="/messages">
 								Messages
 							</Link>
-							<Link className="mr-1" href="/">Profile</Link>
+							<Link className="mr-1" href={`/user/${session.user_id}`}>Profile</Link>
 							<Link href="/login/logout">Logout</Link>
 						</>
 					)}

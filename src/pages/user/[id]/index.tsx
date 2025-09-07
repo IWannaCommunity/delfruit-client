@@ -2,11 +2,11 @@ import Head from "next/head";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { AnyElem } from "@/utils/element";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import TabBar from "@/components/helpers/tabBar";
 import Profile from "@/components/user/profile";
+import ProfileActions from "@/components/user/profileActions";
 import Ratings from "@/components/user/ratings";
 import UserReviews from "@/components/user/userReviews";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
@@ -28,6 +28,8 @@ export type UserTabValue =
 export default function User(): AnyElem {
 	const [activeTab, setActiveTab] = useState<UserTabValue>("profile");
 	const [user, setUser] = useState<UserExt>();
+	const [error, setError] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [session] = useSessionContext();
 
 	const router = useRouter();
@@ -48,70 +50,67 @@ export default function User(): AnyElem {
 		
 		// Anti-trolling measures
 		if (isNaN(id) || id < 0) {
-			router.replace({ pathname: "/user/[id]", query: { id: 0 } });
+			setError(true);
+			setLoading(false);
 			return;
 		}
 
 		(async () => {
-			const resp = await USERS_API_CLIENT.getUserCompositeAll(id);
-			const user = resp.data;
-			const newData: UserExt = {
-				id: user.id,
-				name: user.name,
-				dateCreated: user.dateCreated ? formatDate(new Date(user.dateCreated)) : null,
-				twitchLink: user.twitchLink,
-				youtubeLink: user.youtubeLink,
-				twitterLink: user.twitterLink,
-				bio: user.bio,
-				token: user.token,
-				reviewCount: user.reviewCount,
-				ratingsCount: user.ratingsCount,
-				screenshotCount: user.screenshotCount
-			};
-			setUser(newData);
+			try {
+				const resp = await USERS_API_CLIENT.getUserCompositeAll(id);
+				const user = resp.data;
+				const newData: UserExt = {
+					id: user.id,
+					name: user.name,
+					dateCreated: user.dateCreated ? formatDate(new Date(user.dateCreated)) : null,
+					twitchLink: user.twitchLink,
+					youtubeLink: user.youtubeLink,
+					twitterLink: user.twitterLink,
+					bio: user.bio,
+					token: user.token,
+					reviewCount: user.reviewCount,
+					ratingsCount: user.ratingsCount,
+					screenshotCount: user.screenshotCount
+				};
+				setUser(newData);
+			} catch (err: any) {
+        if (err.response?.status === 404) {
+          setError(true);
+        } 
+			} finally {
+        setLoading(false);
+      }
 		})();
 	}, [router, router.isReady, router.query.id]);
 
-	const followUser = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!user || !session.active || !session.token) return;
+	const renderContent = () => {
+		if (loading) return <span>Loading...</span>;
+		if (error) return <span className="text-red-600">Invalid Page</span>;
 		
-		try {
-			if (e.target.checked) {
-				// FOLLOW user
-				await USERS_API_CLIENT.putUserFollow(
-					`Bearer ${session.token}`,
-					session.user_id,
-					user.id,
-				);
-
-				const alertEl = document.querySelector(".follow_alert");
-				if (alertEl) {
-					alertEl.textContent = "You are now following this user!";
-					alertEl.classList.remove("display-none");
-				}
-			} else {
-				// UNFOLLOW user
-				await USERS_API_CLIENT.deleteUserFollow(
-					`Bearer ${session.token}`,
-					session.user_id,
-					user.id,
-				);
-
-				const alertEl = document.querySelector(".follow_alert");
-				if (alertEl) {
-					alertEl.textContent = "You unfollowed this user.";
-					alertEl.classList.remove("display-none");
-				}
-			}
-		} catch (error) {
-			const alertEl = document.querySelector(".follow_alert");
-			if (alertEl) {
-				alertEl.textContent = "Operation failed. Please try again.";
-				alertEl.classList.remove("display-none");
-			}
-		}
+		return (
+			<>
+				<h2>{`${user.name}'s Profile`}</h2>
+				<ProfileActions user={user} />
+				<div className="border border-solid border-gray-400 rounded-md bg-white text-[1.1em] font-verdana">
+					<div className="border border-gray-400 rounded-md p-[0.25em]">
+				
+						{/* Tabs */}
+						<TabBar<UserTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+					
+						{/* Profile */}
+						{activeTab === "profile" && user && <Profile user={user}/>}
+						
+						{/* Ratings */}
+						{/* activeTab === "ratings" && user && <Ratings/> */}
+						
+						{/* Reviews */}
+						{activeTab === "reviews" && user && <UserReviews/>}
+					</div>
+				</div>
+			</>
+		)
 	}
-	
+
 	return (
 		<div>
 			<Head>
@@ -120,35 +119,7 @@ export default function User(): AnyElem {
 			<div id="container">
 				<Header />
 				<div id="content">
-					<h2>{user ? `${user.name}'s Profile` : "Loading Profile..."}</h2>
-					{session.active && user && (
-						<>
-							<Link href={`/messages/compose?to=${user.id}`}>Send a PM</Link>
-							<br/>
-							<input type="checkbox" id="a_follow" onChange={followUser}/>
-							<span> Follow this user! </span>
-							<span className="follow_alert display-none"/>
-							<br/>
-						</>
-					)}
-					
-					<div className="border border-solid border-gray-400 rounded-md bg-white text-[1.1em] font-verdana">
-						<div className="border border-gray-400 rounded-md p-[0.25em]">
-						
-							{/* Tabs */}
-							<TabBar<UserTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-							
-							{/* Profile */}
-							{activeTab === "profile" && user && <Profile user={user}/>}
-							
-							{/* Ratings */}
-							{/* activeTab === "ratings" && user && <Ratings/> */}
-							
-							{/* Reviews */}
-							{activeTab === "reviews" && user && <UserReviews/>}
-							
-						</div>
-					</div>
+					{renderContent()}
 				</div>
 				<Footer />
 			</div>
