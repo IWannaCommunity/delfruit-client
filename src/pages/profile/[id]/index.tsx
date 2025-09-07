@@ -12,7 +12,6 @@ import UserReviews from "@/components/user/userReviews";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
-import { useSessionContext } from "@/utils/hooks";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());
@@ -30,7 +29,6 @@ export default function Profile(): AnyElem {
 	const [user, setUser] = useState<UserExt>();
 	const [error, setError] = useState(false);
 	const [loading, setLoading] = useState(true);
-	const [session] = useSessionContext();
 
 	const router = useRouter();
 	

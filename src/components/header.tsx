@@ -70,7 +70,7 @@ export default function Header(): AnyElem {
 							<Link className="mr-1" href="/messages">
 								Messages
 							</Link>
-							<Link className="mr-1" href={`/profile/${session.user_id}`}>Profile</Link>
+							<Link className="mr-1" href="/profile">Profile</Link>
 							<Link href="/login/logout">Logout</Link>
 						</>
 					)}
