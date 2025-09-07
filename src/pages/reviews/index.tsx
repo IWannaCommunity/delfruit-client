@@ -3,7 +3,7 @@ import Head from "next/head";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 
-export default function User(): AnyElem {
+export default function Reviews(): AnyElem {
 	return (
 		<div>
 			<Head>

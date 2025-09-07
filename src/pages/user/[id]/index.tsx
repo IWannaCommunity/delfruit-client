@@ -49,7 +49,7 @@ export default function User(): AnyElem {
 		const id = Number(router.query.id);
 		
 		// Anti-trolling measures
-		if (isNaN(id) || id < 0) {
+		if (isNaN(id) || id < 0 || !id) {
 			setError(true);
 			setLoading(false);
 			return;
