@@ -7,6 +7,7 @@ import { AnyElem } from "@/utils/element";
 import { useRouter } from "next/router";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());

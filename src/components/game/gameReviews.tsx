@@ -8,6 +8,7 @@ import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { dedupeArray } from "@/utils/dedupeArray";
 import type { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());

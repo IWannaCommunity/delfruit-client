@@ -3,6 +3,7 @@ import { useState } from "react";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());

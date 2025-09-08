@@ -12,6 +12,7 @@ import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 import { useSessionContext } from "@/utils/hooks";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());

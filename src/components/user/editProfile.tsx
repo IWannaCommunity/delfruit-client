@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useSessionContext } from "@/utils/hooks";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { useState, useEffect } from "react";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());

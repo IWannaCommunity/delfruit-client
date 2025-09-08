@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSessionContext } from "@/utils/hooks";
 import { MessagesApi, UsersApi, Message as MessageT, UserExt as UserT } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const MESSAGES_API_CLIENT = new MessagesApi(undefined, CFG.apiURL.toString());

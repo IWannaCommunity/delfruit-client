@@ -4,6 +4,7 @@ import { ReviewsApi } from "delfruit-swagger-cg-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
 import { AnyElem } from "@/utils/element";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const REVIEWS_API_CLIENT = new ReviewsApi(undefined, CFG.apiURL.toString());

@@ -5,6 +5,7 @@ import { MessagesApi, Message as MessageT } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
 import { formatDate } from "@/utils/formatDate";
 import { useUserNames } from "@/utils/userNameCache";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const MESSAGES_API_CLIENT = new MessagesApi(undefined, CFG.apiURL.toString());

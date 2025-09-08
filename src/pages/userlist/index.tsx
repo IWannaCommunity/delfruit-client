@@ -10,6 +10,7 @@ import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 import { AnyElem } from "@/utils/element";
 import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT: UsersApi = new UsersApi(undefined, CFG.apiURL.toString());

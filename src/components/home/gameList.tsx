@@ -3,6 +3,7 @@ import { GamesApi } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());

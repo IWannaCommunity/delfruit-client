@@ -4,6 +4,7 @@ import { UsersApi, UserExt } from "delfruit-swagger-cg-sdk";
 import { useEffect, useState, useCallback } from "react";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { dedupeArray } from "@/utils/dedupeArray";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT: UsersApi = new UsersApi(undefined, CFG.apiURL.toString());

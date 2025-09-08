@@ -5,6 +5,7 @@ import { getRatingDescription, getDifficultyDescription } from "@/utils/ratingHe
 import { ReviewsApi, Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
 import { useSessionContext } from "@/utils/hooks";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const REVIEWS_API_CLIENT = new ReviewsApi(undefined, CFG.apiURL.toString());

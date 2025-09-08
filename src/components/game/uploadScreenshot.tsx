@@ -4,6 +4,7 @@ import { useSessionContext } from "@/utils/hooks";
 import { useState } from "react";
 import { GamesApi } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
+import { Config } from "@/utils/config";
 
 const CFG: Config = require("@/config.json");
 const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
