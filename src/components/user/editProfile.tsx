@@ -209,9 +209,13 @@ export default function ProfileEdit(): AnyElem {
 							className={`border ${validNewPassField ? "border-gray-400" : "border-red-500"}`}
 							value={newPassword}
 							onChange={(e) => {
-								setNewPassword(e.target.value)
+								const value = e.target.value;
+								setNewPassword(value)
 								setSuccess(false);
 								setError(null);
+								if (value === "") {
+									setRetypePassword("");
+								}
 							}}
 							disabled={!oldPassword}
 						/>
