@@ -1,12 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { UserExt } from "delfruit-swagger-cg-sdk";
+import { useSessionContext } from "@/utils/hooks";
 
 type UserInfoProps = {
 	user: UserExt;
 };
 
 export default function UserProfile({ user }: UserInfoProps): JSX.Element {
+	const [session] = useSessionContext();
 
 	return(
 		<div className="px-[1.5em] text-black">
@@ -14,7 +16,7 @@ export default function UserProfile({ user }: UserInfoProps): JSX.Element {
 			{user.bio && (
 				<>
 					<p className="mb-2">Bio:</p>
-					<p>{user.bio}</p>
+					<p className="break-words whitespace-pre-wrap">{user.bio}</p>
 				</>
 			)}
 			<p>
@@ -29,25 +31,30 @@ export default function UserProfile({ user }: UserInfoProps): JSX.Element {
 			{user.twitchLink && (
 				<>
 					<Image src="/images/twitch16.png" alt="" width={16} height={16}/>
-					<a href={user.twitchLink}>Twitch Stream</a>
+					<a className="ml-2" href={user.twitchLink}>Twitch Stream</a>
 					<br/>
 				</>
 			)}
 			{user.youtubeLink && (
 				<>
 					<Image src="/images/youtube16.png" alt="" width={16} height={16}/>
-					<a href={user.youtubeLink}>Youtube Channel</a>
+					<a className="ml-2" href={user.youtubeLink}>Youtube Channel</a>
 					<br/>
 				</>
 			)}
 			{user.twitterLink && (
 				<>
 					<Image src="/images/twitter16.png" alt="" width={16} height={16}/>
-					<a href={user.twitterLink}>Twittter</a>
+					<a className="ml-2" href={user.twitterLink}>Twittter</a>
 					<br/>
 				</>
 			)}
-			<Link href="/">Report this user</Link>
+
+			{session.active && session.user_id !== user.id && (
+				<div className="mt-[1em]">
+					<Link href="/">Report this user</Link>
+				</div>
+			)}
 		</div>
 	);
 }

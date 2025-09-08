@@ -41,6 +41,8 @@ export default function Profile(): AnyElem {
   ] as const;
 	
 	useEffect(() => {
+		if (!session?.user_id) return;
+
 		(async () => {
 			try {
 				const resp = await USERS_API_CLIENT.getUserCompositeAll(session.user_id);
@@ -67,7 +69,7 @@ export default function Profile(): AnyElem {
         setLoading(false);
       }
 		})();
-	}, []);
+	}, [session?.user_id]);
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
