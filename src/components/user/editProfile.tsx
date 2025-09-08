@@ -22,6 +22,9 @@ export default function ProfileEdit(): AnyElem {
 	const [error, setError] = useState(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
+	const [validPassField, setValidPassField] = useState(true);
+	const [validNewPassField, setValidNewPassField] = useState(true);
+
 	useEffect(() => {
     async function fetchUser() {
       if (!session?.active) return;
@@ -59,6 +62,8 @@ export default function ProfileEdit(): AnyElem {
 
 		if (newPassword && newPassword !== retypePassword) {
 			setError("New passwords do not match!");
+			setIsSubmitting(false);
+			setValidNewPassField(false);
 			return;
 		}
 
@@ -86,10 +91,27 @@ export default function ProfileEdit(): AnyElem {
 			setOldPassword("");
 			setNewPassword("");
 			setRetypePassword("");
+			setValidPassField(true);
+			setValidNewPassField(true);
 
 			setTimeout(() => setIsSubmitting(false), 5000);
 		} catch (err: any) {
-			setError("An error occured. Could not update profile.");
+			if (err.response) {
+				if (err.response.status === 401) {
+					setError("Incorrect current password. Please try again.");
+					setValidPassField(false);
+				} else if (err.response.status === 403) {
+					setError("You are not authorized to edit this profile.");
+				} else if (err.response.status === 404) {
+					setError("User not found.");
+				} else {
+					setError("An error occurred. Could not update profile.");
+				}
+			} else {
+				setError("Network error. Please try again.");
+			}
+			
+			setSuccess(false);
 			setIsSubmitting(false);
 		}
 	}
@@ -164,6 +186,7 @@ export default function ProfileEdit(): AnyElem {
 						<span className="w-40 group-focus-within:font-bold">Old Password:</span>
 						<input 
 							type="password"
+							className={`border ${validPassField ? "border-gray-400" : "border-red-500"}`}
 							value={oldPassword}
 							onChange={(e) => {
 								const value = e.target.value;
@@ -182,6 +205,7 @@ export default function ProfileEdit(): AnyElem {
 						<span className="w-40 group-focus-within:font-bold">New Password:</span>
 						<input 
 							type="password"
+							className={`border ${validNewPassField ? "border-gray-400" : "border-red-500"}`}
 							value={newPassword}
 							onChange={(e) => {
 								setNewPassword(e.target.value)
@@ -196,6 +220,7 @@ export default function ProfileEdit(): AnyElem {
 						<span className="w-40 group-focus-within:font-bold">Retype Password:</span>
 						<input 
 							type="password"
+							className={`border ${validNewPassField ? "border-gray-400" : "border-red-500"}`}
 							value={retypePassword}
 							onChange={(e) => {
 								setRetypePassword(e.target.value)
