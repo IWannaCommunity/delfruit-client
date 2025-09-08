@@ -2,8 +2,12 @@ import { AnyElem } from "@/utils/element";
 import Head from "next/head";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import EditProfile from "@/components/user/editProfile";
+import { useSessionContext } from "@/utils/hooks";
 
 export default function ProfileEdit(): AnyElem {
+	const [session] = useSessionContext();
+
 	return (
 		<div>
 			<Head>
@@ -12,7 +16,10 @@ export default function ProfileEdit(): AnyElem {
 			<div id="container">
 				<Header />
 				<div id="content">
-					<span className="text-red-600">Invalid Page</span>
+					{session.active ? (<EditProfile />)
+					: (
+						<span>You must login to view this page</span>
+					)}
 				</div>
 				<Footer />
 			</div>

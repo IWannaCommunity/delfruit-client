@@ -60,7 +60,7 @@ export default function ProfileActions({ user }: ProfileActionsProps) {
 	if (session.user_id === user.id) {
 		return (
 			<p>
-				<Link href="/">Edit Profile</Link>
+				<Link href="/profile/edit">Edit Profile</Link>
 			</p>
 		);
 	}
