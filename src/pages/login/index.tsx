@@ -35,7 +35,7 @@ export default function Login(): AnyElem {
 		evt.preventDefault();
 
 		const frmData = new FormData(evt.currentTarget);
-		frmData.set("notARobot", 386);
+		//frmData.set("notARobot", 386);
 		// TODO: check if we've actually logged in
 		const resp = await AUTHAPI.postLogin(
 			Object.fromEntries(frmData) as any as UserCredentials,
@@ -67,6 +67,7 @@ export default function Login(): AnyElem {
 										<label htmlFor="password">Password: </label>
 										<input id="password" type="password" name="password" />
 									</p>
+									{/*
 									<p>
 										<label>
 											<input type="checkbox" name="rememberme" />
@@ -80,6 +81,7 @@ export default function Login(): AnyElem {
 										defaultValue={1}
 										hidden
 									/>
+									*/}
 									<button type="submit">Login</button>
 								</form>
 								<br/>
