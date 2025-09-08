@@ -17,8 +17,6 @@ export default function UserReviews({ user }: UserInfoProps): JSX.Element {
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 	
-	console.log(user)
-	
 	const fetchReviews = useCallback(
 		async (requestedPage: number, userID: number): Promise<ReviewT[]> => {
 			const res = await USERS_API_CLIENT.getUsersReviews(

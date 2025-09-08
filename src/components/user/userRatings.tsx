@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
-import { UsersApi } from "delfruit-swagger-cg-sdk";
-import { useRouter } from "next/router";
+import { UsersApi, UserExt } from "delfruit-swagger-cg-sdk";
 import { useEffect, useState, useCallback } from "react";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
+import { dedupeArray } from "@/utils/dedupeArray";
 
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT: UsersApi = new UsersApi(undefined, CFG.apiURL.toString());
+
+type UserInfoProps = {
+  user: UserExt;
+};
 
 type Rating = {
 	id: number;
@@ -37,21 +41,21 @@ const ratingColumns: Column<Rating>[] = [
 	}
 ];
 
-export default function Ratings(): JSX.Element {
+export default function UserRatings({ user }: UserInfoProps): JSX.Element {
 	const [ratings, setRatings] = useState<Rating[]>([]);
   const [sortConfig, setSortConfig] = useState<SortConfig<Rating> | null>(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
-  const router = useRouter();
-	
-	// Needs backend sorting
   const fetchRatings = useCallback(
     async (requestedPage: number, sort: SortConfig<Rating> | null): Promise<Rating[]> => {
       const res = await USERS_API_CLIENT.getUsersReviews(
-        userID, // id
+        user.id, // id
         requestedPage, // page number
         50, // limit
+        sort?.column, // orderCol
+				sort?.direction, // orderDir
       );
 
       const newData: Rating[] = (res.data ?? []).map((r: any) => ({
@@ -68,16 +72,16 @@ export default function Ratings(): JSX.Element {
   );
 	
   useEffect(() => {
-    if (!router.isReady) return;
-
     let isCancelled = false;
+    setInitialized(false);
 
     const fetchAndSet = async () => {
       const firstPage = await fetchRatings(0, sortConfig);
       if (!isCancelled) {
         setRatings(firstPage);
         setPage(0);
-        setHasMore(firstPage.length > 0);
+        setHasMore(firstPage.length === 50);
+        setInitialized(true);
       }
     };
 
@@ -86,7 +90,7 @@ export default function Ratings(): JSX.Element {
     return () => {
       isCancelled = true; // cleanup
     };
-  }, [sortConfig, router.isReady, fetchRatings]);
+  }, [sortConfig, fetchRatings]);
 
   const loadMore = async () => {
     const nextPage = page + 1;
@@ -97,13 +101,14 @@ export default function Ratings(): JSX.Element {
       return;
     }
 
-    setRatings((prev) => [...prev, ...moreRatings]);
+    setRatings((prev) => dedupeArray([...prev, ...moreRatings], (r) => r.id));
     setPage(nextPage);
   };
 	
-  const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
-    if (hasMore) loadMore();
-  });
+  const loaderRef = useInfiniteScroll<HTMLDivElement>(
+		() => { if (hasMore) loadMore(); },
+		{ enabled: initialized }
+	);
 	
 	return(
 		<div className="px-[1.5em]">
@@ -111,13 +116,18 @@ export default function Ratings(): JSX.Element {
 			
 			<div className="overflow-x-auto">
 				<DataTable
-					data={[...ratings]}
+					data={ratings}
 					columns={ratingColumns}
 					sortConfig={sortConfig}
 					onSortChange={setSortConfig}
 				/>
+        {/* Infinite scroll trigger */}
+				{loaderRef && hasMore ? (
+					<div ref={loaderRef} className="h-10" />
+				) : (
+					<span>No more results.</span>
+				)}
 			</div>
-
 		</div>
 	);
 }

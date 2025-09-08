@@ -186,13 +186,14 @@ export default function Search(): JSX.Element {
 		}
 
 		let isCancelled = false;
+		setInitialized(false);
 
 		const fetchAndSet = async () => {
 			const firstPage = await fetchGames(0, sortConfig);
 			if (!isCancelled) {
 				setGames(firstPage);
 				setPage(0);
-				setHasMore(firstPage.length > 0);
+				setHasMore(firstPage.length === 50);
 				setInitialized(true);
 			}
 		};

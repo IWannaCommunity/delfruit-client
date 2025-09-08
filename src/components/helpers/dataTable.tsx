@@ -6,7 +6,7 @@ export type Column<T> = {
 	render?: (value: any, row: T) => React.ReactNode;
 };
 
-export type SortConfig<T> = { column: keyof T; direction: "asc" | "desc" } | null;
+export type SortConfig<T> = { column: keyof T; direction: "ASC" | "DESC" } | null;
 
 type DataTableProps<T> = {
 	data: T[];
@@ -25,16 +25,16 @@ export function DataTable<T extends { id: number | string }>({
 		if (sortConfig?.column === column) {
 			onSortChange({
 				column,
-				direction: sortConfig.direction === "asc" ? "desc" : "asc",
+				direction: sortConfig.direction === "ASC" ? "DESC" : "ASC",
 			});
 		} else {
-			onSortChange({ column, direction: "asc" });
+			onSortChange({ column, direction: "ASC" });
 		}
 	};
 
 	const getSortIcon = (column: keyof T) => {
 		if (sortConfig?.column !== column) return "/images/bg.gif";
-		return sortConfig.direction === "asc" ? "/images/asc.gif" : "/images/desc.gif";
+		return sortConfig.direction === "ASC" ? "/images/asc.gif" : "/images/desc.gif";
 	};
 
 	return (

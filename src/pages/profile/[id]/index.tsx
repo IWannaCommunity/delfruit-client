@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import TabBar from "@/components/helpers/tabBar";
 import UserProfile from "@/components/user/userProfile";
 import ProfileActions from "@/components/user/profileActions";
-import Ratings from "@/components/user/ratings";
+import UserRatings from "@/components/user/userRatings";
 import UserReviews from "@/components/user/userReviews";
 import { UsersApi } from "delfruit-swagger-cg-sdk";
 import { UserExt } from "delfruit-swagger-cg-sdk";
@@ -99,7 +99,7 @@ export default function Profile(): AnyElem {
 						{activeTab === "profile" && user && <UserProfile user={user}/>}
 						
 						{/* Ratings */}
-						{/* activeTab === "ratings" && user && <Ratings/> */}
+						{activeTab === "ratings" && user && <UserRatings user={user}/>}
 						
 						{/* Reviews */}
 						{activeTab === "reviews" && user && <UserReviews user={user}/>}

@@ -17,7 +17,13 @@ export default function ReviewList(props: ReviewListProps): AnyElem {
 	const [reviews, setReviews] = useState<ReviewT[]>([]);
 
 	const fetchReviews = useCallback(async () => {
-		const resp = await REVIEWS_API_CLIENT.getReviews(props.page, props.limit);
+		const resp = await REVIEWS_API_CLIENT.getReviews(
+			undefined, // gameID
+			undefined, // userID
+			undefined, // ID
+			props.page, // page
+			props.limit // limit
+		);
 		return resp.data;
 	}, [props.limit, props.page]);
 
