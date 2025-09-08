@@ -2,12 +2,18 @@ import Tag from "@/components/game/tag";
 import Link from "next/link";
 import React from "react";
 import { useState } from "react";
-import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
+import { ReviewsApi, Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
+import { Config } from "@/utils/config";
+
+const CFG: Config = require("@/config.json");
+const REVIEWS_API_CLIENT = new ReviewsApi(undefined, CFG.apiURL.toString());
 
 export default function Review(props: ReviewT): JSX.Element {
 	const [expanded, setExpanded] = useState(false);
-	const [session, setSession] = useSessionContext();
+	const [session] = useSessionContext();
+	const [like, getLike] = useState(false);
+	const [likeCount, setLikeCount] = useState(props.like_count);
 
 	const maxLength = 500;
 	const shouldTruncate = props.comment
@@ -18,10 +24,27 @@ export default function Review(props: ReviewT): JSX.Element {
 			? props.comment
 			: props.comment.slice(0, maxLength) + "...";
 
+	const likeReview = async () => {
+		if (!session.active || !session.token) return;
+		
+		setLikeCount((prev: number) => prev + 1);
+
+		try {
+			await REVIEWS_API_CLIENT.putReviewLike(
+					`Bearer ${session.token}`,
+					props.id,
+					session.user_id,
+				);
+		} catch (error) {
+			setLikeCount((prev: number) => prev - 1);
+			console.log(error);
+		}
+	}
+
 	return (
 		<div className={`review ${props.owner_review ? "owner-review" : ""}`}>
 			{/* AUTHOR */}
-			<Link href={`/user/${props.user_id}`}>{props.user_name}</Link>
+			<Link href={`/profile/${props.user_id}`}>{props.user_name}</Link>
 			{props.owner_review && <span className="!font-bold">[Creator]</span>}
 			<br />
 
@@ -64,9 +87,12 @@ export default function Review(props: ReviewT): JSX.Element {
 
 			{/* LIKES */}
 			<span> [</span>
-			<span className="r-like-span">{props.like_count}</span>
+			<span className="r-like-span">{likeCount}</span>
 			<span>] </span>
 			<span className="r-like-span-label">Likes</span>
+			{session.active && (
+				<a onClick={likeReview} className="underline ml-1 cursor-pointer">Like this review</a>
+			)}
 
 			<div className="!m-[0px]">
 				{/* RATING */}
@@ -82,8 +108,8 @@ export default function Review(props: ReviewT): JSX.Element {
 				)}
 				{/* DIFFICULTY */}
 				<span className="!align-middle ml-[2em] mr-[0.5em]">
-					Difficulty:{" "}
-					{props.difficulty === null ? "N/A" : `${props.difficulty}`}
+					Difficulty:
+					{props.difficulty === null ? " N/A" : ` ${props.difficulty}`}
 				</span>
 				{props.difficulty !== null ? (
 					<span className="stars">
@@ -98,10 +124,7 @@ export default function Review(props: ReviewT): JSX.Element {
 
 					{/* Buttons */}
 					{session.active && (
-						<>
-							{" "}
-							<Link href={`/report/${props.id}`}>Report</Link>
-						</>
+						<Link href={`/report/${props.id}`} className="ml-1">Report</Link>
 					)}
 				</div>
 			</div>
