@@ -21,6 +21,7 @@ type User = {
 	twitchLink: string;
 	youtubeLink: string;
 	twitterLink: string;
+	reviewCount: number;
 };
 
 const userColumns: Column<User>[] = [
@@ -38,6 +39,11 @@ const userColumns: Column<User>[] = [
 		label: "Account Created",
 		render: (value) => (value ? formatDate(value as Date) : "Unknown"),
 	},
+	{
+		key: "reviewCount",
+		label: "Reviews Submitted",
+		render: (value) => (value),
+	},
 ];
 
 export default function UserList(): AnyElem {
@@ -50,7 +56,7 @@ export default function UserList(): AnyElem {
 	
 	const fetchUsers = useCallback(
 		async (requestedPage: number, sort: SortConfig<User> | null): Promise<User[]> => {
-			const res = await USERS_API_CLIENT.getUsers(
+			const res = await USERS_API_CLIENT.getUsersWithReviewsCount(
 				undefined, // authorization
 				undefined, // name
 				undefined, // following
@@ -66,6 +72,7 @@ export default function UserList(): AnyElem {
 				twitchLink: u.twitchLink,
 				youtubeLink: u.youtubeLink,
 				twitterLink: u.twitterLink,
+				reviewCount: u.reviewCount
 			}));
 
 			return newData;
