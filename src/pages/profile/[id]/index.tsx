@@ -102,7 +102,7 @@ export default function Profile(): AnyElem {
 						{/* activeTab === "ratings" && user && <Ratings/> */}
 						
 						{/* Reviews */}
-						{activeTab === "reviews" && user && <UserReviews/>}
+						{activeTab === "reviews" && user && <UserReviews user={user}/>}
 					</div>
 				</div>
 			</>

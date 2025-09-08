@@ -1,5 +1,4 @@
-import { UsersApi, Review as ReviewT } from "delfruit-swagger-cg-sdk";
-import { useRouter } from "next/router";
+import { UsersApi, UserExt, Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { useEffect, useState, useCallback } from "react";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { formatDate } from "@/utils/formatDate";
@@ -9,12 +8,16 @@ import { dedupeArray } from "@/utils/dedupeArray";
 const CFG: Config = require("@/config.json");
 const USERS_API_CLIENT: UsersApi = new UsersApi(undefined, CFG.apiURL.toString());
 
-export default function UserReviews(): JSX.Element {
+type UserInfoProps = {
+	user: UserExt;
+};
+
+export default function UserReviews({ user }: UserInfoProps): JSX.Element {
 	const [reviews, setReviews] = useState<ReviewT[]>([]);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
-
-	const router = useRouter();
+	
+	console.log(user)
 	
 	const fetchReviews = useCallback(
 		async (requestedPage: number, userID: number): Promise<ReviewT[]> => {
@@ -45,14 +48,10 @@ export default function UserReviews(): JSX.Element {
 	);
 	
 	useEffect(() => {
-		if (!router.isReady) return;
-
-		const id = Number(router.query.id);
-
 		let isCancelled = false;
 
 		const fetchAndSet = async () => {
-			const firstPage = await fetchReviews(0, id);
+			const firstPage = await fetchReviews(0, user.id);
 			if (!isCancelled) {
 				setReviews(firstPage);
 				setPage(0);
@@ -65,11 +64,11 @@ export default function UserReviews(): JSX.Element {
 		return () => {
 			isCancelled = true; // cleanup
 		};
-	}, [router.isReady, fetchReviews, router.query.id]);
+	}, [fetchReviews]);
 
 	const loadMore = async () => {
 		const nextPage = page + 1;
-		const moreReviews = await fetchReviews(nextPage, Number(router.query.id));
+		const moreReviews = await fetchReviews(nextPage, user.id);
 
 		if (moreReviews.length === 0) {
 			setHasMore(false);
