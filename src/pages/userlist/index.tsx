@@ -5,15 +5,11 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState, useCallback } from "react";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { dedupeArray } from "@/utils/dedupeArray";
-import { UsersApi } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 import { AnyElem } from "@/utils/element";
 import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const USERS_API_CLIENT: UsersApi = new UsersApi(undefined, CFG.apiURL.toString());
 
 type User = {
 	id: number;
@@ -57,7 +53,7 @@ export default function UserList(): AnyElem {
 	
 	const fetchUsers = useCallback(
 		async (requestedPage: number, sort: SortConfig<User> | null): Promise<User[]> => {
-			const res = await USERS_API_CLIENT.getUsersWithReviewsCount(
+			const res = await API.users().getUsersWithReviewsCount(
 				undefined, // authorization
 				undefined, // name
 				undefined, // following

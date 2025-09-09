@@ -1,16 +1,11 @@
 import { AnyElem } from "@/utils/element";
 import { useState, useEffect } from "react";
 import { useSessionContext } from "@/utils/hooks";
-import { MessagesApi, UsersApi, Message as MessageT, UserExt as UserT } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
+import { Message as MessageT, UserExt as UserT } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const MESSAGES_API_CLIENT = new MessagesApi(undefined, CFG.apiURL.toString());
-const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());
 
 export default function ComposePage(): AnyElem {
-
 	const [session] = useSessionContext();
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -43,7 +38,7 @@ export default function ComposePage(): AnyElem {
 		if (userIdParam) {
 			(async () => {
 				try {
-					const res = await USERS_API_CLIENT.getUser(Number(userIdParam));
+					const res = await API.users().getUser(Number(userIdParam));
 					const user = res.data;
 					setSelectedUser(user);
 					setFormData((prev) => ({ ...prev, to: user.name }));
@@ -63,7 +58,7 @@ export default function ComposePage(): AnyElem {
 		const timer = setTimeout(async () => {
 
 			try {
-				const res = await USERS_API_CLIENT.getUsers(
+				const res = await API.users().getUsers(
 					`Bearer ${session.token}`,
 					formData.to,
 					undefined,
@@ -124,7 +119,7 @@ export default function ComposePage(): AnyElem {
 		}
 
 		try {
-			await MESSAGES_API_CLIENT.postMessage(message, `Bearer ${session.token}`);
+			await API.messages().postMessage(message, `Bearer ${session.token}`);
 			setLastRecipient(selectedUser?.name ?? null);
 			setFormData({ to: "", subject: "", message: "" });
 			setSelectedUser(null);

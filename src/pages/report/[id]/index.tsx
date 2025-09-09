@@ -1,27 +1,19 @@
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import Review from "@/components/review";
-import { Config } from "@/utils/config";
 import { AnyElem } from "@/utils/element";
 import { useEffectAsync, useSessionContext } from "@/utils/hooks";
-import {
-	ReportsApi,
-	Review as ReviewT,
-	ReviewsApi,
-} from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
+import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
-
-const CFG: Config = require("@/config.json");
-
-const REVIEWSAPI: ReviewsApi = new ReviewsApi(void 0, CFG.apiURL.toString());
-const REPORTSAPI: ReportsApi = new ReportsApi(void 0, CFG.apiURL.toString());
+import { FormEvent, useState } from "react";
+import { formatDate } from "@/utils/formatDate";
 
 export default function Report(): AnyElem {
 	const router = useRouter();
-	const [session, _] = useSessionContext();
+	const [session] = useSessionContext();
 
 	const [reviewDetails, setReviewDetails] = useState<ReviewT>(undefined);
 
@@ -32,7 +24,7 @@ export default function Report(): AnyElem {
 			if (!router.isReady) {
 				return;
 			}
-			const resp = await REVIEWSAPI.getReview(id);
+			const resp = await API.reviews().getReview(id);
 			setReviewDetails({
 				id: Number(resp.data.id),
 				user_id: Number(resp.data.user_id),
@@ -65,7 +57,7 @@ export default function Report(): AnyElem {
 		const frmData = new FormData(evt.currentTarget);
 		const report = frmData.get("report");
 
-		REPORTSAPI.postReport(
+		API.reports().postReport(
 			{
 				report: report.toString(),
 				reporterId: session.user_id,

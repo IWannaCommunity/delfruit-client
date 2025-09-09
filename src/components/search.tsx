@@ -3,16 +3,9 @@ import { useEffect, useState, useCallback } from "react";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { dedupeArray } from "@/utils/dedupeArray";
 import { formatDate } from "@/utils/formatDate";
-import { GamesApi } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
 import Link from "next/link";
 import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const GAMES_API_CLIENT: GamesApi = new GamesApi(
-	undefined,
-	CFG.apiURL.toString(),
-);
 
 // #region Types
 type Game = {
@@ -106,7 +99,7 @@ export default function Search(): JSX.Element {
 			sort: SortConfig<Game> | null,
 		): Promise<Game[]> => {
 			try {
-				const res = await GAMES_API_CLIENT.getGames(
+				const res = await API.games().getGames(
 					undefined, // authorization
 					searchQuery === "" ? undefined : searchQuery, // query
 					undefined, // id

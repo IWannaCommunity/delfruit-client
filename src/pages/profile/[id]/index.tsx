@@ -9,13 +9,9 @@ import UserProfile from "@/components/user/userProfile";
 import ProfileActions from "@/components/user/profileActions";
 import UserRatings from "@/components/user/userRatings";
 import UserReviews from "@/components/user/userReviews";
-import { UsersApi } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());
 
 export type ProfileTabValue =
   | "profile"
@@ -56,7 +52,7 @@ export default function Profile(): AnyElem {
 
 		(async () => {
 			try {
-				const resp = await USERS_API_CLIENT.getUserCompositeAll(id);
+				const resp = await API.users().getUserCompositeAll(id);
 				const user = resp.data;
 				const newData: UserExt = {
 					id: user.id,

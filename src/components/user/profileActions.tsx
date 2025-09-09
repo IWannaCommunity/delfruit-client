@@ -2,11 +2,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
-import { UsersApi } from "delfruit-swagger-cg-sdk";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());
+import { API } from "@/utils/api";
 
 type ProfileActionsProps = {
 	user: UserExt;
@@ -22,7 +18,7 @@ export default function ProfileActions({ user }: ProfileActionsProps) {
 		try {
 			if (e.target.checked) {
 				// FOLLOW user
-				await USERS_API_CLIENT.putUserFollow(
+				await API.users().putUserFollow(
 					`Bearer ${session.token}`,
 					session.user_id,
 					user.id,
@@ -35,7 +31,7 @@ export default function ProfileActions({ user }: ProfileActionsProps) {
 				}
 			} else {
 				// UNFOLLOW user
-				await USERS_API_CLIENT.deleteUserFollow(
+				await API.users().deleteUserFollow(
 					`Bearer ${session.token}`,
 					session.user_id,
 					user.id,

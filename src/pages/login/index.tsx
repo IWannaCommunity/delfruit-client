@@ -1,18 +1,14 @@
 import Head from "next/head";
 import Header from "@/components/header";
 import { useSessionContext } from "@/utils/hooks";
-import { AuthenticationApi, UserCredentials } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
+import { UserCredentials } from "delfruit-swagger-cg-sdk";
 import { FormEvent, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
-import { Config } from "@/utils/config";
 import Link from "next/link";
 import { AnyElem } from "@/utils/element";
 import Footer from "@/components/footer";
-
-const CFG: Config = require("@/config.json");
-
-const AUTHAPI = new AuthenticationApi(void 0, CFG.apiURL.toString());
 
 export default function Login(): AnyElem {
 	const [session, setSession] = useSessionContext();
@@ -37,7 +33,7 @@ export default function Login(): AnyElem {
 		const frmData = new FormData(evt.currentTarget);
 		//frmData.set("notARobot", 386);
 		// TODO: check if we've actually logged in
-		const resp = await AUTHAPI.postLogin(
+		const resp = await API.authentication().postLogin(
 			Object.fromEntries(frmData) as any as UserCredentials,
 		);
 		Cookies.set("session", resp.data.token);

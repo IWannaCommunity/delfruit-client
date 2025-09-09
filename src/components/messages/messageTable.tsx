@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import TabBar from "@/components/helpers/tabBar";
-import { MessagesApi, Message as MessageT } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
+import { Message as MessageT } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
 import { formatDate } from "@/utils/formatDate";
 import { useUserNames } from "@/utils/userNameCache";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const MESSAGES_API_CLIENT = new MessagesApi(undefined, CFG.apiURL.toString());
 
 export type MessageTabValue = "inbox" | "outbox";
 
@@ -32,10 +29,10 @@ export default function MessageTable(): JSX.Element {
 
 			try {
 				if (activeTab === "inbox") {
-					const res = await MESSAGES_API_CLIENT.getMessagesFromInbox(`Bearer ${session.token}`);
+					const res = await API.messages().getMessagesFromInbox(`Bearer ${session.token}`);
 					setInboxMessages(res.data || []);
 				} else {
-					const res = await MESSAGES_API_CLIENT.getMessagesFromInbox(`Bearer ${session.token}`); // Replace with outbox when ready
+					const res = await API.messages().getMessagesFromInbox(`Bearer ${session.token}`); // Replace with outbox when ready
 					setOutboxMessages(res.data || []);
 				}
 			} catch (err) {

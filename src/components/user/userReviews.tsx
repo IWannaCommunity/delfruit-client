@@ -1,13 +1,10 @@
-import { UsersApi, UserExt, Review as ReviewT } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
+import { UserExt, Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { useEffect, useState, useCallback } from "react";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { formatDate } from "@/utils/formatDate";
 import Review from "@/components/review";
 import { dedupeArray } from "@/utils/dedupeArray";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const USERS_API_CLIENT: UsersApi = new UsersApi(undefined, CFG.apiURL.toString());
 
 type UserInfoProps = {
 	user: UserExt;
@@ -20,7 +17,7 @@ export default function UserReviews({ user }: UserInfoProps): JSX.Element {
 	
 	const fetchReviews = useCallback(
 		async (requestedPage: number, userID: number): Promise<ReviewT[]> => {
-			const res = await USERS_API_CLIENT.getUsersReviews(
+			const res = await API.users().getUsersReviews(
 				userID, // id
 				requestedPage, // page number
 				10, // limit

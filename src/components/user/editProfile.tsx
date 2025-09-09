@@ -1,12 +1,8 @@
 import { AnyElem } from "@/utils/element";
 import Image from "next/image";
 import { useSessionContext } from "@/utils/hooks";
-import { UsersApi } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
 import { useState, useEffect } from "react";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const USERS_API_CLIENT = new UsersApi(undefined, CFG.apiURL.toString());
 
 export default function ProfileEdit(): AnyElem {
 	const [session] = useSessionContext();
@@ -31,7 +27,7 @@ export default function ProfileEdit(): AnyElem {
       if (!session?.active) return;
 
       try {
-        const response = await USERS_API_CLIENT.getUser(session.user_id);
+        const response = await API.users().getUser(session.user_id);
         const user = response.data;
 
         setBio(user.bio ?? "");
@@ -81,7 +77,7 @@ export default function ProfileEdit(): AnyElem {
 		}
 
 		try {
-			const response = await USERS_API_CLIENT.patchUser(
+			const response = await API.users().patchUser(
 				body,
 				`Bearer ${session.token}`,
 				session.user_id

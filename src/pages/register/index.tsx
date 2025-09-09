@@ -1,16 +1,13 @@
 import Head from "next/head";
 import Header from "@/components/header";
 import Whitespace from "@/components/whitespace";
-import React from "react";
-import type { NextPage } from "next";
-import { UserRegistration, UsersApi } from "delfruit-swagger-cg-sdk";
-import { Config } from "@/utils/config";
+import React, { FormEvent } from "react";
+import { AnyElem } from "@/utils/element";
+import { UserRegistration } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
+import { API } from "@/utils/api";
 
-const CFG: Config = require("@/config.json");
-const USERSAPI: UsersApi = new UsersApi(void 0, CFG.apiURL.toString());
-
-export default function Register(): NextPage {
+export default function Register(): AnyElem {
 	const router = useRouter();
 
 	async function attemptUserRegistration(evt: FormEvent<HTMLFormElement>) {
@@ -19,7 +16,7 @@ export default function Register(): NextPage {
 		const frmData: FormData = new FormData(evt.currentTarget);
 
 		// TODO: check if we actually registered
-		const resp = await USERSAPI.postUser(
+		const resp = await API.users().postUser(
 			Object.fromEntries(frmData) as any as UserRegistration,
 		);
 		router.reload();

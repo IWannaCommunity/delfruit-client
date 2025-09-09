@@ -1,24 +1,21 @@
 import Review from "@/components/review";
 import { useState, useCallback } from "react";
 import WriteReview from "@/components/game/writeReview";
-import { GamesApi, Review as ReviewT } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
+import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 import { useRouter } from "next/router";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { dedupeArray } from "@/utils/dedupeArray";
 import type { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
 
 type GameReviewsProp = {
 	reviews: ReviewT[];
 };
 
 export default function GameReviews(props: GameReviewsProp): AnyElem {
-	const [session, setSession] = useSessionContext();
+	const [session] = useSessionContext();
 	const [reviews, setReviews] = useState<ReviewT[]>(props.reviews);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
@@ -32,7 +29,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 	const fetchReviews = useCallback(
 		async (requestedPage: number): Promise<ReviewT[]> => {
-			const res = await GAMES_API_CLIENT.getGameReviews(
+			const res = await API.games().getGameReviews(
 				id, // id
 				undefined,
 				true,

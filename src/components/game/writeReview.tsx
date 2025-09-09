@@ -2,13 +2,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getRatingDescription, getDifficultyDescription } from "@/utils/ratingHelpers"
-import { ReviewsApi, Review as ReviewT } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
+import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
 import { useSessionContext } from "@/utils/hooks";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const REVIEWS_API_CLIENT = new ReviewsApi(undefined, CFG.apiURL.toString());
 
 type WriteReviewProps = {
   onReviewUpdated: () => void;
@@ -53,7 +50,7 @@ export default function GameReviews({ onReviewUpdated, existingReview }: WriteRe
 
 			const token = session.token;
 
-			await REVIEWS_API_CLIENT.putGameReview(body, `Bearer ${token}`, gameId);
+			await API.reviews().putGameReview(body, `Bearer ${token}`, gameId);
 			
 			onReviewUpdated();
 			setShowWrite(false);

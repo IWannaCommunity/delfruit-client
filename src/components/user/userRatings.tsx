@@ -1,13 +1,10 @@
 import Link from "next/link";
 import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
-import { UsersApi, UserExt } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
+import { UserExt } from "delfruit-swagger-cg-sdk";
 import { useEffect, useState, useCallback } from "react";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { dedupeArray } from "@/utils/dedupeArray";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const USERS_API_CLIENT: UsersApi = new UsersApi(undefined, CFG.apiURL.toString());
 
 type UserInfoProps = {
   user: UserExt;
@@ -51,7 +48,7 @@ export default function UserRatings({ user }: UserInfoProps): JSX.Element {
 
   const fetchRatings = useCallback(
     async (requestedPage: number, sort: SortConfig<Rating> | null): Promise<Rating[]> => {
-      const res = await USERS_API_CLIENT.getUsersReviews(
+      const res = await API.users().getUsersReviews(
         user.id, // id
         requestedPage, // page number
         50, // limit

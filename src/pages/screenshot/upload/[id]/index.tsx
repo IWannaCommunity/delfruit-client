@@ -5,12 +5,8 @@ import UploadScreenshot, { GameProps } from "@/components/game/uploadScreenshot"
 import { useEffect, useState } from "react";
 import { AnyElem } from "@/utils/element";
 import { useRouter } from "next/router";
-import { GamesApi } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
 import { useSessionContext } from "@/utils/hooks";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
 
 export default function ScreenshotUploadPage(): AnyElem {
 	const [game, setGame] = useState<GameProps>();
@@ -34,7 +30,7 @@ export default function ScreenshotUploadPage(): AnyElem {
 
 		(async () => {
 			try {
-				const resp = await GAMES_API_CLIENT.getGame(id);
+				const resp = await API.games().getGame(id);
 				const game = resp.data;
 
 				if (!game || !game.id) {

@@ -1,12 +1,8 @@
 import Game, { GameProps } from "@/components/game";
-import { GamesApi } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
 
 export default function GameList(): JSX.Element {
 	
@@ -19,7 +15,7 @@ export default function GameList(): JSX.Element {
 
 		(async () => {
 			try {
-				const resp = await GAMES_API_CLIENT.getGames(
+				const resp = await API.games().getGames(
 					undefined, // authorization
 					undefined, // q
 					undefined, // id

@@ -3,18 +3,14 @@ import Header from "@/components/header";
 import GameInfo from "@/components/game/gameInfo";
 import Carousel from "@/components/game/carousel";
 import GameReviews from "@/components/game/gameReviews";
-import { CompositeApi, GameExt } from "delfruit-swagger-cg-sdk";
-import { Config } from "@/utils/config";
+import { GameExt } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { formatDate } from "@/utils/formatDate";
 import Footer from "@/components/footer";
 import { AnyElem } from "@/utils/element";
 import { makeScrnshotURL } from "@/utils/url";
-
-const CFG: Config = require("@/config.json");
-
-const APICLIENT = new CompositeApi(undefined, CFG.apiURL.toString());
 
 export default function Game(): AnyElem {
 	const [details, setDetails] = useState<GameExt>(null);
@@ -38,7 +34,7 @@ export default function Game(): AnyElem {
 
 		(async () => {
 			try {
-				const resp = await APICLIENT.getGameCompositeAll(id);
+				const resp = await API.composite().getGameCompositeAll(id);
 				const game = resp.data;
 
 				if (!game || !game.id) {

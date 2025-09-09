@@ -2,12 +2,8 @@ import { AnyElem } from "@/utils/element";
 import Image from "next/image";
 import { useSessionContext } from "@/utils/hooks";
 import { useState } from "react";
-import { GamesApi } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
 import Link from "next/link";
-import { Config } from "@/utils/config";
-
-const CFG: Config = require("@/config.json");
-const GAMES_API_CLIENT = new GamesApi(undefined, CFG.apiURL.toString());
 
 export type GameProps = {
 	id: number,
@@ -43,7 +39,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 
 			const token = session.token;
 
-			await GAMES_API_CLIENT.postGameScreenshotForm(description, file, `Bearer ${token}`, game.id);
+			await API.games().postGameScreenshotForm(description, file, `Bearer ${token}`, game.id);
 
 			setSuccess(true);
 			setError(null);
