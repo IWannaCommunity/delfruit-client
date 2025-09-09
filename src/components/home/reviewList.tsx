@@ -16,6 +16,8 @@ type ReviewListProps = {
 
 export default function ReviewList(props: ReviewListProps): AnyElem {
 	const [reviews, setReviews] = useState<ReviewT[]>([]);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
 	const fetchReviews = useCallback(async () => {
 		const resp = await REVIEWS_API_CLIENT.getReviews(
@@ -29,53 +31,69 @@ export default function ReviewList(props: ReviewListProps): AnyElem {
 	}, [props.limit, props.page]);
 
 	useEffect(() => {
-		(async () => {
-			const newReviews = await fetchReviews();
+		setLoading(true);
 
-			const reviewProps: ReviewT[] = newReviews.map((review) => ({
-				id: review.id,
-				user_id: review.user_id,
-				game_id: review.game_id,
-				rating:
-					review.rating === null ? null : Number(review.rating / 10).toFixed(1),
-				difficulty:
-					review.difficulty === null ? null : Number(review.difficulty),
-				comment: review.comment,
-				date_created: review.date_created
-					? formatDate(new Date(review.date_created))
-					: null,
-				removed: review.removed,
-				user_name: review.user_name,
-				game_name: review.game_name,
-				like_count: review.like_count,
-				owner_review: review.owner_review === 1,
-			}));
-			setReviews(reviewProps);
+		(async () => {
+			try {
+				const newReviews = await fetchReviews();
+				const reviewProps: ReviewT[] = newReviews.map((review) => ({
+					id: review.id,
+					user_id: review.user_id,
+					game_id: review.game_id,
+					rating:
+						review.rating === null ? null : Number(review.rating / 10).toFixed(1),
+					difficulty:
+						review.difficulty === null ? null : Number(review.difficulty),
+					comment: review.comment,
+					date_created: review.date_created
+						? formatDate(new Date(review.date_created))
+						: null,
+					removed: review.removed,
+					user_name: review.user_name,
+					game_name: review.game_name,
+					like_count: review.like_count,
+					owner_review: review.owner_review === 1,
+				}));
+				setReviews(reviewProps);
+				setError(null);
+			} catch (err: any) {
+				setError("Failed to load reviews.");
+			} finally {
+				setLoading(false);
+			}
 		})();
 	}, [fetchReviews]);
 
 	return (
 		<>
-			{reviews.map((review) => {
-				return (
-					<Review
-						key={review.id}
-						id={review.id}
-						user_id={review.user_id}
-						user_name={review.user_name}
-						comment={review.comment}
-						rating={review.rating}
-						difficulty={review.difficulty}
-						tags={review.tags}
-						date_created={review.date_created}
-						like_count={review.like_count}
-						game_name={review.game_name}
-						game_id={review.game_id}
-						owner_review={review.owner_review}
-						removed={review.removed}
-					/>
-				);
-			})}
+			{loading ? (
+				<span>Loading...</span>
+			) : error ? (
+				<span className="text-red-600">{error}</span>
+			) : (
+				<>
+					{reviews.map((review) => {
+						return (
+							<Review
+								key={review.id}
+								id={review.id}
+								user_id={review.user_id}
+								user_name={review.user_name}
+								comment={review.comment}
+								rating={review.rating}
+								difficulty={review.difficulty}
+								tags={review.tags}
+								date_created={review.date_created}
+								like_count={review.like_count}
+								game_name={review.game_name}
+								game_id={review.game_id}
+								owner_review={review.owner_review}
+								removed={review.removed}
+							/>
+						);
+					})}
+				</>
+			)}
 		</>
 	);
 }
