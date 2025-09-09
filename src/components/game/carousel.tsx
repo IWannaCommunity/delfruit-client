@@ -90,6 +90,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 										alt={img.alt || `Screenshot ${index + 1}`}
 										width={350}
 										height={250}
+										priority
 										className={`absolute top-0 left-0 h-full max-w-[350px] 
 									object-contain transition-opacity duration-500 ease-in-out 
 									${current === index ? "opacity-100" : "opacity-0"}`}
