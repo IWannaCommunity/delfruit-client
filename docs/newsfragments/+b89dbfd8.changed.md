@@ -1,1 +1,0 @@
-Certain pages are hidden to the user when not logged in. (TTBB)

@@ -1,1 +1,0 @@
-Guidelines page listing all current rules. (TTBB)

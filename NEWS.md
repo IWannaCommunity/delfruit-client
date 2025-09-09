@@ -1,3 +1,26 @@
+Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.6 (2025-09-09)
+====================================================================
+
+### ➕ Added
+
+- Direct Messages can be Composed from the Inbox. (TTBB)
+- Guidelines page listing all current rules. (TTBB)
+- Inbox is now populated with your messages. (TTBB)
+- Reviews can be liked and unliked. (TTBB)
+- Some report functionality. (Starz0r)
+
+### 🔧 Fixed
+
+- Minor LCP issue regarding the Cherry in the site header.
+
+### 🔄 Changed
+
+- Certain pages are hidden to the user when not logged in. (TTBB)
+- Reveal specific functionality on some pages when logged in. (TTBB)
+- User page is now called the Profile page. (TTBB)
+- You can now edit your Profile from the application (with the exception of Twitter links). (TTBB)
+
+
 Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.5 (2025-09-05)
 ====================================================================
 
