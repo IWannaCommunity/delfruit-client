@@ -29,11 +29,22 @@ export default function GameReviews({ onReviewUpdated, existingReview }: WriteRe
 	const router = useRouter();
 	const gameId = Number(router.query.id);
 
+	function isReviewEmpty() {
+  	return (rating < 0) && (difficulty < 0) && (comment.trim() === "") && (tags === "");
+	}
+
 	async function handleSubmit() {
 		setLoading(true);
 		setError(null);
 
 		try {
+
+			if (isReviewEmpty()) {
+				setError("Please provide at least a rating, difficulty, comment, or tag before submitting.");
+				setLoading(false);
+				return;
+			}
+
 			const body: ReviewT = {
 				rating: rating >= 0 ? rating : undefined,
 				difficulty: difficulty >= 0 ? difficulty : undefined,
@@ -182,7 +193,7 @@ export default function GameReviews({ onReviewUpdated, existingReview }: WriteRe
 						type="button"
 						id="update_button"
 						value={existingReview ? "Update Review" : "Submit Review"}
-						disabled={loading}
+						disabled={loading || isReviewEmpty()}
 						onClick={handleSubmit}
 					/>
 					{error && <span className="text-red-600"> {error}</span>}
