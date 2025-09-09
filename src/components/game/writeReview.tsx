@@ -97,7 +97,7 @@ export default function GameReviews({ onReviewUpdated, existingReview }: WriteRe
 					<ul>
 						<li>
 							<span>Make sure to follow the </span>
-							<Link href="/">rules</Link>
+							<Link href="/guidelines">rules</Link>
 							<span> for reviewing games when writing your review.</span>
 						</li>
 						<li>Make sure to properly tag your spoilers with the spoiler tag:</li>
