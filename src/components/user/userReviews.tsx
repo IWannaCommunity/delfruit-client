@@ -60,7 +60,7 @@ export default function UserReviews({ user }: UserInfoProps): JSX.Element {
 		return () => {
 			isCancelled = true; // cleanup
 		};
-	}, [fetchReviews]);
+	}, [fetchReviews, user.id]);
 
 	const loadMore = async () => {
 		const nextPage = page + 1;

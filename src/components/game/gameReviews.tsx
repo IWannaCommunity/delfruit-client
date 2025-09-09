@@ -25,7 +25,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const id = Number(router.query.id);
 
 	const userId = session.user_id;
-	const userReview = reviews.find(r => r.user_id === userId) || null;
+	const userReview = reviews.find((r) => r.user_id === userId) || null;
 
 	const fetchReviews = useCallback(
 		async (requestedPage: number): Promise<ReviewT[]> => {

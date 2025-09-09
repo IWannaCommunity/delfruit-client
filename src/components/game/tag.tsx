@@ -4,7 +4,7 @@ import Link from "next/link";
 type TagProps = {
 	id: number;
 	name: string;
-	count?: number | null;
+	count: number | null;
 };
 
 export default function Tag(props: TagProps): AnyElem {

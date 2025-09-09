@@ -7,7 +7,7 @@ import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { dedupeArray } from "@/utils/dedupeArray";
 
 type UserInfoProps = {
-  user: UserExt;
+	user: UserExt;
 };
 
 type Rating = {
@@ -19,15 +19,15 @@ type Rating = {
 };
 
 const ratingColumns: Column<Rating>[] = [
-  {
-    key: "game_name",
-    label: "Game",
-    render: (value, row) => (
-      <Link href="/game/[id]" as={`/game/${row.game_id}`}>
-        {value}
-      </Link>
-    ),
-  },
+	{
+		key: "game_name",
+		label: "Game",
+		render: (value, row) => (
+			<Link href="/game/[id]" as={`/game/${row.game_id}`}>
+				{value}
+			</Link>
+		),
+	},
 	{ 
 		key: "difficulty", 
 		label: "Difficulty",
@@ -41,77 +41,75 @@ const ratingColumns: Column<Rating>[] = [
 
 export default function UserRatings({ user }: UserInfoProps): JSX.Element {
 	const [ratings, setRatings] = useState<Rating[]>([]);
-  const [sortConfig, setSortConfig] = useState<SortConfig<Rating> | null>(null);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [initialized, setInitialized] = useState(false);
+	const [sortConfig, setSortConfig] = useState<SortConfig<Rating> | null>(null);
+	const [page, setPage] = useState(0);
+	const [hasMore, setHasMore] = useState(true);
+	const [initialized, setInitialized] = useState(false);
 
-  const fetchRatings = useCallback(
-    async (requestedPage: number, sort: SortConfig<Rating> | null): Promise<Rating[]> => {
-      const res = await API.users().getUsersReviews(
-        user.id, // id
-        requestedPage, // page number
-        50, // limit
-        sort?.column, // orderCol
+	const fetchRatings = useCallback(
+		async (requestedPage: number, sort: SortConfig<Rating> | null): Promise<Rating[]> => {
+			const res = await API.users().getUsersReviews(
+				user.id, // id
+				requestedPage, // page number
+				50, // limit
+				sort?.column, // orderCol
 				sort?.direction, // orderDir
-      );
+			);
 
-      const newData: Rating[] = (res.data ?? []).map((r: any) => ({
-        id: Number(r.id),
+			const newData: Rating[] = (res.data ?? []).map((r: any) => ({
+				id: Number(r.id),
 				game_id: Number(r.game_id),
-        game_name: r.game_name,
-        difficulty: (r.difficulty === null) ? "N/A" : Number(r.difficulty).toFixed(1),
+				game_name: r.game_name,
+				difficulty: (r.difficulty === null) ? "N/A" : Number(r.difficulty).toFixed(1),
 				rating: (r.rating === null) ? "N/A" : Number(r.rating/10).toFixed(1)
-      }));
+			}));
 
-      return newData;
-    },
-    []
-  );
+			return newData;
+		}, [user.id]
+	);
 	
-  useEffect(() => {
-    let isCancelled = false;
-    setInitialized(false);
+	useEffect(() => {
+		let isCancelled = false;
+		setInitialized(false);
 
-    const fetchAndSet = async () => {
-      const firstPage = await fetchRatings(0, sortConfig);
-      if (!isCancelled) {
-        setRatings(firstPage);
-        setPage(0);
-        setHasMore(firstPage.length === 50);
-        setInitialized(true);
-      }
-    };
+		const fetchAndSet = async () => {
+			const firstPage = await fetchRatings(0, sortConfig);
+			if (!isCancelled) {
+				setRatings(firstPage);
+				setPage(0);
+				setHasMore(firstPage.length === 50);
+				setInitialized(true);
+			}
+		};
 
-    fetchAndSet();
+		fetchAndSet();
 
-    return () => {
-      isCancelled = true; // cleanup
-    };
-  }, [sortConfig, fetchRatings]);
+		return () => {
+			isCancelled = true; // cleanup
+		};
+	}, [sortConfig, fetchRatings]);
 
-  const loadMore = async () => {
-    const nextPage = page + 1;
-    const moreRatings = await fetchRatings(nextPage, sortConfig);
+	const loadMore = async () => {
+		const nextPage = page + 1;
+		const moreRatings = await fetchRatings(nextPage, sortConfig);
 
-    if (moreRatings.length === 0) {
-      setHasMore(false);
-      return;
-    }
+		if (moreRatings.length === 0) {
+			setHasMore(false);
+			return;
+		}
 
-    setRatings((prev) => dedupeArray([...prev, ...moreRatings], (r) => r.id));
-    setPage(nextPage);
-  };
+		setRatings((prev) => dedupeArray([...prev, ...moreRatings], (r) => r.id));
+		setPage(nextPage);
+	};
 	
-  const loaderRef = useInfiniteScroll<HTMLDivElement>(
+	const loaderRef = useInfiniteScroll<HTMLDivElement>(
 		() => { if (hasMore) loadMore(); },
 		{ enabled: initialized }
 	);
 	
 	return(
 		<div className="px-[1.5em]">
-		<p className="text-[#222222]">{ratings.length} Games</p>
-			
+			<p className="text-[#222222]">{ratings.length} Games</p>
 			<div className="overflow-x-auto">
 				<DataTable
 					data={ratings}
@@ -119,7 +117,7 @@ export default function UserRatings({ user }: UserInfoProps): JSX.Element {
 					sortConfig={sortConfig}
 					onSortChange={setSortConfig}
 				/>
-        {/* Infinite scroll trigger */}
+				{/* Infinite scroll trigger */}
 				{loaderRef && hasMore ? (
 					<div ref={loaderRef} className="h-10" />
 				) : (

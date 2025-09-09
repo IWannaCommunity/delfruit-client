@@ -165,14 +165,14 @@ export default function ComposePage(): AnyElem {
 
 				<div>
 					<label htmlFor="subject">Subject: </label>
-						<input
-							id="subject"
-							type="text"
-							name="subject"
-							maxLength={100}
-							value={formData.subject}
-							onChange={handleChange}
-						/>
+					<input
+						id="subject"
+						type="text"
+						name="subject"
+						maxLength={100}
+						value={formData.subject}
+						onChange={handleChange}
+					/>
 				</div>
 
 				<div>

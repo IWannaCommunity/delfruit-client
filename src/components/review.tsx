@@ -12,7 +12,6 @@ const REVIEWS_API_CLIENT = new ReviewsApi(undefined, CFG.apiURL.toString());
 export default function Review(props: ReviewT): JSX.Element {
 	const [expanded, setExpanded] = useState(false);
 	const [session] = useSessionContext();
-	const [like, getLike] = useState(false);
 	const [likeCount, setLikeCount] = useState(props.like_count);
 
 	const maxLength = 500;
@@ -37,7 +36,6 @@ export default function Review(props: ReviewT): JSX.Element {
 				);
 		} catch (error) {
 			setLikeCount((prev: number) => prev - 1);
-			console.log(error);
 		}
 	}
 

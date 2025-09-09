@@ -10,9 +10,9 @@ export default function ScreenshotRules(): JSX.Element {
 				</li>
 				<li>
 					When taking a screenshot to upload, please consider using the
-						ingame screenshot button (F9 by default). If it doesn’t exist, 
-						please include a screenshot of the game itself and not include 
-						the windows border.
+					ingame screenshot button (F9 by default). If it doesn’t exist, 
+					please include a screenshot of the game itself and not include 
+					the windows border.
 				</li>
 				<li>
 					If a screenshot for the game doesn’t exist, consider uploading a 

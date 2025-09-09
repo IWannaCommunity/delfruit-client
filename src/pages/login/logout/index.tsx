@@ -11,7 +11,7 @@ export default function Logout(): AnyElem {
 	const router = useRouter();
 	const [idempotency, setIdempotency] = useState<boolean>(false);
 	const [recentlySignedOut, setRecentlySignedOut] = useState<boolean>(false);
-	const [session, _] = useSessionContext();
+	const [session] = useSessionContext();
 
 	// QUEST: perhaps there is a simpler way then using this "idempotency" mechanism.
 

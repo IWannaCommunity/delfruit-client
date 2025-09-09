@@ -11,7 +11,7 @@ import { AnyElem } from "@/utils/element";
 import Footer from "@/components/footer";
 
 export default function Login(): AnyElem {
-	const [session, setSession] = useSessionContext();
+	const [session] = useSessionContext();
 	const router = useRouter();
 	const [successfulLogin, setSuccessfulLogin] = useState<boolean>(false);
 	const [idempotency, setIdempotency] = useState<boolean>(false);
@@ -31,7 +31,7 @@ export default function Login(): AnyElem {
 		evt.preventDefault();
 
 		const frmData = new FormData(evt.currentTarget);
-		//frmData.set("notARobot", 386);
+		// frmData.set("notARobot", 386);
 		// TODO: check if we've actually logged in
 		const resp = await API.authentication().postLogin(
 			Object.fromEntries(frmData) as any as UserCredentials,

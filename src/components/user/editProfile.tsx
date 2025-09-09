@@ -9,7 +9,7 @@ export default function ProfileEdit(): AnyElem {
 	const [bio, setBio] = useState("");
 	const [twitch, setTwitch] = useState("");
 	const [youtube, setYoutube] = useState("");
-	//const [twitter, setTwitter] = useState("");
+	// const [twitter, setTwitter] = useState("");
 
 	const [oldPassword, setOldPassword] = useState("");
 	const [newPassword, setNewPassword] = useState("");
@@ -23,28 +23,28 @@ export default function ProfileEdit(): AnyElem {
 	const [validNewPassField, setValidNewPassField] = useState(true);
 
 	useEffect(() => {
-    async function fetchUser() {
-      if (!session?.active) return;
+		async function fetchUser() {
+			if (!session?.active) return;
 
-      try {
-        const response = await API.users().getUser(session.user_id);
-        const user = response.data;
+			try {
+				const response = await API.users().getUser(session.user_id);
+				const user = response.data;
 
-        setBio(user.bio ?? "");
-        if (user.twitchLink) {
-          setTwitch(user.twitchLink.replace("https://www.twitch.tv/", ""));
-        }
-        if (user.youtubeLink) {
-          setYoutube(
-            user.youtubeLink.replace("https://www.youtube.com/@", "")
-          );
-        }
-      } catch (err) {
-        setError("Unable to load user profile.");
-      }
-    }
-    fetchUser();
-  }, [session]);
+				setBio(user.bio ?? "");
+				if (user.twitchLink) {
+					setTwitch(user.twitchLink.replace("https://www.twitch.tv/", ""));
+				}
+				if (user.youtubeLink) {
+					setYoutube(
+						user.youtubeLink.replace("https://www.youtube.com/@", "")
+					);
+				}
+			} catch (err) {
+				setError("Unable to load user profile.");
+			}
+		}
+		fetchUser();
+	}, [session]);
 
 
 	async function handleSubmit(e: React.FormEvent) {
@@ -77,7 +77,7 @@ export default function ProfileEdit(): AnyElem {
 		}
 
 		try {
-			const response = await API.users().patchUser(
+			await API.users().patchUser(
 				body,
 				`Bearer ${session.token}`,
 				session.user_id
@@ -250,7 +250,7 @@ export default function ProfileEdit(): AnyElem {
 				<input 
 					type="submit" 
 					value={"Update Profile"}
-  				disabled={isSubmitting}	
+					disabled={isSubmitting}	
 					/>
 				{error && !success && <span className="text-red-600 ml-1">{error}</span>}
 				{success && !error && <span className="text-green-600 ml-1">Profile updated!</span>}

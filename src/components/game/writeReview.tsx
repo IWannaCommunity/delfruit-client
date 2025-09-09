@@ -8,8 +8,8 @@ import { useRouter } from "next/router";
 import { useSessionContext } from "@/utils/hooks";
 
 type WriteReviewProps = {
-  onReviewUpdated: () => void;
-	existingReview?: ReviewT | null;
+	onReviewUpdated: () => void;
+	existingReview: ReviewT | null;
 };
 
 export default function GameReviews({ onReviewUpdated, existingReview }: WriteReviewProps): JSX.Element {
@@ -27,7 +27,7 @@ export default function GameReviews({ onReviewUpdated, existingReview }: WriteRe
 	const gameId = Number(router.query.id);
 
 	function isReviewEmpty() {
-  	return (rating < 0) && (difficulty < 0) && (comment.trim() === "") && (tags === "");
+		return (rating < 0) && (difficulty < 0) && (comment.trim() === "") && (tags === "");
 	}
 
 	async function handleSubmit() {
@@ -111,7 +111,7 @@ export default function GameReviews({ onReviewUpdated, existingReview }: WriteRe
 						<li>Make sure to properly tag your spoilers with the spoiler tag:</li>
 						<li className="list-none">
 							<ul>
-								<li>'[spoiler]This game has apples![spoiler]'</li>
+								<li>"[spoiler]This game has apples![spoiler]"</li>
 							</ul>
 						</li>
 						<li>
