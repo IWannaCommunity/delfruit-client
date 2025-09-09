@@ -141,8 +141,9 @@ export default function ComposePage(): AnyElem {
 			<h2>Send a PM</h2>
 			<form onSubmit={handleSubmit}>
 				<div className="relative">
-					<label className="ml-9">To: </label>
+					<label htmlFor="to" className="ml-9">To: </label>
 					<input
+						id="to"
 						type="text"
 						name="to"
 						value={formData.to}
@@ -168,20 +169,22 @@ export default function ComposePage(): AnyElem {
 				</div>
 
 				<div>
-					<label>Subject: </label>
-					<input
-						type="text"
-						name="subject"
-						maxLength={100}
-						value={formData.subject}
-						onChange={handleChange}
-					/>
+					<label htmlFor="subject">Subject: </label>
+						<input
+							id="subject"
+							type="text"
+							name="subject"
+							maxLength={100}
+							value={formData.subject}
+							onChange={handleChange}
+						/>
 				</div>
 
 				<div>
-					<label>Message:</label>
+					<label htmlFor="message">Message:</label>
 					<br />
 					<textarea
+						id="message"
 						name="message"
 						maxLength={5000}
 						value={formData.message}

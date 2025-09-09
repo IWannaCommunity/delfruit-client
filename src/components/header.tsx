@@ -38,6 +38,7 @@ export default function Header(): AnyElem {
 			<div className="!text-right">
 				<span>Find a fangame: </span>
 				<input
+					id="txt_search"
 					type="text"
 					placeholder="name or developer"
 					size={15}

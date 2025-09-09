@@ -118,7 +118,9 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 				<div>
 					<span> Description: (100 character max)</span>
 					<br/>
-					<input 
+					<input
+						id="description"
+						name="description"
 						className="w-full" 
 						type="text"
 						maxLength={100}

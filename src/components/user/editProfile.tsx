@@ -125,6 +125,8 @@ export default function ProfileEdit(): AnyElem {
 				<label className="group">
 					<span className="group-focus-within:font-bold"> Bio: </span>
 					<textarea
+						id="bio"
+						name="bio"
 						value={bio}
 						maxLength={5000}
 						onChange={(e) => {
@@ -141,6 +143,8 @@ export default function ProfileEdit(): AnyElem {
 						<span className="w-40 group-focus-within:font-bold">Twitch Channel:</span>
 						<span className="text-gray-600 text-sm group-focus-within:font-bold">https://www.twitch.tv/</span>						
 						<input
+							id="twitch_link"
+							name="twitch_link"
 							type="text"
 							className="flex-1"
 							value={twitch}
@@ -158,6 +162,8 @@ export default function ProfileEdit(): AnyElem {
 						<span className="w-40 group-focus-within:font-bold">YouTube Channel:</span>
 						<span className="text-gray-600 text-sm group-focus-within:font-bold">https://www.youtube.com/@</span>					
 						<input
+							id="yt_link"
+							name="yt_link"
 							type="text"
 							className="flex-1"
 							value={youtube}
@@ -174,6 +180,8 @@ export default function ProfileEdit(): AnyElem {
 						<span className="w-40 group-focus-within:font-bold">Twitter Profile:</span>
 						<span className="text-gray-600 text-sm group-focus-within:font-bold">https://www.twitter.com/</span>					
 						<input
+							id="twitter_link"
+							name="twitter_link"
 							type="text"
 							className="flex-1"
 							maxLength={15}
@@ -185,7 +193,9 @@ export default function ProfileEdit(): AnyElem {
 				<div className="flex flex-col gap-2 mt-[1em] !mb-[2em]">
 					<label className="group flex items-center gap-2">
 						<span className="w-40 group-focus-within:font-bold">Old Password:</span>
-						<input 
+						<input
+							id="password"
+							name="password"
 							type="password"
 							className={`border ${validPassField ? "border-gray-400" : "border-red-500"}`}
 							value={oldPassword}
@@ -204,7 +214,9 @@ export default function ProfileEdit(): AnyElem {
 
 					<label className="group flex items-center gap-2">
 						<span className="w-40 group-focus-within:font-bold">New Password:</span>
-						<input 
+						<input
+							id="new_password"
+							name="new_password"
 							type="password"
 							className={`border ${validNewPassField ? "border-gray-400" : "border-red-500"}`}
 							value={newPassword}
@@ -223,7 +235,9 @@ export default function ProfileEdit(): AnyElem {
 
 					<label className="group flex items-center gap-2">
 						<span className="w-40 group-focus-within:font-bold">Retype Password:</span>
-						<input 
+						<input
+							id="retype_password"
+							name="retype_password"
 							type="password"
 							className={`border ${validNewPassField ? "border-gray-400" : "border-red-500"}`}
 							value={retypePassword}
