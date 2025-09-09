@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { GameExt } from "delfruit-swagger-cg-sdk";
+import { GameExt, GamesApi } from "delfruit-swagger-cg-sdk";
 import Tag from "@/components/game/tag";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useSessionContext } from "@/utils/hooks";
 import { useRouter } from "next/router";
@@ -10,15 +10,40 @@ import {
 	getRatingDescription,
 	getDifficultyDescription,
 } from "@/utils/ratingHelpers";
+import { AnyElem } from "@/utils/element";
+import { Config } from "@/utils/config";
 
 type GameInfoProps = {
 	game: GameExt;
 };
 
-export default function GameInfo({ game }: GameInfoProps): JSX.Element {
+const CFG: Config = require("@/config.json");
+
+const GAMESCLIENT: GamesApi = new GamesApi(void 0, CFG.apiURL.toString());
+
+export default function GameInfo({ game }: GameInfoProps): AnyElem {
 	const [session, setSession] = useSessionContext();
 
 	const router = useRouter();
+
+	const [hideAdminCreatorInput, setHideAdminCreatorInput] =
+		useState<boolean>(true);
+	const [adminCreatorAlertText, setAdminCreatorAlertText] =
+		useState<string>("");
+
+	function toggleAdminCreatorInput() {
+		setHideAdminCreatorInput(!hideAdminCreatorInput);
+	}
+
+	async function actionAdminChangeGameCreators() {
+		try {
+			const resp = await GAMESCLIENT.patchGame(game, session.token, game.id);
+			toggleAdminCreatorInput();
+			setAdminCreatorAlertText("Changes Saved.");
+		} catch (e) {
+			setAdminCreatorAlertText("Error: Rejected, changes were not accepted.");
+		}
+	}
 
 	return (
 		<div className="w-[50%] float-left">
@@ -33,6 +58,54 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 					</React.Fragment>
 				))}
 			</h2>
+
+			<input
+				id="admin-creator-input"
+				type="text"
+				className="w-[95%]"
+				defaultValue={game.author}
+				hidden={hideAdminCreatorInput}
+			/>
+			<button
+				id="admin-change-creator"
+				type="button"
+				hidden={!hideAdminCreatorInput}
+				onClick={async (
+					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+				) => {
+					evt.preventDefault();
+					toggleAdminCreatorInput();
+				}}
+			>
+				Change Creator
+			</button>
+			<button
+				id="admin-save-change-creator"
+				type="submit"
+				hidden={hideAdminCreatorInput}
+				onClick={async (
+					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+				) => {
+					evt.preventDefault();
+					await actionAdminChangeGameCreators();
+				}}
+			>
+				Change
+			</button>{" "}
+			<button
+				id="admin-discard-change-creator"
+				type="reset"
+				hidden={hideAdminCreatorInput}
+				onClick={async (
+					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+				) => {
+					evt.preventDefault();
+					toggleAdminCreatorInput();
+				}}
+			>
+				Cancel
+			</button>
+			<span className="game_creator_update_alert">{adminCreatorAlertText}</span>
 
 			{/* Average Boxes */}
 			<div className="w-[380px] m-auto h-[80px]">
@@ -96,7 +169,10 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 			{/* Upload Screenshot */}
 			{session.active && (
 				<>
-					<Link className="standalone" href={`/screenshot/upload/${Number(router.query.id)}`}>
+					<Link
+						className="standalone"
+						href={`/screenshot/upload/${Number(router.query.id)}`}
+					>
 						<Image
 							src="/images/camera.png"
 							className="absolute ml-[2px]"
@@ -131,22 +207,17 @@ export default function GameInfo({ game }: GameInfoProps): JSX.Element {
 					<br />
 				</>
 			)}
-			<br/>
+			<br />
 			<span className="leading-[1.5] mt-5">0 people favourited this game!</span>
-			<br/>
+			<br />
 			<span className="leading-[1.5]">Date Submitted: {game.dateCreated}</span>
-			<br/>
+			<br />
 
 			{/* Tags */}
 			<div className="mt-5">
 				<h2>Tags:</h2>
 				{game.tags.map((tag) => (
-					<Tag 
-						key={tag.id} 
-						id={tag.id} 
-						name={tag.name} 
-						count={tag.count}
-					/>
+					<Tag key={tag.id} id={tag.id} name={tag.name} count={tag.count} />
 				))}
 			</div>
 		</div>

@@ -56,7 +56,9 @@ export default function Game(): AnyElem {
 					rating:
 						game.rating === null ? null : Number(game.rating / 10).toFixed(1),
 					difficulty:
-						game.difficulty === null ? null : Number(game.difficulty).toFixed(1),
+						game.difficulty === null
+							? null
+							: Number(game.difficulty).toFixed(1),
 					urlSpdrn: game.urlSpdrn,
 					tags: game.tags,
 
@@ -92,9 +94,9 @@ export default function Game(): AnyElem {
 				setDetails(gameProps);
 				setImages(carouselProps);
 			} catch (err: any) {
-					if (err.response?.status === 404) {
-						setError(true);
-					}
+				if (err.response?.status === 404) {
+					setError(true);
+				}
 			} finally {
 				setLoading(false);
 			}
@@ -105,7 +107,7 @@ export default function Game(): AnyElem {
 		if (loading) return <span>Loading...</span>;
 		if (error) return <span className="text-red-600">Invalid Page</span>;
 		if (!details) return null;
-		
+
 		return (
 			<>
 				<div className="!w-full">
@@ -124,9 +126,7 @@ export default function Game(): AnyElem {
 			</Head>
 			<div id="container">
 				<Header />
-				<div id="content">
-					{renderContent()}
-				</div>
+				<div id="content">{renderContent()}</div>
 				<Footer />
 			</div>
 		</div>
