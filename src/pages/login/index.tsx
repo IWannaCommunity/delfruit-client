@@ -80,13 +80,15 @@ export default function Login(): AnyElem {
 									*/}
 									<button type="submit">Login</button>
 								</form>
-								<br/>
+								<br />
 								<Link href="/">Forgot Password?</Link>
 							</div>
 							<div>
-								Don't have an account? It only takes 10 seconds to register,
-								and then you can get started using Delicious-Fruit!
-								<Link className="ml-1" href="/register">Register Now!</Link>
+								Don't have an account? It only takes 10 seconds to register, and
+								then you can get started using Delicious-Fruit!
+								<Link className="ml-1" href="/register">
+									Register Now!
+								</Link>
 							</div>
 						</>
 					) : successfulLogin ? (

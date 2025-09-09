@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { GameExt, GamesApi } from "delfruit-swagger-cg-sdk";
+import { Game, GameExt, GamesApi } from "delfruit-swagger-cg-sdk";
 import Tag from "@/components/game/tag";
 import React, { useState } from "react";
 import Link from "next/link";
@@ -37,7 +37,12 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 
 	async function actionAdminChangeGameCreators() {
 		try {
-			const resp = await GAMESCLIENT.patchGame(game, session.token, game.id);
+			const g = JSON.parse(JSON.stringify(game)) satisfies Game;
+			// DANGER: typically, DON'T DO THIS IN REACT, but I have no page reactivity
+			// so it's fine here.
+			g.author = document.getElementById("admin-creator-input").value;
+			console.log(g);
+			const resp = await GAMESCLIENT.patchGame(g, session.token, game.id);
 			toggleAdminCreatorInput();
 			setAdminCreatorAlertText("Changes Saved.");
 		} catch (e) {
