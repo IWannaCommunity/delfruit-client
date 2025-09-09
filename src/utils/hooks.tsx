@@ -171,13 +171,61 @@ export function useEffectAsync(
  * not mean it only ever runs "once". If your component has other useEffect hooks,
  * then this hook will re-run, and if it has dependencies, then they WILL be stale.
  * @param {React.EffectCallback} effect - The callback to be ran on mount.
+ * @param {React.DependencyList} deps - Dependencies that this hook relies on.
  * @returns {void}
  */
-export function useMount(effect: React.EffectCallback): void {
+export function useMount(
+	effect: React.EffectCallback,
+	deps: React.DependencyList,
+): void {
 	// QUEST: unsure why passing in a callback from a function parameter
 	// to be used would count as a dependency, as I assume that would be
 	// cyclic, but perhaps I'm wrong?
 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
-	return useEffect(effect, []);
+	return useEffect(effect, [...deps]);
+}
+
+/**
+ * Hook that only runs when the component is unmounted.
+ * @description This hook only runs when the component is unmounted. On the occasion that
+ * you only want to run code when the component is unmounted, for something like a
+ * destructor, then this hook will be useful to you. However, if you also want to run
+ * additional code along side this, you might want to look towards
+ *  using useEffectWithUnmount instead.
+ * @param {VoidFunction} cleanup - The callback to be ran on unmount.
+ * @param {React.DependencyList} deps - Dependencies that this hook relies on.
+ * @returns {void}
+ */
+export function useUnmount(
+	cleanup: VoidFunction,
+	deps: React.DependencyList,
+): void {
+	return useEffect(() => {
+		return cleanup;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [cleanup, ...deps]);
+}
+
+/**
+ * Hook that only runs when the component is unmounted.
+ * @description This hook only runs when the component is unmounted. On the occasion that
+ * you only want to run code when the component is unmounted, for something like a
+ * destructor, then this hook will be useful to you.
+ * @param {React.EffectCallback} effect - The callback to be ran as the base of the effect.
+ * @param {VoidFunction} cleanup - The callback to be ran on unmount.
+ * @param {React.DependencyList} deps - Dependencies that this hook relies on.
+ * @returns {void}
+ */
+export function useEffectWithUnmount(
+	effect: React.EffectCallback,
+	cleanup: VoidFunction,
+	deps: React.DependencyList,
+): void {
+	return useEffect(() => {
+		effect();
+
+		return cleanup;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [effect, cleanup, ...deps]);
 }
