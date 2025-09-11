@@ -4,6 +4,7 @@ import { useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
 import { Message as MessageT, UserExt as UserT } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function Compose(): AnyElem {
 	const [session] = useSessionContext();
@@ -133,6 +134,9 @@ export default function Compose(): AnyElem {
 
 	return (
 		<>
+			<div>
+				<Link href="/messages">&lt;&lt; Back</Link>
+			</div>
 			<h2>Send a PM</h2>
 			<form onSubmit={handleSubmit}>
 				<div className="relative">
