@@ -20,7 +20,7 @@ export default function MessageThread(props: Props): AnyElem {
 			<br />
 
 			{/* COMMENT */}
-      <div className="review-text !wrap-break-word">
+      <div className="review-text break-words whitespace-pre-wrap">
         <span>{props.body}</span>
       </div>
 

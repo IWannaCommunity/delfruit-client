@@ -107,7 +107,7 @@ export default function Review(props: ReviewT): JSX.Element {
 			{/* COMMENT */}
 			{props.comment !== "" && props.comment !== null && (
 				<div>
-					<div className="review-text !wrap-break-word">
+					<div className="review-text break-words whitespace-pre-wrap">
 						<span>{displayText}</span>
 					</div>
 
