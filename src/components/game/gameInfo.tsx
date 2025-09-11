@@ -31,22 +31,63 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 	const [adminCreatorAlertText, setAdminCreatorAlertText] =
 		useState<string>("");
 
+	const [hideAdminDLUrlInput, setHideAdminDLUrlInput] = useState<boolean>(true);
+	const [adminDLUrlText, setAdminDLUrlText] = useState<string>("");
+
 	function toggleAdminCreatorInput() {
 		setHideAdminCreatorInput(!hideAdminCreatorInput);
 	}
 
+	function toggleAdminDLUrlInput() {
+		setHideAdminDLUrlInput(!hideAdminDLUrlInput);
+	}
+
 	async function actionAdminChangeGameCreators() {
 		try {
+			// HACK: rudimentary deepcopy since VMs try to optimize by making this a ref
 			const g = JSON.parse(JSON.stringify(game)) satisfies Game;
 			// DANGER: typically, DON'T DO THIS IN REACT, but I have no page reactivity
-			// so it's fine here.
-			g.author = document.getElementById("admin-creator-input").value;
-			console.log(g);
+			// so it's fine here. actually that's a lie, I do, but input should be
+			// preserved between renders.
+			g.author = (
+				document.getElementById("admin-creator-input") as HTMLInputElement
+			).value;
 			const resp = await GAMESCLIENT.patchGame(g, session.token, game.id);
 			toggleAdminCreatorInput();
 			setAdminCreatorAlertText("Changes Saved.");
 		} catch (e) {
 			setAdminCreatorAlertText("Error: Rejected, changes were not accepted.");
+		}
+	}
+
+	async function actionAdminChangeDLUrl() {
+		// check if it's even a valid URL
+		const dl = (() => {
+			try {
+				// DANGER: typically, DON'T DO THIS IN REACT, but I have no page reactivity
+				// so it's fine here. actually that's a lie, I do, but input should be
+				// preserved between renders.
+				return new URL(
+					(document.getElementById("admin-download-input") as HTMLInputElement)
+						.value,
+				);
+			} catch (e) {
+				setAdminDLUrlText("Error: Rejected, download is not a valid URL.");
+			}
+		})();
+		if (!(dl instanceof URL)) {
+			return;
+		}
+
+		try {
+			// HACK: rudimentary deepcopy since VMs try to optimize by making this a ref
+			const g = JSON.parse(JSON.stringify(game)) satisfies Game;
+			g.url = dl;
+			const resp = await GAMESCLIENT.patchGame(g, session.token, game.id);
+			toggleAdminDLUrlInput();
+			setAdminDLUrlText("Changes Saved.");
+		} catch (e) {
+			setAdminDLUrlText("Error: Rejected, changes were not accepted.");
 		}
 	}
 
@@ -151,7 +192,55 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 				<span id="no-link" className="inline-block pb-[1em]">
 					[Download Not Available]
 				</span>
-			)}
+			)}{" "}
+			<input
+				id="admin-download-input"
+				type="text"
+				className="w-[95%]"
+				defaultValue={game.url}
+				hidden={hideAdminDLUrlInput}
+			/>
+			<button
+				id="admin-change-download"
+				type="button"
+				hidden={!hideAdminDLUrlInput}
+				onClick={async (
+					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+				) => {
+					evt.preventDefault();
+					toggleAdminDLUrlInput();
+				}}
+			>
+				Change URL
+			</button>
+			<button
+				id="admin-save-change-download"
+				type="submit"
+				hidden={hideAdminDLUrlInput}
+				onClick={async (
+					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+				) => {
+					evt.preventDefault();
+					await actionAdminChangeDLUrl();
+				}}
+			>
+				Change
+			</button>{" "}
+			<button
+				id="admin-discard-change-download"
+				type="reset"
+				hidden={hideAdminDLUrlInput}
+				onClick={async (
+					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+				) => {
+					evt.preventDefault();
+					toggleAdminDLUrlInput();
+				}}
+			>
+				Cancel
+			</button>
+			<span className="game_creator_update_alert">{adminDLUrlText}</span>
+
 			<br />
 
 			{/* Speedrun Leaderboard */}
