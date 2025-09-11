@@ -5,7 +5,7 @@ import { API } from "@/utils/api";
 import { Message as MessageT, UserExt as UserT } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
 
-export default function ComposePage(): AnyElem {
+export default function Compose(): AnyElem {
 	const [session] = useSessionContext();
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
