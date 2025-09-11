@@ -109,6 +109,10 @@ export default function MessagePage(): AnyElem {
 
 			try {
 				const data = await fetchMessages(id);
+				if (data.length === 0) {
+					setError("This is an invalid thread, or you are not a participant.");
+					return;
+				}
 				const messageProps: MessageT[] = data.map((msg) => ({
 					id: msg.id,
 					user_from_id: msg.user_from_id,
