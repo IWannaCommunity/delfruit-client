@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Header from "@/components/header";
-import News from "@/components/home/news";
+import HomeNews from "@/components/home/homeNews";
 import GameList from "@/components/home/gameList";
 import ReviewList from "@/components/home/reviewList";
 import Footer from "@/components/footer";
@@ -16,7 +16,7 @@ export default function Home(): AnyElem {
 			<div id="container">
 				<Header />
 				<div id="content">
-					<News />
+					<HomeNews />
 					<GameList />
 					<div>
 						<h2>Latest Reviews</h2>
