@@ -1,3 +1,4 @@
+import React from "react";
 import { AnyElem } from "@/utils/element";
 import Head from "next/head";
 import Header from "@/components/header";
@@ -5,11 +6,11 @@ import Footer from "@/components/footer";
 import { API } from "@/utils/api";
 import { News as NewsT } from "delfruit-swagger-cg-sdk";
 import { useMemo, useState } from "react";
-import BBCode from "@bbob/react";
+import BBCode from "@bbob/react/lib";
 import { useRouter } from "next/router";
-import presetReact from "@bbob/preset-react";
+import presetReact from "@bbob/preset-react/lib";
 
-export default function NewsPage(): AnyElem {
+export default function NewsPage2(): AnyElem {
 	const router = useRouter();
 	const id = Number(router.query.id);
 
