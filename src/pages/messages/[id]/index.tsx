@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Head from "next/head";
 import Header from "@/components/header";
-import Footer from "@/components/footer";
 import MessageThread from "@/components/messages/messageThread";
 import { AnyElem } from "@/utils/element";
 import { useUserNames } from "@/utils/userNameCache";
@@ -10,7 +9,7 @@ import { formatDate } from "@/utils/formatDate";
 import { useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
 import { Message as MessageT } from "delfruit-swagger-cg-sdk";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 
 export default function MessagePage(): AnyElem {
 
@@ -20,8 +19,13 @@ export default function MessagePage(): AnyElem {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [cooldown, setCooldown] = useState(0);
+	const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
 	const router = useRouter();
+
+	const scrollToBottom = () => {
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+	};
 
 	// #region fetchMessages(id)
 	/*
@@ -104,6 +108,8 @@ export default function MessagePage(): AnyElem {
 			}
 		} catch (err) {
 			setError("Failed to send message");
+		} finally {
+			scrollToBottom();
 		}
 	};
 	// #endregion
@@ -185,6 +191,15 @@ export default function MessagePage(): AnyElem {
 
 	// #region
 	/*
+	* useEffect for auto scrolling to the bottom
+	*/
+	useEffect(() => {
+		scrollToBottom();
+	}, [messages]);
+	// #endregion
+
+	// #region
+	/*
 	* useMemo for displaying dynamic cooldown text
 	*/
 	const cooldownText = useMemo(() => {
@@ -219,32 +234,35 @@ export default function MessagePage(): AnyElem {
 
 		return (
 			<>
-				<div>
-					<Link href="/messages">&lt;&lt; Back</Link>
+				<div id="content">
+					<div>
+						<Link href="/messages">&lt;&lt; Back</Link>
+					</div>
+					<div>
+						<h2>Private Message</h2>
+						{messages.length > 0 && (
+							<h4>Subject: {messages[0].subject}</h4>
+						)}
+						{messages.map((msg: any) => {
+							return (
+								<MessageThread
+									key={msg.id}
+									id={msg.id}
+									user_from_id={msg.user_from_id}
+									user_to_id={msg.user_to_id}
+									subject={msg.subject}
+									body={msg.body}
+									reply_to_id={msg.reply_to_id}
+									thread_id={msg.thread_id}
+									date_created={msg.date_created}
+									userNames={userNames}
+								/>
+							);
+						})}
+						
+					</div>
 				</div>
-				<div>
-					<h2>Private Message</h2>
-					{messages.length > 0 && (
-						<h4>Subject: {messages[0].subject}</h4>
-					)}
-					{messages.map((msg: any) => {
-						return (
-							<MessageThread
-								key={msg.id}
-								id={msg.id}
-								user_from_id={msg.user_from_id}
-								user_to_id={msg.user_to_id}
-								subject={msg.subject}
-								body={msg.body}
-								reply_to_id={msg.reply_to_id}
-								thread_id={msg.thread_id}
-								date_created={msg.date_created}
-								userNames={userNames}
-							/>
-						);
-					})}
-				</div>
-				<div className="mt-4 flex items-center border-t pt-2 p-2">
+				<div className="fixed bottom-0 left-[43em] right-[43em] bg-white border-t rounded-md mb-2 pt-4 px-2 flex items-center">
 					<textarea
 						value={replyText}
 						maxLength={2000}
@@ -287,11 +305,9 @@ export default function MessagePage(): AnyElem {
 			</Head>
 			<div id="container">
 				<Header />
-				<div id="content">
-					{renderContent()}
-				</div>
-				<Footer />
+				{renderContent()}
 			</div>
+			<div ref={messagesEndRef} />
 		</div>
 	);
 }
