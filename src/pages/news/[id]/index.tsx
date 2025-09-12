@@ -32,7 +32,7 @@ export default function NewsPage2(): AnyElem {
 		})();
 	}, [hydrated, router.isReady, id]);
 
-	if (!hydrated) {
+	if (!hydrated || news === null) {
 		return <></>;
 	}
 
