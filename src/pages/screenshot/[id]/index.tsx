@@ -8,13 +8,19 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { makeScrnshotURL } from "@/utils/url";
 import { API } from "@/utils/api";
+import { useSessionContext } from "@/utils/hooks";
 
 export default function Screenshot(): AnyElem {
 	const router = useRouter();
 
+	const [session] = useSessionContext();
+
 	const [screenshotURL, setScreenshotURL] = useState<URL>(undefined);
 	const [screenshotGameName, setScreenshotGameName] = useState<string>("");
-	const [screenshotDescription, setScreenshotDescription] = useState<string>("");
+	const [screenshotDescription, setScreenshotDescription] =
+		useState<string>("");
+	const [adminRemoveScreenshotText, setAdminRemoveScreenshotText] =
+		useState<string>("");
 
 	const id = Number(router.query.id);
 
@@ -35,6 +41,15 @@ export default function Screenshot(): AnyElem {
 			setScreenshotGameName(resp.data.name);
 		})();
 	}, [router.isReady, id]);
+
+	async function actionAdminRemoveScreenshot() {
+		try {
+			await API.screenshots().deleteScreenshot(session.token, id);
+			setAdminRemoveScreenshotText("Screenshot removed.");
+		} catch (e) {
+			setAdminRemoveScreenshotText("Error: Rejected, request did not finish.");
+		}
+	}
 
 	return (
 		<div>
@@ -61,7 +76,18 @@ export default function Screenshot(): AnyElem {
 
 					<h2>Admin Tools</h2>
 					<p id="admin_controls">
-						<Link href="/">Remove Screenshot</Link>
+						<button
+							type="submit"
+							onClick={async (
+								evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+							) => {
+								evt.preventDefault();
+								await actionAdminRemoveScreenshot();
+							}}
+						>
+							Remove Screenshot
+						</button>
+						<p>{adminRemoveScreenshotText}</p>
 					</p>
 				</div>
 				<Footer />
