@@ -344,7 +344,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 					) => {
 						evt.preventDefault();
-						actionAdminChangeOwner();
+						await actionAdminChangeOwner();
 					}}
 				>
 					Update
