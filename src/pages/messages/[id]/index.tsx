@@ -87,7 +87,6 @@ export default function MessagePage(): AnyElem {
 			}
 		} catch (err) {
 			setError("Failed to send message");
-			console.log(err);
 		}
 	};
 
@@ -134,7 +133,7 @@ export default function MessagePage(): AnyElem {
 				setLoading(false);
 			}
 		})();
-	}, [fetchMessages, router.isReady]);
+	}, [fetchMessages, router.isReady, router.query.id]);
 
 	const allUserIds = useMemo(() => {
 		return [
@@ -162,15 +161,15 @@ export default function MessagePage(): AnyElem {
 					{messages.map((msg: any) => {
 						return (
 							<MessageThread
-								key = {msg.id}
-								id = {msg.id}
-								user_from_id = {msg.user_from_id}
-								user_to_id = {msg.user_to_id}
-								subject = {msg.subject}
-								body = {msg.body}
-								reply_to_id = {msg.reply_to_id}
-								thread_id = {msg.thread_id}
-								date_created = {msg.date_created}
+								key={msg.id}
+								id={msg.id}
+								user_from_id={msg.user_from_id}
+								user_to_id={msg.user_to_id}
+								subject={msg.subject}
+								body={msg.body}
+								reply_to_id={msg.reply_to_id}
+								thread_id={msg.thread_id}
+								date_created={msg.date_created}
 								userNames={userNames}
 							/>
 						);
@@ -198,8 +197,9 @@ export default function MessagePage(): AnyElem {
 							}
 						}}
 					/>
-					<button 
+					<button
 						onClick={handleSend}
+						type="button"
 						className="styled-button-1 w-20 mb-[1em]">
 						Send
 					</button>
