@@ -22,7 +22,7 @@ export default function Review(props: ReviewT): JSX.Element {
 			? props.comment
 			: props.comment.slice(0, maxLength) + "...";
 
-	const tempDisable = () => {
+	function tempDisable(): void {
 		setDisabled(true);
 		setTimeout(() => setDisabled(false), 1000);
 	}
@@ -36,7 +36,7 @@ export default function Review(props: ReviewT): JSX.Element {
 				const res = await API.reviews().deleteReviewLike(
 					`Bearer ${session.token}`,
 					props.id,
-					session.user_id
+					session.user_id,
 				);
 
 				if (typeof res.data === "boolean") {
@@ -51,7 +51,7 @@ export default function Review(props: ReviewT): JSX.Element {
 		checkLiked();
 	}, [session, props.id, props.user_id]);
 
-	const likeReview = async () => {
+	async function likeReview(): Promise<void> {
 		if (!session.active || !session.token) return;
 
 		setLikeCount((prev: number) => prev + 1);
@@ -60,18 +60,18 @@ export default function Review(props: ReviewT): JSX.Element {
 
 		try {
 			await API.reviews().putReviewLike(
-					`Bearer ${session.token}`,
-					props.id,
-					session.user_id,
-				);
+				`Bearer ${session.token}`,
+				props.id,
+				session.user_id,
+			);
 		} catch (error) {
 			setLikeCount((prev: number) => prev - 1);
 		}
 	}
 
-	const unlikeReview = async () => {
+	async function unlikeReview(): Promise<void> {
 		if (!session.active || !session.token || !liked) return;
-		
+
 		setLikeCount((prev: number) => prev - 1);
 		setLiked(false);
 		tempDisable();
@@ -80,14 +80,20 @@ export default function Review(props: ReviewT): JSX.Element {
 			await API.reviews().deleteReviewLike_1(
 				`Bearer ${session.token}`,
 				props.id,
-				session.user_id
+				session.user_id,
 			);
 		} catch (error) {
 			setLikeCount((prev: number) => prev + 1);
 			setLiked(true);
 		}
-	};
+	}
 
+	async function actionAdminRemoveReview(
+		evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+	) {
+		evt.preventDefault();
+		// TODO: no proper API call to do this currently
+	}
 	return (
 		<div className={`review ${props.owner_review ? "owner-review" : ""}`}>
 			{/* AUTHOR */}
@@ -138,10 +144,8 @@ export default function Review(props: ReviewT): JSX.Element {
 			<span>] </span>
 			<span className="r-like-span-label">Likes</span>
 			{session.active && (
-				<a 
-					onClick={
-						!disabled ? (liked ? unlikeReview : likeReview) : undefined
-					}
+				<a
+					onClick={!disabled ? (liked ? unlikeReview : likeReview) : undefined}
 					className={`underline ml-1 cursor-pointer ${
 						disabled ? "opacity-50 pointer-events-none" : ""
 					}`}
@@ -180,8 +184,13 @@ export default function Review(props: ReviewT): JSX.Element {
 
 					{/* Buttons */}
 					{session.active && (
-						<Link href={`/report/${props.id}`} className="ml-1">Report</Link>
-					)}
+						<Link href={`/report/${props.id}`} className="ml-1">
+							Report
+						</Link>
+					)}{" "}
+					<button type="submit" onClick={actionAdminRemoveReview}>
+						(ADMIN) Remove
+					</button>
 				</div>
 			</div>
 		</div>
