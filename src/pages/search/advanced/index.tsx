@@ -106,7 +106,7 @@ export default function AdvancedSearch(): AnyElem {
 		uiSetCreatedTo,
 	]);
 
-	async function startSearch(evt: FormEvent<HTMLFormElement>) {
+	async function startSearch(evt: React.FormEvent<HTMLFormElement>) {
 		evt.preventDefault();
 
 		const searchParams = new URLSearchParams();
