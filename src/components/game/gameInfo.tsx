@@ -34,6 +34,8 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 	const [hideAdminDLUrlInput, setHideAdminDLUrlInput] = useState<boolean>(true);
 	const [adminDLUrlText, setAdminDLUrlText] = useState<string>("");
 
+	const [adminOwnerText, setAdminOwnerText] = useState<string>("");
+
 	function toggleAdminCreatorInput() {
 		setHideAdminCreatorInput(!hideAdminCreatorInput);
 	}
@@ -88,6 +90,19 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 			setAdminDLUrlText("Changes Saved.");
 		} catch (e) {
 			setAdminDLUrlText("Error: Rejected, changes were not accepted.");
+		}
+	}
+
+	async function actionAdminChangeOwner() {
+		const owner = (document.getElementById("owner-field") as HTMLInputElement)
+			.value;
+		const g = JSON.parse(JSON.stringify(game)) satisfies Game;
+		g.owner = owner;
+		try {
+			const resp = await GAMESCLIENT.patchGame(g, session.token, game.id);
+			setAdminOwnerText("Changes Saved.");
+		} catch (e) {
+			setAdminOwnerText("Error: Rejected, changes were not accepted.");
 		}
 	}
 
@@ -314,6 +329,29 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 					<Tag key={tag.id} id={tag.id} name={tag.name} count={tag.count} />
 				))}
 			</div>
+
+			{/* Other Admin Quick Actions */}
+			<h2>ADMIN TOOLS</h2>
+			<p>
+				<Link href="/admin/remove_game">Remove Game</Link>
+				<br />
+				Owner:
+				<input id="owner-field" type="text" size={15} defaultValue="" />
+				<button
+					id="owner-btn"
+					type="submit"
+					onClick={async (
+						evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+					) => {
+						evt.preventDefault();
+						actionAdminChangeOwner();
+					}}
+				>
+					Update
+				</button>
+				<br />
+				<span id="owner-alert">{adminOwnerText}</span>
+			</p>
 		</div>
 	);
 }
