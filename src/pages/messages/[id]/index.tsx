@@ -19,9 +19,15 @@ export default function MessagePage(): AnyElem {
 	const [replyText, setReplyText] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [cooldown, setCooldown] = useState(0);
 
 	const router = useRouter();
 
+	// #region fetchMessages(id)
+	/*
+	* useCallback function, calls API to retrieve messages
+	* @returns Message[]
+	*/
 	const fetchMessages = useCallback(async (id: number) => {
 		const resp = await API.messages().getMessagesFromThread(
 			`Bearer ${session.token}`, // authorization
@@ -29,8 +35,18 @@ export default function MessagePage(): AnyElem {
 		);
 		return resp.data;
 	}, [session.token]);
+	// #endregion
 
+	// #region handleSend()
+	/*
+	* Handler and logic for sending a message
+	* Does a POST request on API
+	* Then refreshes all messages again after
+	* Then starts reply cooldown
+	*/
 	const handleSend = async () => {
+		if (cooldown > 0) { return; }
+
 		if (!replyText.trim()) return;
 		if (!messages.length) {
 			setError("No messages in thread, cannot reply.");
@@ -84,14 +100,45 @@ export default function MessagePage(): AnyElem {
 						: null,
 				}));
 				setMessages(messageProps);
+				setCooldown(5);
 			}
 		} catch (err) {
 			setError("Failed to send message");
 		}
 	};
+	// #endregion
 
+	// #region
+	/*
+	* useEffect for counting down the cooldown timer
+	*/
 	useEffect(() => {
+		let interval: NodeJS.Timeout | null = null;
 
+		if (cooldown > 0) {
+			interval = setInterval(() => {
+				setCooldown((prev) => {
+					if (prev <= 1) {
+						if (interval) clearInterval(interval);
+						return 0;
+					}
+					return prev - 1;
+				});
+			}, 1000);
+		}
+
+		return () => {
+			if (interval) clearInterval(interval);
+		};
+	}, [cooldown]);
+	// #endregion
+
+	// #region
+	/*
+	* useEffect for loading the page and populating messages initially
+	* Calls the fetchMessages function and passes query id to it
+	*/
+	useEffect(() => {
 		if (!router.isReady) return;
 
 		const id = Number(router.query.id);
@@ -134,15 +181,37 @@ export default function MessagePage(): AnyElem {
 			}
 		})();
 	}, [fetchMessages, router.isReady, router.query.id]);
+	// #endregion
 
+	// #region
+	/*
+	* useMemo for displaying dynamic cooldown text
+	*/
+	const cooldownText = useMemo(() => {
+		return cooldown > 0 ? `Wait ${cooldown}s` : "Send";
+	}, [cooldown]);
+	// #endregion
+
+	// #region
+	/*
+	* useMemo for filtering non-unique userIDs
+	* Then uses the userNameCache util to store usernames in cache
+	* to reduce repeated API calls
+	*/
 	const allUserIds = useMemo(() => {
 		return [
 			...new Set(messages.flatMap((m) => [m.user_from_id, m.user_to_id])),
 		].filter(Boolean) as number[];
 	}, [messages]);
 
-  const userNames = useUserNames(allUserIds);
+	const userNames = useUserNames(allUserIds);
+	// #endregion
 
+	// #region renderContent()
+	/*
+	 * Determines what is to be rendered to the screen
+	 * @returns JSX.Element
+	*/
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
 		if (error) return <span className="text-red-600">{error}</span>;
@@ -200,13 +269,16 @@ export default function MessagePage(): AnyElem {
 					<button
 						onClick={handleSend}
 						type="button"
-						className="styled-button-1 w-20 mb-[1em]">
-						Send
+						disabled={cooldown > 0}
+						className={`styled-button-1 w-20 mb-[1em] ${cooldown > 0 ? "opacity-50" : ""}`}
+					>
+						{cooldownText}
 					</button>
 				</div>
 			</>
 		)
 	}
+	// #endregion
 
 	return (
 		<div>
