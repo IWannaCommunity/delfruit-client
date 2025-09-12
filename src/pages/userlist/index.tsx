@@ -26,7 +26,7 @@ const userColumns: Column<User>[] = [
 		key: "name",
 		label: "Username",
 		render: (value, row) => (
-			<Link href={`/user/${row.id}`}>
+			<Link href={`/profile/${row.id}`}>
 				{value}
 			</Link>
 		),
@@ -48,6 +48,7 @@ export default function UserList(): AnyElem {
 	const [sortConfig, setSortConfig] = useState<SortConfig<User> | null>(null);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
+	const [initialized, setInitialized] = useState(false);
 
 	const router = useRouter();
 	
@@ -60,6 +61,8 @@ export default function UserList(): AnyElem {
 				undefined, // banned
 				requestedPage, // page number
 				50, // limit
+				sort?.column, // orderCol
+				sort?.direction, // orderDir
 			);
 
 			const newData: User[] = (res.data ?? []).map((u: any) => ({
@@ -69,25 +72,26 @@ export default function UserList(): AnyElem {
 				twitchLink: u.twitchLink,
 				youtubeLink: u.youtubeLink,
 				twitterLink: u.twitterLink,
-				reviewCount: u.reviewCount
+				reviewCount: Number(u.reviewCount)
 			}));
 
 			return newData;
-		},
-		[]
+		},[]
 	);
 	
 	useEffect(() => {
 		if (!router.isReady) return;
 
 		let isCancelled = false;
+		setInitialized(false);
 
 		const fetchAndSet = async () => {
 			const firstPage = await fetchUsers(0, sortConfig);
 			if (!isCancelled) {
 				setUsers(firstPage);
 				setPage(0);
-				setHasMore(firstPage.length > 0);
+				setHasMore(firstPage.length === 50);
+				setInitialized(true);
 			}
 		};
 
@@ -111,9 +115,10 @@ export default function UserList(): AnyElem {
 		setPage(nextPage);
 	};
 	
-	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
-		if (hasMore) loadMore();
-	});
+	const loaderRef = useInfiniteScroll<HTMLDivElement>(
+		() => { if (hasMore) loadMore(); },
+		{ enabled: initialized }
+	);
 
 	return (
 		<div>
