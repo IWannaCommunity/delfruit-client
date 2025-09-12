@@ -111,12 +111,12 @@ export default function AdvancedSearch(): AnyElem {
 
 		const searchParams = new URLSearchParams();
 		// TODO: set these all at once
-		specifiedRating && searchParams.set("ratingTo", String(ratingRange[0]));
-		specifiedRating && searchParams.set("ratingFrom", String(ratingRange[1]));
+		specifiedRating && searchParams.set("ratingFrom", String(ratingRange[0]));
+		specifiedRating && searchParams.set("ratingTo", String(ratingRange[1]));
 		specifiedDifficulty &&
-			searchParams.set("difficultyTo", String(difficultyRange[0]));
+			searchParams.set("difficultyFrom", String(difficultyRange[0]));
 		specifiedDifficulty &&
-			searchParams.set("difficultyFrom", String(difficultyRange[1]));
+			searchParams.set("difficultyTo", String(difficultyRange[1]));
 		requireDL && searchParams.set("hasDownload", String(requireDL));
 		createdFrom && searchParams.set("createdFrom", createdFrom);
 		createdTo && searchParams.set("createdTo", createdTo);
