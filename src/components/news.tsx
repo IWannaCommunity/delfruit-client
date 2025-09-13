@@ -1,10 +1,13 @@
 import { News as NewsT } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
 import { useState } from "react";
+import BBCode from "@bbob/react/lib";
+import presetReact from "@bbob/preset-react/lib";
 
 export default function News(props: NewsT): JSX.Element {
 
 	const [expanded, setExpanded] = useState(false);
+	const bbobPlugins = [presetReact()];
 
 	const maxLength = 500;
 	const shouldTruncate = props.news
@@ -18,7 +21,7 @@ export default function News(props: NewsT): JSX.Element {
 	return (
 		<div className="!relative !p-[0.5em] !bg-[#e8e8e8]">
 			<h3>
-				<Link href={`/news/${props.poster_id}`}>
+				<Link href={`/news/${props.id}`}>
 					{props.title}
 				</Link>
 			</h3>
@@ -27,7 +30,7 @@ export default function News(props: NewsT): JSX.Element {
 			{props.news !== "" && props.news !== null && (
 				<div>
 					<div className="break-words whitespace-pre-wrap">
-						<span>{displayText}</span>
+						<BBCode plugins={bbobPlugins}>{displayText}</BBCode>
 					</div>
 
 					{shouldTruncate && (

@@ -10,7 +10,7 @@ import { formatDate } from "@/utils/formatDate";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
 import { dedupeArray } from "@/utils/dedupeArray";
 
-export default function NewsPage(): AnyElem {
+export default function NewsListPage(): AnyElem {
 
 	const [news, setNews] = useState<NewsT[]>([]);
 	const [loading, setLoading] = useState(false);
