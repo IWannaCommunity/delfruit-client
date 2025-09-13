@@ -12,6 +12,7 @@ import UserReviews from "@/components/user/userReviews";
 import { API } from "@/utils/api";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
+import { useSessionContext } from "@/utils/hooks";
 
 export type ProfileTabValue =
 	| "profile"
@@ -25,20 +26,27 @@ export type ProfileTabValue =
 export default function Profile(): AnyElem {
 	const [activeTab, setActiveTab] = useState<ProfileTabValue>("profile");
 	const [user, setUser] = useState<UserExt>();
-	const [error, setError] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [session] = useSessionContext();
 
 	const router = useRouter();
 
-	const tabs = [
-		{ label: "User Profile", value: "profile" },
-		{ label: "Ratings", value: "ratings" },
-		{ label: "Reviews", value: "reviews" },
-		{ label: "Games", value: "games" },
-		{ label: "Favorites List", value: "favorites" },
-		{ label: "Clear List", value: "clearList" },
-		{ label: "Admin", value: "admin" },
-	] as const;
+	const baseTabs = [
+  { label: "User Profile", value: "profile" },
+  { label: "Ratings", value: "ratings" },
+  { label: "Reviews", value: "reviews" },
+  { label: "Games", value: "games" },
+  { label: "Favorites List", value: "favorites" },
+  { label: "Clear List", value: "clearList" },
+] as const;
+
+const tabs = session.admin
+  ? [
+      ...baseTabs,
+      { label: "Admin", value: "admin" },
+    ] as const
+  : baseTabs;
 
 	useEffect(() => {
 		if (!router.isReady) return;
@@ -47,7 +55,7 @@ export default function Profile(): AnyElem {
 
 		// Anti-trolling measures
 		if (isNaN(id) || id < 0 || !id) {
-			setError(true);
+			setError("Invalid page");
 			setLoading(false);
 			return;
 		}
@@ -74,7 +82,9 @@ export default function Profile(): AnyElem {
 				setUser(newData);
 			} catch (err: any) {
 				if (err.response?.status === 404) {
-					setError(true);
+					setError("Invalid page");
+				} else {
+					setError("Something went wrong");
 				}
 			} finally {
 				setLoading(false);
@@ -84,7 +94,7 @@ export default function Profile(): AnyElem {
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
-		if (error) return <span className="text-red-600">Invalid Page</span>;
+		if (error) return <span className="text-red-600">{error}</span>;
 
 		return (
 			<>
@@ -109,7 +119,7 @@ export default function Profile(): AnyElem {
 						{activeTab === "reviews" && user && <UserReviews user={user} />}
 
 						{/* Admin */}
-						{activeTab === "admin" && user && (
+						{activeTab === "admin" && session.admin && user && (
 							<>
 								<input type="checkbox" /> Can submit new games <br />
 								<input type="checkbox" /> Can report <br />
