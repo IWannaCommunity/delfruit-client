@@ -262,7 +262,7 @@ export default function MessagePage(): AnyElem {
 						
 					</div>
 				</div>
-				<div className="fixed bottom-0 left-[43em] right-[43em] bg-white border-t rounded-md mb-2 pt-4 px-2 flex items-center">
+				<div className="fixed bottom-0 left-[45em] right-[45em] bg-white border-t rounded-md mb-2 pt-4 px-2 flex items-center">
 					<textarea
 						value={replyText}
 						maxLength={2000}
