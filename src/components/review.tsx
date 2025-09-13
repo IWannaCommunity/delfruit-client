@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { API } from "@/utils/api";
 import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
+import BBCode from "@bbob/react/lib";
+import { preset } from "@/utils/bbobPreset";
 
 export default function Review(props: ReviewT): JSX.Element {
 	const [expanded, setExpanded] = useState(false);
@@ -33,6 +35,15 @@ export default function Review(props: ReviewT): JSX.Element {
 
 			try {
 				// NOTE: THIS IS THE GET FUNCTION
+				/*
+				* ALSO: I'm starting to think this wasn't actually
+				* misnamed, but moreso klazen probably meant to delete this
+				* call entirely. Because it calls itself once on every review
+				* render which is awful, even if all it returns is a boolean.
+				* Having that many API calls happening is a big yikes.
+				* So on backend, need to somehow get whether a user liked a review
+				* or not into the getReviews call
+				*/
 				const res = await API.reviews().deleteReviewLike(
 					`Bearer ${session.token}`,
 					props.id,
@@ -114,7 +125,7 @@ export default function Review(props: ReviewT): JSX.Element {
 			{props.comment !== "" && props.comment !== null && (
 				<div>
 					<div className="review-text break-words whitespace-pre-wrap">
-						<span>{displayText}</span>
+						<BBCode plugins={[preset()]}>{displayText}</BBCode>
 					</div>
 
 					{shouldTruncate && (
@@ -133,7 +144,7 @@ export default function Review(props: ReviewT): JSX.Element {
 				<div className="!mb-[0px]">
 					<span> Tagged as: </span>
 					{props.tags.map((tag: any) => {
-						return <Tag key={tag.id} id={tag.id} name={tag.name} />;
+						return <Tag key={tag.id} id={tag.id} name={tag.name} count={null} />;
 					})}
 				</div>
 			)}
