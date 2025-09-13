@@ -17,7 +17,13 @@ export default function Report(): AnyElem {
 
 	const [reviewDetails, setReviewDetails] = useState<ReviewT>(undefined);
 
-	const id = Number(router.query.id);
+	// HACK: router.query isn't always initalized on the first run.
+	if (router.query.slug === undefined) {
+		router.query.slug = ["nothing", -1];
+	} else {
+		router.query.slug[1] = Number(router.query.slug[1]);
+	}
+	const [type, id]: [string, number] = router?.query.slug;
 
 	useEffectAsync(
 		async () => {
