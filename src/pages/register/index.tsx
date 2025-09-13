@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Header from "@/components/header";
-import Whitespace from "@/components/whitespace";
 import React, { FormEvent } from "react";
 import { AnyElem } from "@/utils/element";
 import { UserRegistration } from "delfruit-swagger-cg-sdk";
@@ -44,19 +43,19 @@ export default function Register(): AnyElem {
 					</p>
 					<ol>
 						<li>
-							<span className="font-bold">Write Honest Reviews</span>
-							<Whitespace />- Please do not intentionally give games a rating
+							<span className="font-bold mr-1">Write Honest Reviews</span>
+							- Please do not intentionally give games a rating
 							that would be considered sarcastic or a troll. (You are allowed to
 							be funny with your comments.)
 						</li>
 						<li>
-							<span className="font-bold">Don't Attack Other Reviews</span>
-							<Whitespace />- We do not take lightly to bashing other people's
+							<span className="font-bold mr-1">Don't Attack Other Reviews</span>
+							- We do not take lightly to bashing other people's
 							opinions. If your comment attacks others, it will be taken down.
 						</li>
 						<li>
-							<span className="font-bold">Be Respectful</span>
-							<Whitespace />- You may not like a game, but do not bash the
+							<span className="font-bold mr-1">Be Respectful</span>
+							- You may not like a game, but do not bash the
 							creator directly. State what you did/did not like about the game,
 							and leave it at that.
 						</li>
@@ -133,8 +132,7 @@ export default function Register(): AnyElem {
 								/>
 							</div>
 							<p>
-								<b>Why do you need my email?</b>
-								<Whitespace />
+								<span className="font-bold mr-1">Why do you need my email?</span>
 								We only keep your email so we can send you a password reset link
 								if you ever forget!
 							</p>
