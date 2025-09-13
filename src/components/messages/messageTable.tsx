@@ -22,6 +22,11 @@ export default function MessageTable(): JSX.Element {
 		{ label: "Outbox", value: "outbox" },
 	] as const;
 
+	function truncate(text: string, maxLength: number): string {
+		if (!text) return "";
+		return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+	}
+
 	useEffect(() => {
 		const fetchMessages = async () => {
 			setError(null);
@@ -30,7 +35,23 @@ export default function MessageTable(): JSX.Element {
 			try {
 				if (activeTab === "inbox") {
 					const res = await API.messages().getMessagesFromInbox(`Bearer ${session.token}`);
-					setInboxMessages(res.data || []);
+					const messages = res.data || [];
+
+					const latestByThread = Object.values(
+					messages.reduce<Record<number, MessageT>>((acc, msg) => {
+						const threadId = msg.thread_id ?? msg.id;
+						const msgDate = new Date(msg.date_created);
+						const accDate = acc[threadId] ? new Date(acc[threadId].date_created) : null;
+
+						if (!acc[threadId] || msgDate > (accDate as Date)) {
+							acc[threadId] = msg;
+						}
+						return acc;
+					}, {})
+				);
+
+				setInboxMessages(latestByThread);
+
 				} else {
 					const res = await API.messages().getMessagesFromInbox(`Bearer ${session.token}`); // Replace with outbox when ready
 					setOutboxMessages(res.data || []);
@@ -46,7 +67,7 @@ export default function MessageTable(): JSX.Element {
 	}, [activeTab, session.token]);
 
 	const messages = activeTab === "inbox" ? inboxMessages : outboxMessages;
-	const headers = activeTab === "inbox" ? ["From", "Subject", "Date"] : ["To", "Subject", "Date"];
+	const headers = activeTab === "inbox" ? ["From", "Subject", "Message", "Date"] : ["To", "Subject", "Message", "Date"];
 
 	const userNames = useUserNames(messages, activeTab);
 
@@ -73,11 +94,15 @@ export default function MessageTable(): JSX.Element {
 								</tr>
 							</thead>
 							<tbody>
-								{error && <span className="text-red-600"> {error}</span>}
 								{messages.length === 0 ? (
 									<tr>
-										<td colSpan={3} className="py-2 text-gray-400 italic">
-											No messages
+										<td colSpan={4} className="py-2 text-gray-400 italic">
+											{error ? (
+												<span className="text-red-600">{error}</span>
+											)
+											: (
+												<span>No messages</span>
+											)}
 										</td>
 									</tr>
 								) : (
@@ -90,8 +115,11 @@ export default function MessageTable(): JSX.Element {
 											)}
 											<td>
 												<Link href={`/messages/${msg.thread_id}`} className="text-blue-600 hover:underline">
-													{msg.subject}
+													{truncate(msg.subject, 10)}
 												</Link>
+											</td>
+											<td className="text-gray-600">
+												{truncate(msg.body, 10)}
 											</td>
 											<td>{formatDate(new Date(msg.date_created), true)}</td>
 										</tr>
