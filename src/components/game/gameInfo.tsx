@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { Game, GameExt, GamesApi } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
+import { Game, GameExt } from "delfruit-swagger-cg-sdk";
 import Tag from "@/components/game/tag";
 import React, { useState } from "react";
 import Link from "next/link";
@@ -11,18 +12,13 @@ import {
 	getDifficultyDescription,
 } from "@/utils/ratingHelpers";
 import { AnyElem } from "@/utils/element";
-import { Config } from "@/utils/config";
 
 type GameInfoProps = {
 	game: GameExt;
 };
 
-const CFG: Config = require("@/config.json");
-
-const GAMESCLIENT: GamesApi = new GamesApi(void 0, CFG.apiURL.toString());
-
 export default function GameInfo({ game }: GameInfoProps): AnyElem {
-	const [session, setSession] = useSessionContext();
+	const [session] = useSessionContext();
 
 	const router = useRouter();
 
@@ -54,7 +50,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 			g.author = (
 				document.getElementById("admin-creator-input") as HTMLInputElement
 			).value;
-			const resp = await GAMESCLIENT.patchGame(g, session.token, game.id);
+			await API.games().patchGame(g, session.token, game.id);
 			toggleAdminCreatorInput();
 			setAdminCreatorAlertText("Changes Saved.");
 		} catch (e) {
@@ -85,7 +81,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 			// HACK: rudimentary deepcopy since VMs try to optimize by making this a ref
 			const g = JSON.parse(JSON.stringify(game)) satisfies Game;
 			g.url = dl;
-			const resp = await GAMESCLIENT.patchGame(g, session.token, game.id);
+			await API.games().patchGame(g, session.token, game.id);
 			toggleAdminDLUrlInput();
 			setAdminDLUrlText("Changes Saved.");
 		} catch (e) {
@@ -99,7 +95,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 		const g = JSON.parse(JSON.stringify(game)) satisfies Game;
 		g.owner = owner;
 		try {
-			const resp = await GAMESCLIENT.patchGame(g, session.token, game.id);
+			await API.games().patchGame(g, session.token, game.id);
 			setAdminOwnerText("Changes Saved.");
 		} catch (e) {
 			setAdminOwnerText("Error: Rejected, changes were not accepted.");
@@ -120,53 +116,58 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 				))}
 			</h2>
 
-			<input
-				id="admin-creator-input"
-				type="text"
-				className="w-[95%]"
-				defaultValue={game.author}
-				hidden={hideAdminCreatorInput}
-			/>
-			<button
-				id="admin-change-creator"
-				type="button"
-				hidden={!hideAdminCreatorInput}
-				onClick={async (
-					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-				) => {
-					evt.preventDefault();
-					toggleAdminCreatorInput();
-				}}
-			>
-				Change Creator
-			</button>
-			<button
-				id="admin-save-change-creator"
-				type="submit"
-				hidden={hideAdminCreatorInput}
-				onClick={async (
-					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-				) => {
-					evt.preventDefault();
-					await actionAdminChangeGameCreators();
-				}}
-			>
-				Change
-			</button>{" "}
-			<button
-				id="admin-discard-change-creator"
-				type="reset"
-				hidden={hideAdminCreatorInput}
-				onClick={async (
-					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-				) => {
-					evt.preventDefault();
-					toggleAdminCreatorInput();
-				}}
-			>
-				Cancel
-			</button>
-			<span className="game_creator_update_alert">{adminCreatorAlertText}</span>
+			{session.admin && (
+				<>
+					<input
+						id="admin-creator-input"
+						type="text"
+						className="w-[95%]"
+						defaultValue={game.author}
+						hidden={hideAdminCreatorInput}
+					/>
+					<button
+						id="admin-change-creator"
+						type="button"
+						hidden={!hideAdminCreatorInput}
+						onClick={async (
+							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+						) => {
+							evt.preventDefault();
+							toggleAdminCreatorInput();
+						}}
+					>
+						Change Creator
+					</button>
+					<button
+						id="admin-save-change-creator"
+						type="submit"
+						hidden={hideAdminCreatorInput}
+						className="mr-1 mb-1"
+						onClick={async (
+							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+						) => {
+							evt.preventDefault();
+							await actionAdminChangeGameCreators();
+						}}
+					>
+						Change
+					</button>
+					<button
+						id="admin-discard-change-creator"
+						type="reset"
+						hidden={hideAdminCreatorInput}
+						onClick={async (
+							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+						) => {
+							evt.preventDefault();
+							toggleAdminCreatorInput();
+						}}
+					>
+						Cancel
+					</button>
+					<span className="game_creator_update_alert">{adminCreatorAlertText}</span>
+				</>
+			)}
 
 			{/* Average Boxes */}
 			<div className="w-[380px] m-auto h-[80px]">
@@ -204,58 +205,62 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 					<span>&nbsp;&nbsp;&nbsp;&nbsp; Download Game</span>
 				</Link>
 			) : (
-				<span id="no-link" className="inline-block pb-[1em]">
+				<span id="no-link" className="inline-block pb-[1em] mr-1">
 					[Download Not Available]
 				</span>
-			)}{" "}
-			<input
-				id="admin-download-input"
-				type="text"
-				className="w-[95%]"
-				defaultValue={game.url}
-				hidden={hideAdminDLUrlInput}
-			/>
-			<button
-				id="admin-change-download"
-				type="button"
-				hidden={!hideAdminDLUrlInput}
-				onClick={async (
-					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-				) => {
-					evt.preventDefault();
-					toggleAdminDLUrlInput();
-				}}
-			>
-				Change URL
-			</button>
-			<button
-				id="admin-save-change-download"
-				type="submit"
-				hidden={hideAdminDLUrlInput}
-				onClick={async (
-					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-				) => {
-					evt.preventDefault();
-					await actionAdminChangeDLUrl();
-				}}
-			>
-				Change
-			</button>{" "}
-			<button
-				id="admin-discard-change-download"
-				type="reset"
-				hidden={hideAdminDLUrlInput}
-				onClick={async (
-					evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-				) => {
-					evt.preventDefault();
-					toggleAdminDLUrlInput();
-				}}
-			>
-				Cancel
-			</button>
-			<span className="game_creator_update_alert">{adminDLUrlText}</span>
-
+			)}
+			{session.admin && (
+				<>
+					<input
+						id="admin-download-input"
+						type="text"
+						className="w-[95%]"
+						defaultValue={game.url}
+						hidden={hideAdminDLUrlInput}
+					/>
+					<button
+						id="admin-change-download"
+						type="button"
+						hidden={!hideAdminDLUrlInput}
+						onClick={async (
+							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+						) => {
+							evt.preventDefault();
+							toggleAdminDLUrlInput();
+						}}
+					>
+						Change URL
+					</button>
+					<button
+						id="admin-save-change-download"
+						type="submit"
+						hidden={hideAdminDLUrlInput}
+						className="mr-1"
+						onClick={async (
+							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+						) => {
+							evt.preventDefault();
+							await actionAdminChangeDLUrl();
+						}}
+					>
+						Change
+					</button>
+					<button
+						id="admin-discard-change-download"
+						type="reset"
+						hidden={hideAdminDLUrlInput}
+						onClick={async (
+							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+						) => {
+							evt.preventDefault();
+							toggleAdminDLUrlInput();
+						}}
+					>
+						Cancel
+					</button>
+					<span className="game_creator_update_alert">{adminDLUrlText}</span>
+				</>
+			)}
 			<br />
 
 			{/* Speedrun Leaderboard */}
@@ -331,27 +336,31 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 			</div>
 
 			{/* Other Admin Quick Actions */}
-			<h2>ADMIN TOOLS</h2>
-			<p>
-				<Link href="/admin/remove_game">Remove Game</Link>
-				<br />
-				Owner:
-				<input id="owner-field" type="text" size={15} defaultValue="" />
-				<button
-					id="owner-btn"
-					type="submit"
-					onClick={async (
-						evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-					) => {
-						evt.preventDefault();
-						await actionAdminChangeOwner();
-					}}
-				>
-					Update
-				</button>
-				<br />
-				<span id="owner-alert">{adminOwnerText}</span>
-			</p>
+			{session.admin && (
+				<>
+					<h2>ADMIN TOOLS</h2>
+					<p>
+						<Link href="/admin/remove_game">Remove Game</Link>
+						<br />
+						<span>Owner: </span>
+						<input id="owner-field" type="text" size={15} defaultValue="" />
+						<button
+							id="owner-btn"
+							type="submit"
+							onClick={async (
+								evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+							) => {
+								evt.preventDefault();
+								await actionAdminChangeOwner();
+							}}
+						>
+							Update
+						</button>
+						<br />
+						<span id="owner-alert">{adminOwnerText}</span>
+					</p>
+				</>
+			)}
 		</div>
 	);
 }

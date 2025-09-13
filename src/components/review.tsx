@@ -205,7 +205,7 @@ export default function Review(props: ReviewT): JSX.Element {
 							className="ml-1" 
 							type="submit" 
 							onClick={actionAdminRemoveReview}>
-								(ADMIN) Remove
+							(ADMIN) Remove
 						</button>
 					)}
 				</div>
