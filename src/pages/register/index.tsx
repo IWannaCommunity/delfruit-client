@@ -1,12 +1,13 @@
 import Head from "next/head";
 import Header from "@/components/header";
-import React, { FormEvent } from "react";
+import React, { FormEvent, useState } from "react";
 import { AnyElem } from "@/utils/element";
 import { UserRegistration } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
 import { API } from "@/utils/api";
 
 export default function Register(): AnyElem {
+	const [error, setError] = useState<string | null>(null);
 	const router = useRouter();
 
 	async function attemptUserRegistration(evt: FormEvent<HTMLFormElement>) {
@@ -15,10 +16,14 @@ export default function Register(): AnyElem {
 		const frmData: FormData = new FormData(evt.currentTarget);
 
 		// TODO: check if we actually registered
-		const resp = await API.users().postUser(
-			Object.fromEntries(frmData) as any as UserRegistration,
-		);
-		router.reload();
+		try {
+			const resp = await API.users().postUser(
+				Object.fromEntries(frmData) as any as UserRegistration,
+			);
+			router.reload();
+		} catch (err) {
+			setError("Something went wrong")
+		}
 	}
 	return (
 		<>
@@ -129,6 +134,7 @@ export default function Register(): AnyElem {
 									type="email"
 									placeholder=""
 									name="email"
+									autoComplete="on"
 								/>
 							</div>
 							<p>
@@ -153,6 +159,7 @@ export default function Register(): AnyElem {
 								>
 									Submit
 								</button>
+								{error && <span className="text-red-600 ml-1">{error}</span>}
 							</div>
 						</fieldset>
 					</form>
