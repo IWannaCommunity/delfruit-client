@@ -15,6 +15,7 @@ export default function Login(): AnyElem {
 	const router = useRouter();
 	const [successfulLogin, setSuccessfulLogin] = useState<boolean>(false);
 	const [idempotency, setIdempotency] = useState<boolean>(false);
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (Cookies.get("loggedInSuccessfully") !== undefined) {
@@ -33,14 +34,23 @@ export default function Login(): AnyElem {
 		const frmData = new FormData(evt.currentTarget);
 		// frmData.set("notARobot", 386);
 		// TODO: check if we've actually logged in
-		const resp = await API.authentication().postLogin(
-			Object.fromEntries(frmData) as any as UserCredentials,
-		);
-		Cookies.set("session", resp.data.token);
-		Cookies.set("loggedInSuccessfully", "1", {
-			expires: new Date(Date.now() + 5000),
-		});
-		router.reload();
+		try {
+			const resp = await API.authentication().postLogin(
+				Object.fromEntries(frmData) as any as UserCredentials,
+			);
+
+			Cookies.set("session", resp.data.token);
+			Cookies.set("loggedInSuccessfully", "1", {
+				expires: new Date(Date.now() + 5000),
+			});
+			router.reload();
+		} catch (err) {
+			if (err.response?.status === 401) {
+        setError("Incorrect credentials");
+      } else {
+        setError("Something went wrong");
+      }
+		}
 	}
 
 	return (
@@ -57,11 +67,11 @@ export default function Login(): AnyElem {
 								<form onSubmit={attemptLogin}>
 									<p>
 										<label htmlFor="username">Username: </label>
-										<input id="username" type="text" name="username" />
+										<input id="username" type="text" name="username" autoComplete="on" required />
 									</p>
 									<p>
 										<label htmlFor="password">Password: </label>
-										<input id="password" type="password" name="password" />
+										<input id="password" type="password" name="password" required />
 									</p>
 									{/*
 									<p>
@@ -79,6 +89,7 @@ export default function Login(): AnyElem {
 									/>
 									*/}
 									<button type="submit">Login</button>
+									{error && <span className="text-red-600 ml-1">{error}</span>}
 								</form>
 								<br />
 								<Link href="/">Forgot Password?</Link>
