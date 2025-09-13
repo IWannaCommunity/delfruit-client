@@ -62,7 +62,9 @@ export default function Header(): AnyElem {
 				<p className="!mt-[1em]">
 					{!session.active ? (
 						<>
-							<Link className="mr-1" href="/login">Login</Link>
+							<Link className="mr-1" href="/login">
+								Login
+							</Link>
 							<Link href="/register">Register</Link>
 						</>
 					) : (
@@ -71,7 +73,9 @@ export default function Header(): AnyElem {
 							<Link className="mr-1" href="/messages">
 								Messages
 							</Link>
-							<Link className="mr-1" href="/profile">Profile</Link>
+							<Link className="mr-1" href="/profile">
+								Profile
+							</Link>
 							<Link href="/login/logout">Logout</Link>
 						</>
 					)}
@@ -81,18 +85,15 @@ export default function Header(): AnyElem {
 				<Link className="navbutton2 mr-1" href="/">
 					Fangames
 				</Link>
-				<a className="navbutton2 mr-1" href="https://iwannacommunity.com/forum/">
-					Forums
-				</a>
 				<a className="navbutton2 mr-1" href="https://www.iwannawiki.com">
 					Wiki
 				</a>
-				<a className="navbutton2 mr-1" href="https://www.twitch.tv/team/thewannabes">
+				<a
+					className="navbutton2 mr-1"
+					href="https://www.twitch.tv/team/thewannabes"
+				>
 					Twitch Team
 				</a>
-				<Link className="navbutton2 mr-1" href="/">
-					Bingo
-				</Link>
 				<a className="navbutton2" href="https://www.fangam.es/intro">
 					Intro
 				</a>
