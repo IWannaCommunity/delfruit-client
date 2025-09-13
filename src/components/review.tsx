@@ -105,6 +105,7 @@ export default function Review(props: ReviewT): JSX.Element {
 		evt.preventDefault();
 		// TODO: no proper API call to do this currently
 	}
+
 	return (
 		<div className={`review ${props.owner_review ? "owner-review" : ""}`}>
 			{/* AUTHOR */}
@@ -198,10 +199,15 @@ export default function Review(props: ReviewT): JSX.Element {
 						<Link href={`/report/${props.id}`} className="ml-1">
 							Report
 						</Link>
-					)}{" "}
-					<button type="submit" onClick={actionAdminRemoveReview}>
-						(ADMIN) Remove
-					</button>
+					)}
+					{session.admin && (
+						<button 
+							className="ml-1" 
+							type="submit" 
+							onClick={actionAdminRemoveReview}>
+								(ADMIN) Remove
+						</button>
+					)}
 				</div>
 			</div>
 		</div>
