@@ -49,6 +49,7 @@ export default function ReviewList(props: ReviewListProps): AnyElem {
 					game_name: review.game_name,
 					like_count: review.like_count,
 					owner_review: review.owner_review === 1,
+					tags: review.tags
 				}));
 				setReviews(reviewProps);
 				setError(null);
