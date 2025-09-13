@@ -5,20 +5,22 @@
 import reactPreset from "@bbob/preset-react/lib";
 import { useState } from "react";
 
-const Spoiler = ({ children }) => {
-  const [open, setOpen] = useState(false);
+function Spoiler({ children }) {
+	const [open, setOpen] = useState(false);
 
-  return open ? (
-    <div>{children}</div>
-  ) : (
-    <span className="reveal" onClick={() => setOpen(true)}>Reveal Spoiler</span>
-  );
-};
+	return open ? (
+		<div>{children}</div>
+	) : (
+		<span className="reveal" onClick={() => setOpen(true)}>
+			Reveal Spoiler
+		</span>
+	);
+}
 
-export const preset = reactPreset.extend((tags: any, options: any) => ({
-  ...tags,
-  spoiler: (node: { content: any; }) => ({
-    tag: Spoiler,
-    content: node.content
-  })
+export const preset = reactPreset.extend((tags: any) => ({
+	...tags,
+	spoiler: (node: { content: any; }) => ({
+		tag: Spoiler,
+		content: node.content
+	})
 }));
