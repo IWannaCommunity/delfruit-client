@@ -52,7 +52,7 @@ export default function UserProfile({ user }: UserInfoProps): JSX.Element {
 
 			{session.active && session.user_id !== user.id && (
 				<div className="mt-[1em]">
-					<Link href="/">Report this user</Link>
+					<Link href={`/report/user/${user.id}`}>Report this user</Link>
 				</div>
 			)}
 		</div>

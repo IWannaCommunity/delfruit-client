@@ -19,6 +19,7 @@ export default function Report(): AnyElem {
 	const [session] = useSessionContext();
 	const [reviewDetails, setReviewDetails] = useState<ReviewT>(undefined);
 	const [game, setGame] = useState<string | null>(null);
+	const [user, setUser] = useState<string | null>(null);
 	const [type, setType] = useState<ReportTypeEnum | null>(null);
 	const [targetId, setTargetId] = useState<number | null>(null);
 	const [report, setReport] = useState("");
@@ -73,6 +74,7 @@ export default function Report(): AnyElem {
 					} finally {
 						setLoading(false);
 					}
+					break;
 				}
 
 				case ReportTypeEnum.Game: {
@@ -84,6 +86,24 @@ export default function Report(): AnyElem {
 					} finally {
 						setLoading(false);
 					}
+					break;
+				}
+
+				case ReportTypeEnum.User: {
+					try {
+						const resp = await API.users().getUser(qId);
+						setUser(resp.data.name);
+					} catch (err: any) {
+						router.push("/report");
+					} finally {
+						setLoading(false);
+					}
+					break;
+				}
+
+				default: {
+					setLoading(false);
+					break;
 				}
 
 			}
@@ -136,6 +156,7 @@ export default function Report(): AnyElem {
 					You are submitting a report for the following {type}: 
 					<span className="font-bold ml-1">{game && <>{game}</>}</span>
 				</p>
+				{user && <h2>{user}</h2>}
 				{reviewDetails && (
 					<Review
 						key={reviewDetails.id}
@@ -176,6 +197,12 @@ export default function Report(): AnyElem {
 						<li>Link takedown request</li>
 						<li>Offensive content</li>
 						<li>Ownership Request</li>
+					</ul>
+				)}
+				{user && (
+					<ul>
+						<li>Impersonation</li>
+						<li>Offensive content</li>
 					</ul>
 				)}
 				<p>
