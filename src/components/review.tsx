@@ -196,7 +196,7 @@ export default function Review(props: ReviewT): JSX.Element {
 
 					{/* Buttons */}
 					{session.active && (
-						<Link href={`/report/${props.id}`} className="ml-1">
+						<Link href={`/report/review/${props.id}`} className="ml-1">
 							Report
 						</Link>
 					)}

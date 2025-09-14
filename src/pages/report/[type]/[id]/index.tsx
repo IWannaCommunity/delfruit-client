@@ -4,33 +4,42 @@ import Review from "@/components/review";
 import { AnyElem } from "@/utils/element";
 import { useEffectAsync, useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
-import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
+import { 
+	ReportTypeEnum,
+	Report as ReportT, 
+	Review as ReviewT 
+} from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { formatDate } from "@/utils/formatDate";
 
 export default function Report(): AnyElem {
-	const router = useRouter();
 	const [session] = useSessionContext();
-
 	const [reviewDetails, setReviewDetails] = useState<ReviewT>(undefined);
+	const [type, setType] = useState<ReportTypeEnum | null>(null);
+	const [targetId, setTargetId] = useState<number | null>(null);
+	const [report, setReport] = useState("");
+	const [error, setError] = useState<string | null>(null);
 
-	// HACK: router.query isn't always initalized on the first run.
-	if (router.query.slug === undefined) {
-		router.query.slug = ["nothing", -1];
-	} else {
-		router.query.slug[1] = Number(router.query.slug[1]);
-	}
-	const [type, id]: [string, number] = router?.query.slug;
+	const router = useRouter();
 
-	useEffectAsync(
-		async () => {
-			if (!router.isReady) {
-				return;
+	useEffectAsync(async () => {
+		if (router.isReady) {
+			const qType = router.query.type;
+			if (typeof qType === "string" && 
+				Object.values(ReportTypeEnum).includes(qType as ReportTypeEnum)) {
+				setType(qType as ReportTypeEnum);
+			} else {
+				setType(null);
 			}
-			const resp = await API.reviews().getReview(id);
+		}
+
+		setTargetId(Number(router.query.id));
+
+		if (type === "review") {
+			const resp = await API.reviews().getReview(targetId);
 			setReviewDetails({
 				id: Number(resp.data.id),
 				user_id: Number(resp.data.user_id),
@@ -50,27 +59,30 @@ export default function Report(): AnyElem {
 				owner_review: resp.data.owner_review === 1,
 				tags: resp.data.tags,
 			});
-		},
-		async () => {},
-		[router.isReady, id],
+		}
+	},
+	async () => {},
+	[router, router.isReady, router.query.id, router.query.type],
 	);
 
-	async function actionReportReview(
-		evt: FormEvent<HTMLFormElement>,
-	): Promise<void> {
-		evt.preventDefault();
+	async function handleSubmit(e: React.FormEvent) {
+		e.preventDefault();
 
-		const frmData = new FormData(evt.currentTarget);
-		const report = frmData.get("report");
+		if (!type || !targetId || !report) return;
 
-		API.reports().postReport(
-			{
-				report: report.toString(),
-				reporterId: session.user_id,
-				reporterName: session.username,
-			},
-			session.token,
-		);
+		const body: ReportT = {
+			type,
+			targetId,
+			report,
+		}
+
+		try {
+			const response = await API.reports().postReport(body, `Bearer ${session.token}`);
+			const createdReport = response.data;
+			router.push(`/report/submit?id=${createdReport.id}`);
+		} catch (err: any) {
+			setError("Failed to submit report. Please try again.");
+		}
 	}
 
 	return (
@@ -106,8 +118,9 @@ export default function Report(): AnyElem {
 						<li>Off-topic content</li>
 						<li>Messages directed toward other users</li>
 						<li>
-							{" "}
-							<a href="http://www.reddit.com/r/TheoryOfReddit/comments/1faqdm/downvoting_all_of_a_users_comments/">
+							<a
+								className="ml-1"
+								href="http://www.reddit.com/r/TheoryOfReddit/comments/1faqdm/downvoting_all_of_a_users_comments/">
 								Witchhunt downvotes
 							</a>
 						</li>
@@ -119,18 +132,25 @@ export default function Report(): AnyElem {
 					</p>
 					<p>If you would like to continue, please fill out the form below.</p>
 					{session.active ? (
-						<form onSubmit={actionReportReview}>
-							<textarea name="report" />
+						<form onSubmit={handleSubmit}>
+							<textarea 
+								name="report"
+								value={report}
+								maxLength={5000}
+								onChange={(e) => setReport(e.target.value)}
+								required
+							/>
 							<input type="submit" value="Submit Report" />
+							{error && <span className="text-red-600 ml-1">{error}</span>}
 						</form>
 					) : (
 						<>
 							<p>
-								Submitting a report requires an account. Please{" "}
+								<span>Submitting a report requires an account. Please </span>
 								<Link href="/login">login</Link> to add a game.
 							</p>
 							<p>
-								Don't have an account? Registering is quick and easy!{" "}
+								<span>Don't have an account? Registering is quick and easy! </span>
 								<Link href="/register">Click here</Link> to start your account!
 							</p>
 						</>
