@@ -2,12 +2,11 @@ import { News as NewsT } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
 import { useState } from "react";
 import BBCode from "@bbob/react/lib";
-import presetReact from "@bbob/preset-react/lib";
+import { preset } from "@/utils/bbobPreset";
 
 export default function News(props: NewsT): JSX.Element {
 
 	const [expanded, setExpanded] = useState(false);
-	const bbobPlugins = [presetReact()];
 
 	const maxLength = 500;
 	const shouldTruncate = props.news
@@ -30,7 +29,7 @@ export default function News(props: NewsT): JSX.Element {
 			{props.news !== "" && props.news !== null && (
 				<div>
 					<div className="break-words whitespace-pre-wrap">
-						<BBCode plugins={bbobPlugins}>{displayText}</BBCode>
+						<BBCode plugins={[preset()]}>{displayText}</BBCode>
 					</div>
 
 					{shouldTruncate && (
