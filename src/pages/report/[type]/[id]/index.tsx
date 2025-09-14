@@ -7,7 +7,7 @@ import { API } from "@/utils/api";
 import { 
 	ReportTypeEnum,
 	Report as ReportT, 
-	Review as ReviewT 
+	Review as ReviewT
 } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
 import Link from "next/link";
@@ -18,6 +18,7 @@ import { formatDate } from "@/utils/formatDate";
 export default function Report(): AnyElem {
 	const [session] = useSessionContext();
 	const [reviewDetails, setReviewDetails] = useState<ReviewT>(undefined);
+	const [game, setGame] = useState<string | null>(null);
 	const [type, setType] = useState<ReportTypeEnum | null>(null);
 	const [targetId, setTargetId] = useState<number | null>(null);
 	const [report, setReport] = useState("");
@@ -43,33 +44,48 @@ export default function Report(): AnyElem {
 				setTargetId(qId);
 			}
 
-			if (qType === ReportTypeEnum.Review) {
-				try {
-					const resp = await API.reviews().getReview(qId);
-					setReviewDetails({
-						id: Number(resp.data.id),
-						user_id: Number(resp.data.user_id),
-						game_id: null,
-						user_name: resp.data.user_name,
-						game_name: resp.data.game_name,
-						date_created: formatDate(new Date(resp.data.date_created)),
-						removed: resp.data.removed,
-						comment: resp.data.comment,
-						rating:
-							resp.data.rating === null
-								? null
-								: Number(resp.data.rating / 10).toFixed(1),
-						difficulty:
-							resp.data.difficulty === null ? null : Number(resp.data.difficulty),
-						like_count: Number(resp.data.like_count),
-						owner_review: resp.data.owner_review === 1,
-						tags: resp.data.tags,
-					});
-				} catch (err: any) {
-					router.push("/report");
-				} finally {
-					setLoading(false);
+			switch(qType) {
+
+				case ReportTypeEnum.Review: {
+					try {
+						const resp = await API.reviews().getReview(qId);
+						setReviewDetails({
+							id: Number(resp.data.id),
+							user_id: Number(resp.data.user_id),
+							game_id: null,
+							user_name: resp.data.user_name,
+							game_name: resp.data.game_name,
+							date_created: formatDate(new Date(resp.data.date_created)),
+							removed: resp.data.removed,
+							comment: resp.data.comment,
+							rating:
+								resp.data.rating === null
+									? null
+									: Number(resp.data.rating / 10).toFixed(1),
+							difficulty:
+								resp.data.difficulty === null ? null : Number(resp.data.difficulty),
+							like_count: Number(resp.data.like_count),
+							owner_review: resp.data.owner_review === 1,
+							tags: resp.data.tags,
+						});
+					} catch (err: any) {
+						router.push("/report");
+					} finally {
+						setLoading(false);
+					}
 				}
+
+				case ReportTypeEnum.Game: {
+					try {
+						const resp = await API.games().getGame(qId);
+						setGame(resp.data.name);
+					} catch (err: any) {
+						router.push("/report");
+					} finally {
+						setLoading(false);
+					}
+				}
+
 			}
 		}
 	},
@@ -116,7 +132,10 @@ export default function Report(): AnyElem {
 
 		return (
 			<>
-				<p>You are submitting a report for the following review:</p>
+				<p>
+					You are submitting a report for the following {type}: 
+					<span className="font-bold ml-1">{game && <>{game}</>}</span>
+				</p>
 				{reviewDetails && (
 					<Review
 						key={reviewDetails.id}
@@ -136,18 +155,29 @@ export default function Report(): AnyElem {
 					/>
 				)}
 				<p>Reasons can include:</p>
-				<ul>
-					<li>Offensive content</li>
-					<li>Off-topic content</li>
-					<li>Messages directed toward other users</li>
-					<li>
-						<a
-							className="ml-1"
-							href="http://www.reddit.com/r/TheoryOfReddit/comments/1faqdm/downvoting_all_of_a_users_comments/">
-							Witchhunt downvotes
-						</a>
-					</li>
-				</ul>
+				{reviewDetails && (
+					<ul>
+						<li>Offensive content</li>
+						<li>Off-topic content</li>
+						<li>Messages directed toward other users</li>
+						<li>
+							<a
+								href="http://www.reddit.com/r/TheoryOfReddit/comments/1faqdm/downvoting_all_of_a_users_comments/">
+								Witchhunt downvotes
+							</a>
+						</li>
+					</ul>
+				)}
+				{game && (
+					<ul>
+						<li>Invalid name</li>
+						<li>Incorrect Author(s)</li>
+						<li>Broken link</li>
+						<li>Link takedown request</li>
+						<li>Offensive content</li>
+						<li>Ownership Request</li>
+					</ul>
+				)}
 				<p>
 					Please do not submit reports out of anger, or otherwise without a
 					clear and valid reason. Abuse of the system will lead to your

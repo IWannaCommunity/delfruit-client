@@ -299,7 +299,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 					<br />
 
 					{/* Report Game */}
-					<Link className="standalone" href="/">
+					<Link className="standalone" href={`/report/game/${router.query.id}`}>
 						Report Game or Suggest Edit
 					</Link>
 					<br />
