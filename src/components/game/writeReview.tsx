@@ -12,7 +12,7 @@ type WriteReviewProps = {
 	existingReview: ReviewT | null;
 };
 
-export default function GameReviews({ onReviewUpdated, existingReview }: WriteReviewProps): JSX.Element {
+export default function WriteReview({ onReviewUpdated, existingReview }: WriteReviewProps): JSX.Element {
 
 	const [showWrite, setShowWrite] = useState(false);
 	const [rating, setRating] = useState(existingReview?.rating ?? -0.1);
