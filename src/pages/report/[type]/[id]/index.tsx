@@ -99,6 +99,20 @@ export default function Report(): AnyElem {
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
+		if (!session.active) {
+			return (
+				<>
+					<p>
+						<span>Submitting a report requires an account. Please </span>
+						<Link href="/login">login</Link> to add a game.
+					</p>
+					<p>
+						<span>Don't have an account? Registering is quick and easy! </span>
+						<Link href="/register">Click here</Link> to start your account!
+					</p>
+				</>
+			);
+		}
 
 		return (
 			<>
@@ -140,30 +154,17 @@ export default function Report(): AnyElem {
 					reporting privileges being revoked.
 				</p>
 				<p>If you would like to continue, please fill out the form below.</p>
-				{session.active ? (
-					<form onSubmit={handleSubmit}>
-						<textarea 
-							name="report"
-							value={report}
-							maxLength={2000}
-							onChange={(e) => setReport(e.target.value)}
-							required
-						/>
-						<input type="submit" value="Submit Report" />
-						{error && <span className="text-red-600 ml-1">{error}</span>}
-					</form>
-				) : (
-					<>
-						<p>
-							<span>Submitting a report requires an account. Please </span>
-							<Link href="/login">login</Link> to add a game.
-						</p>
-						<p>
-							<span>Don't have an account? Registering is quick and easy! </span>
-							<Link href="/register">Click here</Link> to start your account!
-						</p>
-					</>
-				)}
+				<form onSubmit={handleSubmit}>
+					<textarea 
+						name="report"
+						value={report}
+						maxLength={2000}
+						onChange={(e) => setReport(e.target.value)}
+						required
+					/>
+					<input type="submit" value="Submit Report" />
+					{error && <span className="text-red-600 ml-1">{error}</span>}
+				</form>
 			</>
 		);
 	}
