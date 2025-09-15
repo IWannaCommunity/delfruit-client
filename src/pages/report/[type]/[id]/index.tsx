@@ -11,15 +11,18 @@ import {
 } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { formatDate } from "@/utils/formatDate";
+import { makeScrnshotURL } from "@/utils/url";
 
 export default function Report(): AnyElem {
 	const [session] = useSessionContext();
-	const [reviewDetails, setReviewDetails] = useState<ReviewT>(undefined);
 	const [game, setGame] = useState<string | null>(null);
 	const [user, setUser] = useState<string | null>(null);
+	const [reviewDetails, setReviewDetails] = useState<ReviewT>(undefined);
+	const [screenshotURL, setScreenshotURL] = useState<URL>(undefined);
 	const [type, setType] = useState<ReportTypeEnum | null>(null);
 	const [targetId, setTargetId] = useState<number | null>(null);
 	const [report, setReport] = useState("");
@@ -46,6 +49,30 @@ export default function Report(): AnyElem {
 			}
 
 			switch(qType) {
+
+				case ReportTypeEnum.Game: {
+					try {
+						const resp = await API.games().getGame(qId);
+						setGame(resp.data.name);
+					} catch (err: any) {
+						router.push("/report");
+					} finally {
+						setLoading(false);
+					}
+					break;
+				}
+
+				case ReportTypeEnum.User: {
+					try {
+						const resp = await API.users().getUser(qId);
+						setUser(resp.data.name);
+					} catch (err: any) {
+						router.push("/report");
+					} finally {
+						setLoading(false);
+					}
+					break;
+				}
 
 				case ReportTypeEnum.Review: {
 					try {
@@ -76,23 +103,11 @@ export default function Report(): AnyElem {
 					}
 					break;
 				}
-
-				case ReportTypeEnum.Game: {
+				
+				case ReportTypeEnum.Screenshot: {
 					try {
-						const resp = await API.games().getGame(qId);
-						setGame(resp.data.name);
-					} catch (err: any) {
-						router.push("/report");
-					} finally {
-						setLoading(false);
-					}
-					break;
-				}
-
-				case ReportTypeEnum.User: {
-					try {
-						const resp = await API.users().getUser(qId);
-						setUser(resp.data.name);
+						const resp = await API.screenshots().getScreenshot(qId);
+						setScreenshotURL(makeScrnshotURL(resp.data.gameId, resp.data.id));
 					} catch (err: any) {
 						router.push("/report");
 					} finally {
@@ -175,20 +190,16 @@ export default function Report(): AnyElem {
 						tags={reviewDetails.tags}
 					/>
 				)}
-				<p>Reasons can include:</p>
-				{reviewDetails && (
-					<ul>
-						<li>Offensive content</li>
-						<li>Off-topic content</li>
-						<li>Messages directed toward other users</li>
-						<li>
-							<a
-								href="http://www.reddit.com/r/TheoryOfReddit/comments/1faqdm/downvoting_all_of_a_users_comments/">
-								Witchhunt downvotes
-							</a>
-						</li>
-					</ul>
+				{screenshotURL && (
+					<Image
+						className="w-full"
+						alt=""
+						src={screenshotURL?.toString()}
+						width={-1}
+						height={-1}
+					/>
 				)}
+				<p>Reasons can include:</p>
 				{game && (
 					<ul>
 						<li>Invalid name</li>
@@ -202,6 +213,26 @@ export default function Report(): AnyElem {
 				{user && (
 					<ul>
 						<li>Impersonation</li>
+						<li>Offensive content</li>
+					</ul>
+				)}
+				{reviewDetails && (
+					<ul>
+						<li>Offensive content</li>
+						<li>Off-topic content</li>
+						<li>Messages directed toward other users</li>
+						<li>
+							<a
+								href="http://www.reddit.com/r/TheoryOfReddit/comments/1faqdm/downvoting_all_of_a_users_comments/">
+								Witchhunt downvotes
+							</a>
+						</li>
+					</ul>
+				)}
+				{screenshotURL && (
+					<ul>
+						<li>Incorrect game pictured</li>
+						<li>Image takedown request</li>
 						<li>Offensive content</li>
 					</ul>
 				)}
