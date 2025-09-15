@@ -5,7 +5,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { makeScrnshotURL } from "@/utils/url";
 import { API } from "@/utils/api";
 import { useSessionContext } from "@/utils/hooks";
@@ -24,7 +24,7 @@ export default function Screenshot(): AnyElem {
 
 	const id = Number(router.query.id);
 
-	useMemo(() => {
+	useEffect(() => {
 		if (!router.isReady) {
 			return;
 		}
@@ -44,7 +44,7 @@ export default function Screenshot(): AnyElem {
 
 	async function actionAdminRemoveScreenshot() {
 		try {
-			await API.screenshots().deleteScreenshot(session.token, id);
+			await API.screenshots().deleteScreenshot(`Bearer ${session.token}`, id);
 			setAdminRemoveScreenshotText("Screenshot removed.");
 		} catch (e) {
 			setAdminRemoveScreenshotText("Error: Rejected, request did not finish.");
@@ -71,24 +71,32 @@ export default function Screenshot(): AnyElem {
 					<p>
 						<span>{screenshotDescription}</span>
 						<br />
-						<Link href="/">Report this image</Link>
+						{session.active && (
+							<Link href={`/report/screenshot/${router.query.id}`}>
+								Report this image
+							</Link>
+						)}
 					</p>
 
-					<h2>Admin Tools</h2>
-					<p id="admin_controls">
-						<button
-							type="submit"
-							onClick={async (
-								evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-							) => {
-								evt.preventDefault();
-								await actionAdminRemoveScreenshot();
-							}}
-						>
-							Remove Screenshot
-						</button>
-						<p>{adminRemoveScreenshotText}</p>
-					</p>
+					{session.admin && (
+						<>
+							<h2>Admin Tools</h2>
+							<p id="admin_controls">
+								<button
+									type="submit"
+									onClick={async (
+										evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+									) => {
+										evt.preventDefault();
+										await actionAdminRemoveScreenshot();
+									}}
+								>
+									Remove Screenshot
+								</button>
+								<p>{adminRemoveScreenshotText}</p>
+							</p>
+						</>
+					)}
 				</div>
 				<Footer />
 			</div>
