@@ -7,7 +7,7 @@ type UserInfoProps = {
 	user: UserExt;
 };
 
-export default function UserProfile({ user }: UserInfoProps): JSX.Element {
+export default function ProfileMain({ user }: UserInfoProps): JSX.Element {
 	const [session] = useSessionContext();
 
 	return(

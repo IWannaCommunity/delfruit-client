@@ -10,7 +10,7 @@ type UserInfoProps = {
 	user: UserExt;
 };
 
-export default function UserReviews({ user }: UserInfoProps): JSX.Element {
+export default function ProfileReviews({ user }: UserInfoProps): JSX.Element {
 	const [reviews, setReviews] = useState<ReviewT[]>([]);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);

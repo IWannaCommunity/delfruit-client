@@ -195,7 +195,7 @@ export default function Review(props: ReviewT): JSX.Element {
 					{props.date_created}
 
 					{/* Buttons */}
-					{session.active && (
+					{session.active && !session.admin && (
 						<Link href={`/report/review/${props.id}`} className="ml-1">
 							Report
 						</Link>

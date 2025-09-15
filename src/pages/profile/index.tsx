@@ -4,10 +4,10 @@ import Footer from "@/components/footer";
 import { AnyElem } from "@/utils/element";
 import { useState, useEffect } from "react";
 import TabBar from "@/components/helpers/tabBar";
-import UserProfile from "@/components/user/userProfile";
-import ProfileActions from "@/components/user/profileActions";
-import UserRatings from "@/components/user/userRatings";
-import UserReviews from "@/components/user/userReviews";
+import ProfileMain from "@/components/profile/profileMain";
+import ProfileActions from "@/components/profile/profileActions";
+import ProfileRatings from "@/components/profile/profileRatings";
+import ProfileReviews from "@/components/profile/profileReviews";
 import { API } from "@/utils/api";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
@@ -83,13 +83,13 @@ export default function Profile(): AnyElem {
 						<TabBar<ProfileTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 					
 						{/* Profile */}
-						{activeTab === "profile" && user && <UserProfile user={user}/>}
+						{activeTab === "profile" && user && <ProfileMain user={user}/>}
 						
 						{/* Ratings */}
-						{activeTab === "ratings" && user && <UserRatings user={user}/>}
+						{activeTab === "ratings" && user && <ProfileRatings user={user}/>}
 						
 						{/* Reviews */}
-						{activeTab === "reviews" && user && <UserReviews user={user}/>}
+						{activeTab === "reviews" && user && <ProfileReviews user={user}/>}
 					</div>
 				</div>
 			</>

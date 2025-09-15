@@ -39,7 +39,7 @@ const ratingColumns: Column<Rating>[] = [
 	}
 ];
 
-export default function UserRatings({ user }: UserInfoProps): JSX.Element {
+export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 	const [ratings, setRatings] = useState<Rating[]>([]);
 	const [sortConfig, setSortConfig] = useState<SortConfig<Rating> | null>(null);
 	const [page, setPage] = useState(0);
