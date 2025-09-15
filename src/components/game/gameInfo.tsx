@@ -17,7 +17,28 @@ type GameInfoProps = {
 	game: GameExt;
 };
 
+function sanitizeGameForPatch(game: GameExt): Game {
+  return {
+    id: game.id,
+    name: game.name ?? "",
+    sortname: game.sortname ?? "",
+    url: game.url ?? "",
+    urlSpdrn: game.urlSpdrn ?? "",
+    author: Array.isArray(game.author) ? game.author : [],
+    author_raw: Array.isArray(game.author) ? game.author.join(" ") : "",
+    collab: Boolean(game.collab),
+    dateCreated: game.dateCreated
+      ? new Date(game.dateCreated).toISOString()
+      : undefined,
+    adderId: game.adderId != null ? String(game.adderId) : undefined,
+    ownerId: game.ownerId != null ? String(game.ownerId) : undefined,
+    removed: Boolean(game.removed),
+    ownerBio: game.ownerBio ?? "",
+  };
+}
+
 export default function GameInfo({ game }: GameInfoProps): AnyElem {
+	
 	const [session] = useSessionContext();
 
 	const router = useRouter();
@@ -42,15 +63,16 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 
 	async function actionAdminChangeGameCreators() {
 		try {
-			// HACK: rudimentary deepcopy since VMs try to optimize by making this a ref
-			const g = JSON.parse(JSON.stringify(game)) satisfies Game;
 			// DANGER: typically, DON'T DO THIS IN REACT, but I have no page reactivity
 			// so it's fine here. actually that's a lie, I do, but input should be
 			// preserved between renders.
-			g.author = (
-				document.getElementById("admin-creator-input") as HTMLInputElement
-			).value;
-			await API.games().patchGame(g, session.token, game.id);
+			const rawAuthor = (document.getElementById("admin-creator-input") as HTMLInputElement).value;
+			const g = sanitizeGameForPatch({
+				...game,
+				author: [rawAuthor],
+			} as GameExt);
+
+			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
 			toggleAdminCreatorInput();
 			setAdminCreatorAlertText("Changes Saved.");
 		} catch (e) {
@@ -59,29 +81,26 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 	}
 
 	async function actionAdminChangeDLUrl() {
+		// DANGER: typically, DON'T DO THIS IN REACT, but I have no page reactivity
+		// so it's fine here. actually that's a lie, I do, but input should be
+		// preserved between renders.
+		const input = (document.getElementById("admin-download-input") as HTMLInputElement).value;
 		// check if it's even a valid URL
-		const dl = (() => {
-			try {
-				// DANGER: typically, DON'T DO THIS IN REACT, but I have no page reactivity
-				// so it's fine here. actually that's a lie, I do, but input should be
-				// preserved between renders.
-				return new URL(
-					(document.getElementById("admin-download-input") as HTMLInputElement)
-						.value,
-				);
-			} catch (e) {
-				setAdminDLUrlText("Error: Rejected, download is not a valid URL.");
-			}
-		})();
-		if (!(dl instanceof URL)) {
+		let dl: string;
+		try {
+			dl = new URL(input).href;
+		} catch {
+			setAdminDLUrlText("Error: Rejected, download is not a valid URL.");
 			return;
 		}
 
 		try {
-			// HACK: rudimentary deepcopy since VMs try to optimize by making this a ref
-			const g = JSON.parse(JSON.stringify(game)) satisfies Game;
-			g.url = dl;
-			await API.games().patchGame(g, session.token, game.id);
+			const g = sanitizeGameForPatch({
+				...game,
+				url: dl,
+			} as GameExt);
+			
+			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
 			toggleAdminDLUrlInput();
 			setAdminDLUrlText("Changes Saved.");
 		} catch (e) {
@@ -90,12 +109,15 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 	}
 
 	async function actionAdminChangeOwner() {
-		const owner = (document.getElementById("owner-field") as HTMLInputElement)
-			.value;
-		const g = JSON.parse(JSON.stringify(game)) satisfies Game;
-		g.owner = owner;
+		const owner = (document.getElementById("owner-field") as HTMLInputElement).value;
+
 		try {
-			await API.games().patchGame(g, session.token, game.id);
+			const g = sanitizeGameForPatch({
+				...game,
+				owner_id: owner,
+			} as any);
+
+			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
 			setAdminOwnerText("Changes Saved.");
 		} catch (e) {
 			setAdminOwnerText("Error: Rejected, changes were not accepted.");
@@ -222,6 +244,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						id="admin-change-download"
 						type="button"
 						hidden={!hideAdminDLUrlInput}
+						className="ml-1"
 						onClick={async (
 							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 						) => {
