@@ -1,22 +1,31 @@
 import { 
   APIApi, AuthenticationApi, CompositeApi, DefaultApi, GamesApi,
   ListsApi, MessagesApi, NewsApi, RatingsApi, ReportsApi, ReviewsApi,
-  ScreenshotsApi, TagsApi, UsersApi
+  ScreenshotsApi, TagsApi, UsersApi, Configuration
  } from "delfruit-swagger-cg-sdk";
 import { CFG } from "./config";
 
+let currentConfig = new Configuration();
 // A cache to hold singleton clients
 const apiInstances = new Map<string, any>();
 
 function getApi<T>(ApiClass: new (...args: any[]) => T, key: string): T {
   if (!apiInstances.has(key)) {
     // Construct only once
-    apiInstances.set(key, new ApiClass(undefined, CFG.apiURL.origin));
+    apiInstances.set(key, new ApiClass(currentConfig, CFG.apiURL.origin));
   }
   return apiInstances.get(key);
 }
 
 export const API = {
+  setToken: (token: string) => {
+    console.log("API.setToken called with:", token);
+    currentConfig = new Configuration({
+      accessToken: token ? token : undefined,
+    });
+    apiInstances.clear();
+  },
+
   API: () => getApi<APIApi>(APIApi, "APIApi"),
   authentication: () => getApi<AuthenticationApi>(AuthenticationApi, "AuthenticationApi"),
   composite: () => getApi<CompositeApi>(CompositeApi, "CompositeApi"),

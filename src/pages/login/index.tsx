@@ -43,6 +43,7 @@ export default function Login(): AnyElem {
 			Cookies.set("loggedInSuccessfully", "1", {
 				expires: new Date(Date.now() + 5000),
 			});
+			API.setToken(resp.data.token);
 			router.reload();
 		} catch (err) {
 			if (err.response?.status === 401) {

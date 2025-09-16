@@ -3,6 +3,7 @@ import { ReactNode, SetStateAction, createContext, useContext } from "react";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { Dispatch } from "react";
 import jwt from "jsonwebtoken";
+import { API } from "@/utils/api";
 
 export interface Session {
 	active: boolean;
@@ -40,6 +41,8 @@ function useSession(): [
 		const username = sessionToken["username"];
 		const admin = sessionToken["isAdmin"];
 		const userId = Number(sessionToken["sub"]); // If your IDE says this is deprecated, it is literally stupid (thanks vscode)
+
+		API.setToken(sessionCookie)
 
 		setSession({
 			active: true,
