@@ -19,9 +19,8 @@ function getApi<T>(ApiClass: new (...args: any[]) => T, key: string): T {
 
 export const API = {
   setToken: (token: string) => {
-    console.log("API.setToken called with:", token);
     currentConfig = new Configuration({
-      accessToken: token ? token : undefined,
+      accessToken: token || undefined,
     });
     apiInstances.clear();
   },

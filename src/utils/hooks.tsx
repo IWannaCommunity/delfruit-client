@@ -61,12 +61,14 @@ const SessionContext = createContext<
 	[Session, React.Dispatch<SetStateAction<Session>>] | undefined
 >(void 0);
 
-export function SessionContextProvider(props: {
-	children: ReactNode;
-}): JSX.Element {
+export function SessionContextProvider(props: { children: ReactNode }): JSX.Element {
 	const [session, setSession] = useSession();
 
-	const SessionContextStore = [session, setSession];
+	const SessionContextStore = useMemo(
+		() => [session, setSession] as const,
+		[session, setSession]
+	);
+
 	return (
 		<SessionContext.Provider value={SessionContextStore}>
 			{props.children}
