@@ -9,6 +9,7 @@ import ProfileMain from "@/components/profile/profileMain";
 import ProfileActions from "@/components/profile/profileActions";
 import ProfileRatings from "@/components/profile/profileRatings";
 import ProfileReviews from "@/components/profile/profileReviews";
+import ProfileAdminActions from "@/components/profile/profileAdminActions";
 import { API } from "@/utils/api";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
@@ -119,15 +120,7 @@ const tabs = session.admin
 						{activeTab === "reviews" && user && <ProfileReviews user={user} />}
 
 						{/* Admin */}
-						{activeTab === "admin" && session.admin && user && (
-							<>
-								<input type="checkbox" /> Can submit new games <br />
-								<input type="checkbox" /> Can report <br />
-								<input type="checkbox" /> Can submit screenshots <br />
-								<input type="checkbox" /> Can submit reviews <br />
-								<input type="checkbox" /> Can send Private Messages <br />
-							</>
-						)}
+						{activeTab === "admin" && session.admin && user && <ProfileAdminActions user={user} />}
 					</div>
 				</div>
 			</>

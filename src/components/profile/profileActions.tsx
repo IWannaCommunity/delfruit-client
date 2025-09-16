@@ -4,11 +4,11 @@ import { UserExt } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
 
-type ProfileActionsProps = {
+type UserInfoProps = {
 	user: UserExt;
 };
 
-export default function ProfileActions({ user }: ProfileActionsProps) {
+export default function ProfileActions({ user }: UserInfoProps) {
 	const [session] = useSessionContext();
 	const [isFollowing, setIsFollowing] = useState(false);
 
