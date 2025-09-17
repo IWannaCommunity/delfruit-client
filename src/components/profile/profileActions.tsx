@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
@@ -10,7 +10,8 @@ type UserInfoProps = {
 
 export default function ProfileActions({ user }: UserInfoProps) {
 	const [session] = useSessionContext();
-	const [isFollowing, setIsFollowing] = useState(false);
+	const [isFollowing, setIsFollowing] = useState(!!user.isFollowing);
+	const [alertMsg, setAlertMsg] = useState<string | null>(null);
 
 	const changeFollow = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (!user || !session.active || !session.token) return;
@@ -23,12 +24,9 @@ export default function ProfileActions({ user }: UserInfoProps) {
 					session.user_id,
 					user.id,
 				);
-
-				const alertEl = document.querySelector(".follow_alert");
-				if (alertEl) {
-					alertEl.textContent = "You are now following this user!";
-					alertEl.classList.remove("display-none");
-				}
+				setIsFollowing(true);
+				setAlertMsg("You are now following this user!");
+						console.log("User prop:", user);
 			} else {
 				// UNFOLLOW user
 				await API.users().deleteUserFollow(
@@ -36,19 +34,12 @@ export default function ProfileActions({ user }: UserInfoProps) {
 					session.user_id,
 					user.id,
 				);
-
-				const alertEl = document.querySelector(".follow_alert");
-				if (alertEl) {
-					alertEl.textContent = "You unfollowed this user.";
-					alertEl.classList.remove("display-none");
-				}
+				setIsFollowing(false);
+				setAlertMsg("You unfollowed this user.");
+						console.log("User prop:", user);
 			}
 		} catch (error) {
-			const alertEl = document.querySelector(".follow_alert");
-			if (alertEl) {
-				alertEl.textContent = "Operation failed. Please try again.";
-				alertEl.classList.remove("display-none");
-			}
+			setAlertMsg("An error has occurred.");
 		}
 	}
 
@@ -75,7 +66,7 @@ export default function ProfileActions({ user }: UserInfoProps) {
 				onChange={changeFollow}
 			/>
 			<span> Follow this user! </span>
-			<span className="follow_alert display-none" />
+			{alertMsg && <span className="follow_alert">{alertMsg}</span>}
 			<br />
 		</>
 	);

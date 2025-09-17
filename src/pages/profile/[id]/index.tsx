@@ -63,7 +63,8 @@ const tabs = session.admin
 
 		(async () => {
 			try {
-				const resp = await API.users().getUserCompositeAll(id);
+				const token = session?.token ? `Bearer ${session.token}` : undefined;
+				const resp = await API.users().getUserCompositeAll(id, token);
 				const user = resp.data;
 				const newData: UserExt = {
 					id: user.id,
@@ -79,6 +80,7 @@ const tabs = session.admin
 					reviewCount: user.reviewCount,
 					ratingsCount: user.ratingsCount,
 					screenshotCount: user.screenshotCount,
+					isFollowing: user.isFollowing
 				};
 				setUser(newData);
 			} catch (err: any) {
