@@ -38,23 +38,38 @@ export default function MessageTable(): JSX.Element {
 					const messages = res.data || [];
 
 					const latestByThread = Object.values(
-					messages.reduce<Record<number, MessageT>>((acc, msg) => {
-						const threadId = msg.thread_id ?? msg.id;
-						const msgDate = new Date(msg.date_created);
-						const accDate = acc[threadId] ? new Date(acc[threadId].date_created) : null;
+						messages.reduce<Record<number, MessageT>>((acc, msg) => {
+							const threadId = msg.thread_id ?? msg.id;
+							const msgDate = new Date(msg.date_created);
+							const accDate = acc[threadId] ? new Date(acc[threadId].date_created) : null;
 
-						if (!acc[threadId] || msgDate > (accDate as Date)) {
-							acc[threadId] = msg;
-						}
-						return acc;
-					}, {})
-				);
+							if (!acc[threadId] || msgDate > (accDate as Date)) {
+								acc[threadId] = msg;
+							}
+							return acc;
+						}, {})
+					);
 
 				setInboxMessages(latestByThread);
 
 				} else {
-					const res = await API.messages().getMessagesFromInbox(`Bearer ${session.token}`); // Replace with outbox when ready
-					setOutboxMessages(res.data || []);
+					const res = await API.messages().getMessagesFromOutbox(`Bearer ${session.token}`);
+					const messages = res.data || [];
+
+					const latestByThread = Object.values(
+						messages.reduce<Record<number, MessageT>>((acc, msg) => {
+							const threadId = msg.thread_id ?? msg.id;
+							const msgDate = new Date(msg.date_created);
+							const accDate = acc[threadId] ? new Date(acc[threadId].date_created) : null;
+
+							if (!acc[threadId] || msgDate > (accDate as Date)) {
+								acc[threadId] = msg;
+							}
+							return acc;
+						}, {})
+					);
+
+					setOutboxMessages(latestByThread);
 				}
 			} catch (err) {
 				setError("Failed to fetch messages.");
