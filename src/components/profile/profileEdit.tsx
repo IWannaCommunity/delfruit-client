@@ -2,14 +2,14 @@ import { AnyElem } from "@/utils/element";
 import Image from "next/image";
 import { useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export default function ProfileEdit(): AnyElem {
 	const [session] = useSessionContext();
 	const [bio, setBio] = useState("");
 	const [twitch, setTwitch] = useState("");
 	const [youtube, setYoutube] = useState("");
-	// const [twitter, setTwitter] = useState("");
+	const [twitter, setTwitter] = useState("");
 
 	const [oldPassword, setOldPassword] = useState("");
 	const [newPassword, setNewPassword] = useState("");
@@ -17,7 +17,7 @@ export default function ProfileEdit(): AnyElem {
 
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState(null);
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [cooldown, setCooldown] = useState(0);
 
 	const [validPassField, setValidPassField] = useState(true);
 	const [validNewPassField, setValidNewPassField] = useState(true);
@@ -39,6 +39,11 @@ export default function ProfileEdit(): AnyElem {
 						user.youtubeLink.replace("https://www.youtube.com/@", "")
 					);
 				}
+				if (user.twitterLink) {
+					setTwitter(
+						user.twitterLink.replace("https://www.twitter.com/", "")
+					);
+				}
 			} catch (err) {
 				setError("Unable to load user profile.");
 			}
@@ -50,16 +55,14 @@ export default function ProfileEdit(): AnyElem {
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
-		if (isSubmitting) return;
+		if (cooldown > 0) { return; }
 		if (!session.active) { return; }
 
-		setIsSubmitting(true);
 		setError(null);
 		setSuccess(false);
 
 		if (newPassword && newPassword !== retypePassword) {
 			setError("New passwords do not match!");
-			setIsSubmitting(false);
 			setValidNewPassField(false);
 			return;
 		}
@@ -68,6 +71,7 @@ export default function ProfileEdit(): AnyElem {
 			bio: bio === "" ? null : bio,
 			twitchLink: twitch ? `https://www.twitch.tv/${twitch}` : null,
 			youtubeLink: youtube ? `https://www.youtube.com/@${youtube}` : null,
+			twitterLink: twitter ? `https://www.twitter.com/${twitter}` : null,
 		};
 
 		// Only include password fields if changing password
@@ -90,8 +94,7 @@ export default function ProfileEdit(): AnyElem {
 			setRetypePassword("");
 			setValidPassField(true);
 			setValidNewPassField(true);
-
-			setTimeout(() => setIsSubmitting(false), 5000);
+			setCooldown(5);
 		} catch (err: any) {
 			if (err.response) {
 				if (err.response.status === 401) {
@@ -107,11 +110,35 @@ export default function ProfileEdit(): AnyElem {
 			} else {
 				setError("Network error. Please try again.");
 			}
-			
 			setSuccess(false);
-			setIsSubmitting(false);
 		}
 	}
+
+	useEffect(() => {
+		let interval: NodeJS.Timeout | null = null;
+
+		if (cooldown > 0) {
+			interval = setInterval(() => {
+				setCooldown((prev) => {
+					if (prev <= 1) {
+						if (interval) clearInterval(interval);
+						return 0;
+					}
+					return prev - 1;
+				});
+			}, 1000);
+		}
+
+		if (cooldown === 0) { setSuccess(false); }
+
+		return () => {
+			if (interval) clearInterval(interval);
+		};
+	}, [cooldown]);
+
+	const cooldownText = useMemo(() => {
+		return cooldown > 0 ? `Wait ${cooldown}s` : "Update Profile";
+	}, [cooldown]);
 
 	return(
 		<>
@@ -123,8 +150,8 @@ export default function ProfileEdit(): AnyElem {
 					<textarea
 						id="bio"
 						name="bio"
-						value={bio}
 						maxLength={5000}
+						value={bio}			
 						onChange={(e) => {
 							setBio(e.target.value)
 							setSuccess(false);
@@ -143,8 +170,8 @@ export default function ProfileEdit(): AnyElem {
 							name="twitch_link"
 							type="text"
 							className="flex-1"
-							value={twitch}
 							maxLength={25}
+							value={twitch}				
 							onChange={(e) => {
 								setTwitch(e.target.value);
 								setSuccess(false);
@@ -181,6 +208,12 @@ export default function ProfileEdit(): AnyElem {
 							type="text"
 							className="flex-1"
 							maxLength={15}
+							value={twitter}
+							onChange={(e) => {
+								setTwitter(e.target.value);
+								setSuccess(false);
+								setError(null);
+							}}
 						/>
 					</label>
 				</div>
@@ -249,8 +282,9 @@ export default function ProfileEdit(): AnyElem {
 
 				<input 
 					type="submit" 
-					value={"Update Profile"}
-					disabled={isSubmitting}	
+					value={cooldownText}
+					disabled={cooldown > 0}
+					className={`${cooldown > 0 ? "opacity-50" : ""}`}
 					/>
 				{error && !success && <span className="text-red-600 ml-1">{error}</span>}
 				{success && !error && <span className="text-green-600 ml-1">Profile updated!</span>}
