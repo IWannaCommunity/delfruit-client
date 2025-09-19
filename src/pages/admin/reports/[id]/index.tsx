@@ -111,11 +111,14 @@ export default function AdminDashboard(): AnyElem {
 		if (searchInputRef.current) {
 			searchInputRef.current.value = "";
 		}
+		setPage(0);
+		setFilters({ type: "all", answered: null, order: "ASC" })
 	}
 
 	const handleFilterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setFilters(parseFilters(new FormData(e.currentTarget)));
+		setPage(0);
 	};
 
 	useEffect(() => {
