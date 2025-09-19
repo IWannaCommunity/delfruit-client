@@ -34,17 +34,7 @@ export default function Review(props: ReviewT): JSX.Element {
 			if (!session.active || !session.token) return;
 
 			try {
-				// NOTE: THIS IS THE GET FUNCTION
-				/*
-				* ALSO: I'm starting to think this wasn't actually
-				* misnamed, but moreso klazen probably meant to delete this
-				* call entirely. Because it calls itself once on every review
-				* render which is awful, even if all it returns is a boolean.
-				* Having that many API calls happening is a big yikes.
-				* So on backend, need to somehow get whether a user liked a review
-				* or not into the getReviews call
-				*/
-				const res = await API.reviews().deleteReviewLike(
+				const res = await API.reviews().getReviewLike(
 					`Bearer ${session.token}`,
 					props.id,
 					session.user_id,
@@ -88,7 +78,7 @@ export default function Review(props: ReviewT): JSX.Element {
 		tempDisable();
 
 		try {
-			await API.reviews().deleteReviewLike_1(
+			await API.reviews().deleteReviewLike(
 				`Bearer ${session.token}`,
 				props.id,
 				session.user_id,
@@ -195,7 +185,7 @@ export default function Review(props: ReviewT): JSX.Element {
 					{props.date_created}
 
 					{/* Buttons */}
-					{session.active && !session.admin && (
+					{session.active && (
 						<Link href={`/report/review/${props.id}`} className="ml-1">
 							Report
 						</Link>
