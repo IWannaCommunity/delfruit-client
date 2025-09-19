@@ -5,7 +5,7 @@ import Head from "next/head";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import ReviewList from "@/components/home/reviewList";
-import ReviewPagination from "@/components/reviewlist/reviewPagination";
+import Pagination from "@/components/pagination";
 
 
 export default function Reviews(): AnyElem {
@@ -37,9 +37,9 @@ export default function Reviews(): AnyElem {
 				<Header />
 				<div id="content">
 					<h2>Latest Reviews</h2>
-					<ReviewPagination page={page} totalPages={totalPages}/>
+					<Pagination page={page} totalPages={totalPages} basePath="/reviews/[id]"/>
 					<ReviewList page={page} limit={25} />
-					<ReviewPagination page={page} totalPages={totalPages}/>
+					<Pagination page={page} totalPages={totalPages} basePath="/reviews/[id]"/>
 				</div>
 				<Footer />
 			</div>

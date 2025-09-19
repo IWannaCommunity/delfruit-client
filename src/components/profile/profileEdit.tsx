@@ -160,7 +160,7 @@ export default function ProfileEdit(): AnyElem {
 					/>
 				</label>
 
-				<div className="flex flex-col gap-2 mt-[1em] !mb-[2em]">							
+				<div className="flex flex-col gap-2 mt-[1em] !mb-[2em]">
 					<label className="group flex items-center gap-2">
 						<Image src="/images/twitch16.png" alt="" width={16} height={16} />
 						<span className="w-40 group-focus-within:font-bold">Twitch Channel:</span>
