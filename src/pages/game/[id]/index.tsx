@@ -5,7 +5,7 @@ import Carousel from "@/components/game/carousel";
 import GameReviews from "@/components/game/gameReviews";
 import { GameExt } from "delfruit-swagger-cg-sdk";
 import { API } from "@/utils/api";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import { formatDate } from "@/utils/formatDate";
 import Footer from "@/components/footer";
@@ -23,85 +23,83 @@ export default function Game(): AnyElem {
 	const router = useRouter();
 	const id = Number(router.query.id);
 
+	const fetchDetails = useCallback(async () => {
+		try {
+			const resp = await API.composite().getGameCompositeAll(id);
+			const game = resp.data;
+
+			if (!game || !game.id) {
+				setError(true);
+				return;
+			}
+
+			const gameProps: GameExt = {
+				id: game.id,
+				name: game.name,
+				url: game.url,
+				author: game.author,
+				collab: game.collab,
+				removed: game.removed,
+				owner_id: game.owner_id,
+				dateCreated: game.dateCreated
+					? formatDate(new Date(game.dateCreated))
+					: null,
+				rating:
+					game.rating === null ? null : Number(game.rating / 10).toFixed(1),
+				difficulty:
+					game.difficulty === null ? null : Number(game.difficulty).toFixed(1),
+				urlSpdrn: game.urlSpdrn,
+				tags: game.tags,
+				reviews:
+					game.reviews?.map((review) => ({
+						id: review.id,
+						user_id: review.user_id,
+						game_id: null,
+						rating:
+							review.rating === null
+								? null
+								: Number(review.rating / 10).toFixed(1),
+						difficulty:
+							review.difficulty === null ? null : Number(review.difficulty),
+						comment: review.comment,
+						date_created: formatDate(new Date(review.date_created)),
+						removed: review.removed,
+						user_name: review.user_name,
+						game_name: review.game_name,
+						like_count: review.like_count,
+						owner_review: review.owner_review === 1,
+						tags: review.tags,
+					})) || [],
+			};
+
+			const carouselProps =
+				game.screenshots.map((scrnShot) => ({
+					id: scrnShot.id,
+					src: makeScrnshotURL(scrnShot.gameId, scrnShot.id).toString(),
+					alt: "",
+					user_name: scrnShot.user_name,
+				})) || [];
+
+			setDetails(gameProps);
+			setImages(carouselProps);
+		} catch (err: any) {
+			if (err.response?.status === 404) {
+				setError(true);
+			}
+		} finally {
+			setLoading(false);
+		}
+	}, [id]);
+
 	useEffect(() => {
 		if (!router.isReady) return;
-
 		if (isNaN(id) || id <= 0) {
 			setError(true);
 			setLoading(false);
 			return;
 		}
-
-		(async () => {
-			try {
-				const resp = await API.composite().getGameCompositeAll(id);
-				const game = resp.data;
-
-				if (!game || !game.id) {
-					setError(true);
-					return;
-				}
-
-				const gameProps: GameExt = {
-					id: game.id,
-					name: game.name,
-					url: game.url,
-					author: game.author,
-					collab: game.collab,
-					removed: game.removed,
-					owner_id: game.owner_id,
-					dateCreated: game.dateCreated
-						? formatDate(new Date(game.dateCreated))
-						: null,
-					rating:
-						game.rating === null ? null : Number(game.rating / 10).toFixed(1),
-					difficulty:
-						game.difficulty === null
-							? null
-							: Number(game.difficulty).toFixed(1),
-					urlSpdrn: game.urlSpdrn,
-					tags: game.tags,
-
-					reviews:
-						game.reviews?.map((review) => ({
-							id: review.id,
-							user_id: review.user_id,
-							game_id: null,
-							rating:
-								review.rating === null
-									? null
-									: Number(review.rating / 10).toFixed(1),
-							difficulty:
-								review.difficulty === null ? null : Number(review.difficulty),
-							comment: review.comment,
-							date_created: formatDate(new Date(review.date_created)),
-							removed: review.removed,
-							user_name: review.user_name,
-							game_name: review.game_name,
-							like_count: review.like_count,
-							owner_review: review.owner_review === 1,
-							tags: review.tags,
-						})) || [],
-				};
-
-				const carouselProps =
-					game.screenshots.map((scrnShot) => ({
-						id: scrnShot.id,
-						src: makeScrnshotURL(scrnShot.gameId, scrnShot.id).toString(),
-						alt: "",
-						user_name: scrnShot.user_name,
-					})) || [];
-				setDetails(gameProps);
-				setImages(carouselProps);
-			} catch (err: any) {
-				if (err.response?.status === 404) {
-					setError(true);
-				}
-			} finally {
-				setLoading(false);
-			}
-		})();
-	}, [id, router.isReady]);
+		fetchDetails();
+	}, [id, router.isReady, fetchDetails]);
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
@@ -111,7 +109,7 @@ export default function Game(): AnyElem {
 		return (
 			<>
 				<div className="!w-full">
-					<GameInfo game={details} />
+					<GameInfo game={details} onGameUpdated={fetchDetails} />
 					<Carousel images={images} />
 				</div>
 				<GameReviews reviews={details.reviews} />

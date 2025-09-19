@@ -1,125 +1,109 @@
+import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { API } from "@/utils/api";
 import { Game, GameExt } from "delfruit-swagger-cg-sdk";
-import Tag from "@/components/game/tag";
-import React, { useState } from "react";
-import Link from "next/link";
 import { useSessionContext } from "@/utils/hooks";
 import { useRouter } from "next/router";
 import AverageBox, { getColor } from "@/components/game/averageBox";
-import {
-	getRatingDescription,
-	getDifficultyDescription,
-} from "@/utils/ratingHelpers";
+import { getRatingDescription, getDifficultyDescription } from "@/utils/ratingHelpers";
+import Tag from "@/components/game/tag";
 import { AnyElem } from "@/utils/element";
 
 type GameInfoProps = {
 	game: GameExt;
+	onGameUpdated: () => void;
 };
 
 function sanitizeGameForPatch(game: GameExt): Game {
-  return {
-    id: game.id,
-    name: game.name ?? "",
-    sortname: game.sortname ?? "",
-    url: game.url ?? "",
-    urlSpdrn: game.urlSpdrn ?? "",
-    author: Array.isArray(game.author) ? game.author : [],
-    author_raw: Array.isArray(game.author) ? game.author.join(" ") : "",
-    collab: Boolean(game.collab),
-    dateCreated: game.dateCreated
-      ? new Date(game.dateCreated).toISOString()
-      : undefined,
-    adderId: game.adderId != null ? String(game.adderId) : undefined,
-    ownerId: game.ownerId != null ? String(game.ownerId) : undefined,
-    removed: Boolean(game.removed),
-    ownerBio: game.ownerBio ?? "",
-  };
+	return {
+		id: game.id,
+		name: game.name ?? "",
+		sortname: game.sortname ?? "",
+		url: game.url ?? "",
+		urlSpdrn: game.urlSpdrn ?? "",
+		author: Array.isArray(game.author) ? game.author : [],
+		author_raw: Array.isArray(game.author) ? game.author.join(" ") : "",
+		collab: Boolean(game.collab),
+		dateCreated: game.dateCreated
+			? new Date(game.dateCreated).toISOString()
+			: undefined,
+		adderId: game.adderId != null ? String(game.adderId) : undefined,
+		ownerId: game.ownerId != null ? String(game.ownerId) : undefined,
+		removed: Boolean(game.removed),
+		ownerBio: game.ownerBio ?? "",
+	};
 }
 
-export default function GameInfo({ game }: GameInfoProps): AnyElem {
-	
+export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyElem {
 	const [session] = useSessionContext();
-
 	const router = useRouter();
 
-	const [hideAdminCreatorInput, setHideAdminCreatorInput] =
-		useState<boolean>(true);
-	const [adminCreatorAlertText, setAdminCreatorAlertText] =
-		useState<string>("");
+	// Controlled input states
+	const [creatorInput, setCreatorInput] = useState(game.author.join(", "));
+	const [dlUrlInput, setDlUrlInput] = useState(game.url ?? "");
+	const [ownerInput, setOwnerInput] = useState("");
 
-	const [hideAdminDLUrlInput, setHideAdminDLUrlInput] = useState<boolean>(true);
-	const [adminDLUrlText, setAdminDLUrlText] = useState<string>("");
+	// Visibility toggles
+	const [hideAdminCreatorInput, setHideAdminCreatorInput] = useState(true);
+	const [hideAdminDLUrlInput, setHideAdminDLUrlInput] = useState(true);
 
-	const [adminOwnerText, setAdminOwnerText] = useState<string>("");
+	// Alerts
+	const [adminCreatorAlertText, setAdminCreatorAlertText] = useState("");
+	const [adminDLUrlText, setAdminDLUrlText] = useState("");
+	const [adminOwnerText, setAdminOwnerText] = useState("");
 
-	function toggleAdminCreatorInput() {
-		setHideAdminCreatorInput(!hideAdminCreatorInput);
-	}
+	// Checkboxes
+	const [isFavourite, setIsFavourite] = useState(false);
+	const [isCleared, setIsCleared] = useState(false);
+	const [isBookmarked, setIsBookmarked] = useState(false);
 
-	function toggleAdminDLUrlInput() {
-		setHideAdminDLUrlInput(!hideAdminDLUrlInput);
-	}
-
+	// Handlers
 	async function actionAdminChangeGameCreators() {
 		try {
-			// DANGER: typically, DON'T DO THIS IN REACT, but I have no page reactivity
-			// so it's fine here. actually that's a lie, I do, but input should be
-			// preserved between renders.
-			const rawAuthor = (document.getElementById("admin-creator-input") as HTMLInputElement).value;
 			const g = sanitizeGameForPatch({
 				...game,
-				author: [rawAuthor],
+				author: creatorInput.split(",").map((a) => a.trim()),
 			} as GameExt);
 
 			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
-			toggleAdminCreatorInput();
+			setHideAdminCreatorInput(true);
 			setAdminCreatorAlertText("Changes Saved.");
-		} catch (e) {
+			if (onGameUpdated) onGameUpdated();
+		} catch {
 			setAdminCreatorAlertText("Error: Rejected, changes were not accepted.");
 		}
 	}
 
 	async function actionAdminChangeDLUrl() {
-		// DANGER: typically, DON'T DO THIS IN REACT, but I have no page reactivity
-		// so it's fine here. actually that's a lie, I do, but input should be
-		// preserved between renders.
-		const input = (document.getElementById("admin-download-input") as HTMLInputElement).value;
-		// check if it's even a valid URL
-		let dl: string;
 		try {
-			dl = new URL(input).href;
-		} catch {
-			setAdminDLUrlText("Error: Rejected, download is not a valid URL.");
-			return;
-		}
+			const dl = dlUrlInput.trim() ? new URL(dlUrlInput).href : "";
 
-		try {
 			const g = sanitizeGameForPatch({
 				...game,
 				url: dl,
 			} as GameExt);
-			
+
 			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
-			toggleAdminDLUrlInput();
+			setHideAdminDLUrlInput(true);
 			setAdminDLUrlText("Changes Saved.");
-		} catch (e) {
-			setAdminDLUrlText("Error: Rejected, changes were not accepted.");
+			if (onGameUpdated) onGameUpdated();
+		} catch {
+			setAdminDLUrlText("Error: Rejected, download is not a valid URL.");
 		}
 	}
 
 	async function actionAdminChangeOwner() {
-		const owner = (document.getElementById("owner-field") as HTMLInputElement).value;
-
 		try {
 			const g = sanitizeGameForPatch({
 				...game,
-				owner_id: owner,
+				ownerId: ownerInput,
 			} as any);
 
 			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
 			setAdminOwnerText("Changes Saved.");
-		} catch (e) {
+			if (onGameUpdated) onGameUpdated();
+		} catch {
 			setAdminOwnerText("Error: Rejected, changes were not accepted.");
 		}
 	}
@@ -144,19 +128,15 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						id="admin-creator-input"
 						type="text"
 						className="w-[95%]"
-						defaultValue={game.author}
+						value={creatorInput}
+						onChange={(e) => setCreatorInput(e.target.value)}
 						hidden={hideAdminCreatorInput}
 					/>
 					<button
 						id="admin-change-creator"
 						type="button"
 						hidden={!hideAdminCreatorInput}
-						onClick={async (
-							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-						) => {
-							evt.preventDefault();
-							toggleAdminCreatorInput();
-						}}
+						onClick={() => setHideAdminCreatorInput(false)}
 					>
 						Change Creator
 					</button>
@@ -165,9 +145,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						type="submit"
 						hidden={hideAdminCreatorInput}
 						className="mr-1 mb-1"
-						onClick={async (
-							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-						) => {
+						onClick={async (evt) => {
 							evt.preventDefault();
 							await actionAdminChangeGameCreators();
 						}}
@@ -178,16 +156,15 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						id="admin-discard-change-creator"
 						type="reset"
 						hidden={hideAdminCreatorInput}
-						onClick={async (
-							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-						) => {
+						onClick={(evt) => {
 							evt.preventDefault();
-							toggleAdminCreatorInput();
+							setCreatorInput(game.author.join(", "));
+							setHideAdminCreatorInput(true);
 						}}
 					>
 						Cancel
 					</button>
-					<span className="game_creator_update_alert">{adminCreatorAlertText}</span>
+					<span className="game_creator_update_alert ml-1">{adminCreatorAlertText}</span>
 				</>
 			)}
 
@@ -237,7 +214,8 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						id="admin-download-input"
 						type="text"
 						className="w-[95%]"
-						defaultValue={game.url}
+						value={dlUrlInput}
+						onChange={(e) => setDlUrlInput(e.target.value)}
 						hidden={hideAdminDLUrlInput}
 					/>
 					<button
@@ -245,12 +223,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						type="button"
 						hidden={!hideAdminDLUrlInput}
 						className="ml-1"
-						onClick={async (
-							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-						) => {
-							evt.preventDefault();
-							toggleAdminDLUrlInput();
-						}}
+						onClick={() => setHideAdminDLUrlInput(false)}
 					>
 						Change URL
 					</button>
@@ -259,9 +232,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						type="submit"
 						hidden={hideAdminDLUrlInput}
 						className="mr-1"
-						onClick={async (
-							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-						) => {
+						onClick={async (evt) => {
 							evt.preventDefault();
 							await actionAdminChangeDLUrl();
 						}}
@@ -272,16 +243,15 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						id="admin-discard-change-download"
 						type="reset"
 						hidden={hideAdminDLUrlInput}
-						onClick={async (
-							evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-						) => {
+						onClick={(evt) => {
 							evt.preventDefault();
-							toggleAdminDLUrlInput();
+							setDlUrlInput(game.url ?? "");
+							setHideAdminDLUrlInput(true);
 						}}
 					>
 						Cancel
 					</button>
-					<span className="game_creator_update_alert">{adminDLUrlText}</span>
+					<span className="game_creator_update_alert ml-1">{adminDLUrlText}</span>
 				</>
 			)}
 			<br />
@@ -328,19 +298,34 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 					<br />
 
 					{/* Checkboxes */}
-					<input type="checkbox" id="chk_favourite" />
+					<input
+						type="checkbox"
+						id="chk_favourite"
+						checked={isFavourite}
+						onChange={() => setIsFavourite(!isFavourite)}
+					/>
 					<span> Favourite </span>
-					<span className="favourite_alert hidden" />
+					<span className="favourite_alert">{isFavourite ? "Updated!" : ""}</span>
 					<br />
 
-					<input type="checkbox" id="chk_clear" />
+					<input
+						type="checkbox"
+						id="chk_clear"
+						checked={isCleared}
+						onChange={() => setIsCleared(!isCleared)}
+					/>
 					<span> Cleared </span>
-					<span className="clear_alert hidden" />
+					<span className="clear_alert">{isCleared ? "Updated!" : ""}</span>
 					<br />
 
-					<input type="checkbox" id="chk_bookmark" />
+					<input
+						type="checkbox"
+						id="chk_bookmark"
+						checked={isBookmarked}
+						onChange={() => setIsBookmarked(!isBookmarked)}
+					/>
 					<span> Bookmark </span>
-					<span className="bookmark_alert hidden" />
+					<span className="bookmark_alert">{isBookmarked ? "Updated!" : ""}</span>
 					<br />
 				</>
 			)}
@@ -358,7 +343,7 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 				))}
 			</div>
 
-			{/* Other Admin Quick Actions */}
+			{/* Admin Actions */}
 			{session.admin && (
 				<>
 					<h2>ADMIN TOOLS</h2>
@@ -366,13 +351,17 @@ export default function GameInfo({ game }: GameInfoProps): AnyElem {
 						<Link href="/admin/remove_game">Remove Game</Link>
 						<br />
 						<span>Owner: </span>
-						<input id="owner-field" type="text" size={15} defaultValue="" />
+						<input
+							id="owner-field"
+							type="text"
+							size={15}
+							value={ownerInput}
+							onChange={(e) => setOwnerInput(e.target.value)}
+						/>
 						<button
 							id="owner-btn"
 							type="submit"
-							onClick={async (
-								evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-							) => {
+							onClick={async (evt) => {
 								evt.preventDefault();
 								await actionAdminChangeOwner();
 							}}
