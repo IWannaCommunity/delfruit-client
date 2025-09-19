@@ -342,17 +342,10 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 			<span className="leading-[1.5]">Date Submitted: {game.dateCreated}</span>
 			<br />
 
-			{/* Tags */}
-			<div className="mt-5">
-				<h2>Tags:</h2>
-				{game.tags.map((tag) => (
-					<Tag key={tag.id} id={tag.id} name={tag.name} count={tag.count} />
-				))}
-			</div>
-
-			{/* Admin Actions */}
+			{/* Admin Tools */}
 			{session.admin && (
 				<>
+					<br />
 					<h2>ADMIN TOOLS</h2>
 					<p>
 						<Link href="/admin/remove_game">Remove Game</Link>
@@ -380,6 +373,15 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 					</p>
 				</>
 			)}
+
+			{/* Tags */}
+			<div className="mt-5">
+				<h2>Tags:</h2>
+				{game.tags.map((tag) => (
+					<Tag key={tag.id} id={tag.id} name={tag.name} count={tag.count} />
+				))}
+			</div>
+
 		</div>
 	);
 }
