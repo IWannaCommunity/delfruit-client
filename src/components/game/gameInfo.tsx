@@ -61,14 +61,17 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 	// Handlers
 	async function actionAdminChangeGameCreators() {
 		try {
+			const authors = [creatorInput.trim()];
+
 			const g = sanitizeGameForPatch({
 				...game,
-				author: creatorInput.split(",").map((a) => a.trim()),
+				author: authors,
 			} as GameExt);
 
 			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
 			setHideAdminCreatorInput(true);
 			setAdminCreatorAlertText("Changes Saved.");
+
 			if (onGameUpdated) onGameUpdated();
 		} catch {
 			setAdminCreatorAlertText("Error: Rejected, changes were not accepted.");
@@ -114,12 +117,16 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 
 			<h2 id="creator-label" className="mb-[13px]">
 				<span>Creator: </span>
-				{game.author.map((author, index) => (
-					<React.Fragment key={author}>
-						<Link href={`/search/?author=${author}`}>{author}</Link>
-						{index < game.author.length - 1 && ", "}
-					</React.Fragment>
-				))}
+				{game.author.length > 0 &&
+					game.author[0].split(",").map((author, i, arr) => {
+						const trimmed = author.trim();
+						return (
+							<React.Fragment key={trimmed}>
+								<Link href={`/search/?author=${trimmed}`}>{trimmed}</Link>
+								{i < arr.length - 1 && ", "}
+							</React.Fragment>
+						);
+					})}
 			</h2>
 
 			{session.admin && (
