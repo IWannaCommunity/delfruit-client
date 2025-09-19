@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import Pagination from "@/components/pagination";
+import Pagination from "@/components/helpers/pagination";
 import ReportList from "@/components/admin/reportList";
 import { ReportTypeEnum } from "delfruit-swagger-cg-sdk";
 import { Filters } from "@/utils/types";
@@ -88,7 +87,7 @@ function SelectField({ label, name, options, id }: {
 	);
 }
 
-export default function AdminDashboard(): AnyElem {
+export default function AdminDashboard(): JSX.Element {
 	const [session] = useSessionContext();
 	const [page, setPage] = useState<number>(0);
 	const [searchId, setSearchId] = useState<number | null>(null);

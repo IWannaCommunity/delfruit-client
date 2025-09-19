@@ -1,14 +1,13 @@
-import { AnyElem } from "@/utils/element";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import ReviewList from "@/components/home/reviewList";
-import Pagination from "@/components/pagination";
+import Pagination from "@/components/helpers/pagination";
 
 
-export default function Reviews(): AnyElem {
+export default function Reviews(): JSX.Element {
 	const [page, setPage] = useState<number>(0);
 	const router = useRouter();
 

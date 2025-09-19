@@ -3,14 +3,13 @@ import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { API } from "@/utils/api";
 import { useCallback, useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
-import { AnyElem } from "@/utils/element";
 
 type ReviewListProps = {
 	page: number;
 	limit: number;
 };
 
-export default function ReviewList(props: ReviewListProps): AnyElem {
+export default function ReviewList(props: ReviewListProps): JSX.Element {
 	const [reviews, setReviews] = useState<ReviewT[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);

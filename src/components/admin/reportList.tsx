@@ -3,7 +3,6 @@ import { Report as ReportT } from "delfruit-swagger-cg-sdk";
 import { API } from "@/utils/api";
 import { useCallback, useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
-import { AnyElem } from "@/utils/element";
 import { Filters } from "@/utils/types";
 
 type ReportListProps = {
@@ -13,7 +12,7 @@ type ReportListProps = {
 	filters: Filters;
 };
 
-export default function ReportList(props: ReportListProps): AnyElem {
+export default function ReportList(props: ReportListProps): JSX.Element {
 	const [reports, setReports] = useState<ReportT[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);

@@ -1,4 +1,3 @@
-import { AnyElem } from "@/utils/element";
 import Link from "next/link";
 
 interface PaginationProps {
@@ -7,11 +6,7 @@ interface PaginationProps {
 	basePath: string;
 }
 
-export default function Pagination({
-	page,
-	totalPages,
-	basePath,
-}: PaginationProps): AnyElem {
+export default function Pagination({ page, totalPages, basePath }: PaginationProps): JSX.Element {
 	const lastPage = totalPages - 1;
 	const pageCount = 10;
 
