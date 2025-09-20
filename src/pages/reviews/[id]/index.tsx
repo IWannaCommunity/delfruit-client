@@ -14,6 +14,8 @@ export default function Reviews(): JSX.Element {
 	const [loading, setLoading] = useState(true);
 	const router = useRouter();
 
+	const limit = 20;
+
 	useEffect(() => {
 		if (router.isReady) {
 			const id = Number(router.query.id);
@@ -29,7 +31,7 @@ export default function Reviews(): JSX.Element {
 			(async () => {
 				try {
 					const resp = await API.reviews().getReviewCount();
-					const total = Math.ceil(resp.data.count/25);
+					const total = Math.ceil(resp.data.count/limit);
 					setTotalPage(total);
 					setError(false);
 				} catch (err: any) {
@@ -53,7 +55,7 @@ export default function Reviews(): JSX.Element {
 					{!loading && !error && (
 						<>
 							<Pagination page={page} totalPages={totalPage} basePath="/reviews/[id]"/>
-							<ReviewList page={page} limit={25} />
+							<ReviewList page={page} limit={limit} />
 							<Pagination page={page} totalPages={totalPage} basePath="/reviews/[id]"/>
 						</>
 					)}
