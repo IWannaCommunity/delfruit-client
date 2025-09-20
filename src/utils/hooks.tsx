@@ -39,7 +39,7 @@ function useSession(): [
 
 		const sessionToken = jwt.decode(sessionCookie);
 		const username = sessionToken["username"];
-		const admin = sessionToken["isAdmin"];
+		const admin = Boolean(sessionToken["isAdmin"]);
 		const userId = Number(sessionToken["sub"]); // If your IDE says this is deprecated, it is literally stupid (thanks vscode)
 
 		API.setToken(sessionCookie)
