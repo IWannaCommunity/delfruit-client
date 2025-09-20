@@ -7,15 +7,15 @@ import { formatDate } from "@/utils/formatDate";
 export default function GameList(): JSX.Element {
 
 	const [games, setGames] = useState<GameProps[]>([]);
+	const [count, setCount] = useState<number>(0);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		setLoading(true);
-
-		(async () => {
-			try {
-				const resp = await API.games().getGames(
+    const fetchData = async () => {
+      const results = await Promise.allSettled([
+        API.games().getGames(
 					undefined, // authorization
 					undefined, // q
 					undefined, // id
@@ -28,37 +28,46 @@ export default function GameList(): JSX.Element {
 					undefined, // ownerUserId
 					undefined, // hasDownload
 					undefined, // createdFrom
-					new Date(Date.now()), // createdTo
+					undefined, // createdTo
 					undefined, // clearedByUserId
 					undefined, // reviewedByUserId
 					undefined, // ratingFrom
 					undefined, // ratingTo
 					undefined, // difficultyFrom
 					undefined, // difficultyTo
-					0, // page number
-					25, // limit
-					"date_created", // orderCol
-					"DESC" // orderDir
-				);
+          0,
+          25,
+          "date_created",
+          "desc"
+        ),
+        API.games().getGameCount()
+      ]);
 
-				const gameProps: GameProps[] = resp.data.map((game) => ({
+      // Games result
+      if (results[0].status === "fulfilled") {
+        const resp = results[0].value;
+        const gameProps: GameProps[] = resp.data.map((game) => ({
 					name: game.name,
 					id: game.id,
 					date_created: game.date_created ? formatDate(new Date(game.date_created)) : null,
 					rating: game.rating === null ? null : Number(game.rating / 10).toFixed(1),
 					difficulty: game.difficulty === null ? null : Number(game.difficulty).toFixed(1),
 					rating_count: game.rating_count,
-				}));
-
-				setGames(gameProps);
-				setError(null);
-			} catch (err: any) {
-				setError("Failed to load games.");
-			} finally {
+        }));
+        setGames(gameProps);
 				setLoading(false);
-			}
-		})();
-	}, []);
+      } else {
+        setError("Failed to load games.");
+      }
+
+      // Count result
+      if (results[1].status === "fulfilled") {
+        setCount(results[1].value.data.count);
+      }
+    };
+
+    fetchData();
+  }, []);
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
@@ -66,7 +75,7 @@ export default function GameList(): JSX.Element {
 
 		return (
 			<>
-				<p className="notes">Showing 25 of 14370</p>
+				<p className="notes">Showing 25 of {count}</p>
 				<table className="gamelist">
 					<tbody>
 						<tr>
@@ -125,4 +134,3 @@ export default function GameList(): JSX.Element {
 		</div>
 	);
 }
-
