@@ -51,7 +51,7 @@ export default function UserList(): AnyElem {
 	const [initialized, setInitialized] = useState(false);
 
 	const router = useRouter();
-	
+
 	const fetchUsers = useCallback(
 		async (requestedPage: number, sort: SortConfig<User> | null): Promise<User[]> => {
 			const res = await API.users().getUsersWithReviewsCount(
@@ -78,7 +78,7 @@ export default function UserList(): AnyElem {
 			return newData;
 		},[]
 	);
-	
+
 	useEffect(() => {
 		if (!router.isReady) return;
 
@@ -114,7 +114,7 @@ export default function UserList(): AnyElem {
 		setUsers((prev) => dedupeArray([...prev, ...moreUsers], (u) => u.id));
 		setPage(nextPage);
 	};
-	
+
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(
 		() => { if (hasMore) loadMore(); },
 		{ enabled: initialized }

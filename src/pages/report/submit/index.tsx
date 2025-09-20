@@ -21,7 +21,7 @@ export default function ReportSubmit(): AnyElem {
 					{id && router.isReady ? (
 						<>
 							<p>
-								Thank you for your report! Your report ID is 
+								Thank you for your report! Your report ID is
 								<span className="font-bold ml-1">{id}</span>
 								<span>
 									, please refer to this ID if you need to discuss

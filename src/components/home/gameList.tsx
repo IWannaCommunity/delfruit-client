@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
 
 export default function GameList(): JSX.Element {
-	
+
 	const [games, setGames] = useState<GameProps[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	
+
 	useEffect(() => {
 		setLoading(true);
 
@@ -63,7 +63,7 @@ export default function GameList(): JSX.Element {
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
 		if (error) return <span className="text-red-600">{error}</span>;
-		
+
 		return (
 			<>
 				<p className="notes">Showing 25 of 14370</p>
@@ -95,7 +95,7 @@ export default function GameList(): JSX.Element {
 			</>
 		);
 	};
-	
+
 	return (
 		<div className="!mb-[1em]">
 			<h2>Newest Fangames</h2>

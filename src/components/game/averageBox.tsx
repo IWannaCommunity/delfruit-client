@@ -1,8 +1,8 @@
 export function getColor(
-	value: number | null, 
-	min: number, 
-	max: number, 
-	startColor: string, 
+	value: number | null,
+	min: number,
+	max: number,
+	startColor: string,
 	endColor: string
 ): string {
 	if (value === null) return "#ffffff";
@@ -49,7 +49,7 @@ export default function AverageBox({label, value, max, description, bgColor}: {
 	bgColor: string;
 }) {
 	return (
-		<div 
+		<div
 			className="rating bg-[var(--average-color)]"
 			style={{ ["--average-color" as any]: bgColor }}
 		>

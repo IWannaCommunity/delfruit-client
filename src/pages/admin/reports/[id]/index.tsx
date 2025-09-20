@@ -160,12 +160,12 @@ export default function AdminDashboard(): JSX.Element {
 					<label htmlFor="rid" className="font-medium whitespace-nowrap">
 						Get Report by ID:
 					</label>
-					<input id="rid" 
-						name="rid" 
-						type="text" 
-						size={5} 
-						className="w-20" 
-						ref={searchInputRef} 
+					<input id="rid"
+						name="rid"
+						type="text"
+						size={5}
+						className="w-20"
+						ref={searchInputRef}
 					/>
 					<input type="submit" value="Search" />
 				</form>

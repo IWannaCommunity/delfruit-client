@@ -151,7 +151,7 @@ export default function ProfileEdit(): AnyElem {
 						id="bio"
 						name="bio"
 						maxLength={5000}
-						value={bio}			
+						value={bio}
 						onChange={(e) => {
 							setBio(e.target.value)
 							setSuccess(false);
@@ -164,14 +164,14 @@ export default function ProfileEdit(): AnyElem {
 					<label className="group flex items-center gap-2">
 						<Image src="/images/twitch16.png" alt="" width={16} height={16} />
 						<span className="w-40 group-focus-within:font-bold">Twitch Channel:</span>
-						<span className="text-gray-600 text-sm group-focus-within:font-bold">https://www.twitch.tv/</span>						
+						<span className="text-gray-600 text-sm group-focus-within:font-bold">https://www.twitch.tv/</span>
 						<input
 							id="twitch_link"
 							name="twitch_link"
 							type="text"
 							className="flex-1"
 							maxLength={25}
-							value={twitch}				
+							value={twitch}
 							onChange={(e) => {
 								setTwitch(e.target.value);
 								setSuccess(false);
@@ -183,7 +183,7 @@ export default function ProfileEdit(): AnyElem {
 					<label className="group flex items-center gap-2">
 						<Image src="/images/youtube16.png" alt="" width={16} height={16} />
 						<span className="w-40 group-focus-within:font-bold">YouTube Channel:</span>
-						<span className="text-gray-600 text-sm group-focus-within:font-bold">https://www.youtube.com/@</span>					
+						<span className="text-gray-600 text-sm group-focus-within:font-bold">https://www.youtube.com/@</span>
 						<input
 							id="yt_link"
 							name="yt_link"
@@ -201,7 +201,7 @@ export default function ProfileEdit(): AnyElem {
 					<label className="group flex items-center gap-2">
 						<Image src="/images/twitter16.png" alt="" width={16} height={16} />
 						<span className="w-40 group-focus-within:font-bold">Twitter Profile:</span>
-						<span className="text-gray-600 text-sm group-focus-within:font-bold">https://www.twitter.com/</span>					
+						<span className="text-gray-600 text-sm group-focus-within:font-bold">https://www.twitter.com/</span>
 						<input
 							id="twitter_link"
 							name="twitter_link"
@@ -280,8 +280,8 @@ export default function ProfileEdit(): AnyElem {
 					</label>
 				</div>
 
-				<input 
-					type="submit" 
+				<input
+					type="submit"
 					value={cooldownText}
 					disabled={cooldown > 0}
 					className={`${cooldown > 0 ? "opacity-50" : ""}`}

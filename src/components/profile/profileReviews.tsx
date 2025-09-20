@@ -14,7 +14,7 @@ export default function ProfileReviews({ user }: UserInfoProps): JSX.Element {
 	const [reviews, setReviews] = useState<ReviewT[]>([]);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
-	
+
 	const fetchReviews = useCallback(
 		async (requestedPage: number, userID: number): Promise<ReviewT[]> => {
 			const res = await API.users().getUsersReviews(
@@ -42,7 +42,7 @@ export default function ProfileReviews({ user }: UserInfoProps): JSX.Element {
 			return newData;
 		},[]
 	);
-	
+
 	useEffect(() => {
 		let isCancelled = false;
 
@@ -74,11 +74,11 @@ export default function ProfileReviews({ user }: UserInfoProps): JSX.Element {
 		setReviews((prev) => dedupeArray([...prev, ...moreReviews], (r) => r.id));
 		setPage(nextPage);
 	};
-	
+
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
 		if (hasMore) loadMore();
 	});
-	
+
 	return(
 		<div className="px-[1.5em]">
 			<p className="text-[#222222]">{reviews.length} Reviews</p>

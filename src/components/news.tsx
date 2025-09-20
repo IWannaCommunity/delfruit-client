@@ -45,7 +45,7 @@ export default function News(props: NewsT): JSX.Element {
 
 			<div className="!absolute !right-[0px] !top-[0px] !p-[0.5em] !text-right">
 				-User on {props.date_created}
-			</div>	
+			</div>
 		</div>
 	);
 }

@@ -1,4 +1,4 @@
-import { 
+import {
   APIApi, AuthenticationApi, CompositeApi, DefaultApi, GamesApi,
   ListsApi, MessagesApi, NewsApi, RatingsApi, ReportsApi, ReviewsApi,
   ScreenshotsApi, TagsApi, UsersApi, Configuration

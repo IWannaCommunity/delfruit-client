@@ -32,7 +32,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 		setError(null);
 
 		try {
-			if (!file) { 
+			if (!file) {
 				setError("Please select a file.");
 				return;
 			}
@@ -117,7 +117,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 					<input
 						id="description"
 						name="description"
-						className="w-full" 
+						className="w-full"
 						type="text"
 						maxLength={100}
 						value={description}
@@ -130,7 +130,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 						<p>
 							Select an image to upload: (max file size: 1MB, max image size: 1024x768, JPG/PNG only)
 						</p>
-						<input 
+						<input
 							type="file"
 							accept="image/png,image/jpeg"
 							onChange={(e) => {

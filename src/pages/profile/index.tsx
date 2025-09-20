@@ -27,7 +27,7 @@ export default function Profile(): AnyElem {
 	const [error, setError] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [session] = useSessionContext();
-	
+
 	const tabs = [
     { label: "User Profile", value: "profile" },
     { label: "Ratings", value: "ratings" },
@@ -36,7 +36,7 @@ export default function Profile(): AnyElem {
 		{ label: "Favorites List", value: "favorites" },
 		{ label: "Clear List", value: "clearList" },
   ] as const;
-	
+
 	useEffect(() => {
 		if (!session?.user_id) return;
 
@@ -61,7 +61,7 @@ export default function Profile(): AnyElem {
 			} catch (err: any) {
         if (err.response?.status === 404) {
           setError(true);
-        } 
+        }
 			} finally {
         setLoading(false);
       }
@@ -71,23 +71,23 @@ export default function Profile(): AnyElem {
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
 		if (error) return <span className="text-red-600">Invalid Page</span>;
-		
+
 		return (
 			<>
 				<h2>{`${user.name}'s Profile`}</h2>
 				<ProfileActions user={user} />
 				<div className="border border-solid border-gray-400 rounded-md bg-white text-[1.1em] font-verdana">
 					<div className="border border-gray-400 rounded-md p-[0.25em]">
-				
+
 						{/* Tabs */}
 						<TabBar<ProfileTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-					
+
 						{/* Profile */}
 						{activeTab === "profile" && user && <ProfileMain user={user}/>}
-						
+
 						{/* Ratings */}
 						{activeTab === "ratings" && user && <ProfileRatings user={user}/>}
-						
+
 						{/* Reviews */}
 						{activeTab === "reviews" && user && <ProfileReviews user={user}/>}
 					</div>

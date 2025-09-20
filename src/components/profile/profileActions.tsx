@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
@@ -15,7 +15,7 @@ export default function ProfileActions({ user }: UserInfoProps) {
 
 	const changeFollow = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (!user || !session.active || !session.token) return;
-		
+
 		try {
 			if (e.target.checked) {
 				// FOLLOW user
@@ -26,7 +26,6 @@ export default function ProfileActions({ user }: UserInfoProps) {
 				);
 				setIsFollowing(true);
 				setAlertMsg("You are now following this user!");
-						console.log("User prop:", user);
 			} else {
 				// UNFOLLOW user
 				await API.users().deleteUserFollow(
@@ -36,7 +35,6 @@ export default function ProfileActions({ user }: UserInfoProps) {
 				);
 				setIsFollowing(false);
 				setAlertMsg("You unfollowed this user.");
-						console.log("User prop:", user);
 			}
 		} catch (error) {
 			setAlertMsg("An error has occurred.");
@@ -52,7 +50,7 @@ export default function ProfileActions({ user }: UserInfoProps) {
 			</p>
 		);
 	}
-	
+
 	return (
 		<>
 			<Link href={`/messages/compose?to=${user.id}`}>

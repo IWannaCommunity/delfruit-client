@@ -18,7 +18,7 @@ export default function ComposePage(): AnyElem {
 				<Header />
 				<div id="content">
 					{session.active ? (
-						<Compose /> 
+						<Compose />
 					) : (
 						<span>Page not available. Please login first.</span>
 					)}

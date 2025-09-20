@@ -191,9 +191,9 @@ export default function Review(props: ReviewT): JSX.Element {
 						</Link>
 					)}
 					{session.admin && (
-						<button 
-							className="ml-1" 
-							type="submit" 
+						<button
+							className="ml-1"
+							type="submit"
 							onClick={actionAdminRemoveReview}>
 							(ADMIN) Remove
 						</button>

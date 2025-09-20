@@ -1,6 +1,6 @@
 export function getRatingDescription(value: number | null): string {
   if (value === null) return "None";
-	
+
   const floored = Math.floor(value);
 
   const descriptions: { [key: number]: string } = {

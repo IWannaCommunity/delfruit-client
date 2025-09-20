@@ -93,7 +93,7 @@ const tabs = session.admin
 				setLoading(false);
 			}
 		})();
-	}, [router, router.isReady, router.query.id]);
+	}, [router, router.isReady, router.query.id, session.token]);
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;

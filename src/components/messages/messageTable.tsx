@@ -89,7 +89,7 @@ export default function MessageTable(): JSX.Element {
 	return (
 		<div className="border border-solid border-gray-400 rounded-md bg-white text-[1.1em] font-verdana">
 			<div className="border border-gray-400 rounded-md p-[0.25em]">
-				
+
 				{/* Tabs */}
 				<TabBar<MessageTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 

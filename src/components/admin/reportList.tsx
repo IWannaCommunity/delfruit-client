@@ -84,7 +84,7 @@ export default function ReportList(props: ReportListProps): JSX.Element {
 								answeredById={r.answeredById}
 								answeredByName={r.answeredByName}
 								dateCreated={r.dateCreated}
-								dateAnswered={r.dateAnswered}							
+								dateAnswered={r.dateAnswered}
 							/>
 						);
 					})}

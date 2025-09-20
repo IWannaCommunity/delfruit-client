@@ -18,8 +18,8 @@ export default function Guidelines(): AnyElem {
 				<Header />
 				<div id="content">
 					<p>
-						Here at delicious-fruit be believe that everyone has the right to give their 
-						honest opinion on the games we have in our database! There's just a few small 
+						Here at delicious-fruit be believe that everyone has the right to give their
+						honest opinion on the games we have in our database! There's just a few small
 						rules we ask that you follow.
 					</p>
 

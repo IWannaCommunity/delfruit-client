@@ -88,7 +88,7 @@ export default function Compose(): AnyElem {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
-		
+
 		if (!selectedUser) {
 			setError("Please select a user first.");
 			setSuccess(false);
@@ -151,7 +151,7 @@ export default function Compose(): AnyElem {
 					/>
 					{searchResults.length > 0 && (
 						<ul
-							className="absolute z-10 mt-1 w-[50em] rounded-md border border-gray-200 
+							className="absolute z-10 mt-1 w-[50em] rounded-md border border-gray-200
 							bg-white shadow-lg list-none px-5 mx-[4em]"
 						>
 							{searchResults.map((user) => (

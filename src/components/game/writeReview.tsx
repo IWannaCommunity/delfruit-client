@@ -51,7 +51,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 			const token = session.token;
 
 			await API.reviews().putGameReview(body, `Bearer ${token}`, gameId);
-			
+
 			onReviewUpdated();
 			setShowWrite(false);
 		} catch (err: any) {
@@ -73,7 +73,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 		<>
 			{/* Write Review Button */}
 			{!showWrite && (
-				<div 
+				<div
 					id="myreviewtoggle"
 					onClick={() => setShowWrite(true)}
 				>
@@ -86,7 +86,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 					<span className="leading-[26px]">Write a Review</span>
 				</div>
 			)}
-			
+
 			{/* Hide Button */}
 			{showWrite && (
 				<button
@@ -97,7 +97,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 					Hide
 				</button>
 			)}
-			
+
 			{/* Review Rules */}
 			{showWrite && (
 				<div id="myreview" className="mt-4">
@@ -128,7 +128,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 							least given it a fair attempt) before reviewing.
 						</li>
 					</ul>
-					
+
 					{/* Rating Slider */}
 					<div className="mt-4">
 						<span className="font-medium">My Rating: </span>
@@ -160,7 +160,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 						id="difficulty"
 						className="review-slider ui-slider-horizontal mb-10"
 					/>
-					
+
 					{/* Comment box */}
 					<textarea
 						maxLength={50000}
@@ -170,13 +170,13 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 						onChange={(e) => setComment(e.target.value)}
 					/>
 					<br />
-					
+
 					{/* Tags */}
 					<span>
 						Tags (separate with spaces, 30 characters per tag, max of 10):
 					</span>
 					<br />
-					<input 
+					<input
 						className="w-full"
 						type="text"
 						name="tags"
@@ -186,7 +186,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 					/>
 					<span className="tags_alert"/>
 					<br />
-					<input 
+					<input
 						type="button"
 						id="update_button"
 						value={existingReview ? "Update Review" : "Submit Review"}

@@ -20,7 +20,7 @@ export default function ScreenshotUploadPage(): AnyElem {
 		if (!router.isReady) return;
 
 		const id = Number(router.query.id);
-		
+
 		// Anti-trolling measures
 		if (isNaN(id) || id < 0) {
 			setError(true);
@@ -57,7 +57,7 @@ export default function ScreenshotUploadPage(): AnyElem {
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
 		if (error) return <span className="text-red-600">Invalid Page</span>;
-		
+
 		return (
 			<>
 				{session.active ? (

@@ -154,7 +154,7 @@ export default function MessagePage(): AnyElem {
 			setLoading(false);
 			return;
 		}
-		
+
 		(async () => {
 
 			setLoading(true);
@@ -173,8 +173,8 @@ export default function MessagePage(): AnyElem {
 					body: msg.body,
 					reply_to_id: msg.reply_to_id,
 					thread_id: msg.thread_id,
-					date_created: msg.date_created 
-						? formatDate(new Date(msg.date_created), true) 
+					date_created: msg.date_created
+						? formatDate(new Date(msg.date_created), true)
 						: null,
 				}));
 
@@ -259,7 +259,7 @@ export default function MessagePage(): AnyElem {
 								/>
 							);
 						})}
-						
+
 					</div>
 				</div>
 				<div className="fixed bottom-0 left-[45em] right-[45em] bg-white border-t rounded-md mb-2 pt-4 px-2 flex items-center">
@@ -267,7 +267,7 @@ export default function MessagePage(): AnyElem {
 						value={replyText}
 						maxLength={2000}
 						onChange={(e) => setReplyText(e.target.value)}
-						className="flex-1 border rounded px-2 py-1 mr-2 resize-none 
+						className="flex-1 border rounded px-2 py-1 mr-2 resize-none
 						overflow-hidden text-sm leading-tight focus:outline-none
 						min-h-[28px] max-h-32"
 						rows={1}

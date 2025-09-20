@@ -5,17 +5,17 @@ export default function ScreenshotRules(): JSX.Element {
 			<ul>
 				<li>Do not upload clear screenshots.</li>
 				<li>
-					Do not upload spoilers (secrets, clear 
+					Do not upload spoilers (secrets, clear
 					screens, etc…) will be removed if found to be significant.
 				</li>
 				<li>
 					When taking a screenshot to upload, please consider using the
-					ingame screenshot button (F9 by default). If it doesn’t exist, 
-					please include a screenshot of the game itself and not include 
+					ingame screenshot button (F9 by default). If it doesn’t exist,
+					please include a screenshot of the game itself and not include
 					the windows border.
 				</li>
 				<li>
-					If a screenshot for the game doesn’t exist, consider uploading a 
+					If a screenshot for the game doesn’t exist, consider uploading a
 					screenshot of the title screen.
 				</li>
 				<li>

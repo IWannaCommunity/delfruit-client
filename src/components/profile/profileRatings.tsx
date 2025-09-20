@@ -28,12 +28,12 @@ const ratingColumns: Column<Rating>[] = [
 			</Link>
 		),
 	},
-	{ 
-		key: "difficulty", 
+	{
+		key: "difficulty",
 		label: "Difficulty",
 		render: (value) => (value)
 	},
-	{ key: "rating", 
+	{ key: "rating",
 		label: "User's Rating",
 		render: (value) => (value)
 	}
@@ -67,7 +67,7 @@ export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 			return newData;
 		}, [user.id]
 	);
-	
+
 	useEffect(() => {
 		let isCancelled = false;
 		setInitialized(false);
@@ -101,12 +101,12 @@ export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 		setRatings((prev) => dedupeArray([...prev, ...moreRatings], (r) => r.id));
 		setPage(nextPage);
 	};
-	
+
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(
 		() => { if (hasMore) loadMore(); },
 		{ enabled: initialized }
 	);
-	
+
 	return(
 		<div className="px-[1.5em]">
 			<p className="text-[#222222]">{ratings.length} Games</p>

@@ -4,9 +4,9 @@ import Review from "@/components/review";
 import { AnyElem } from "@/utils/element";
 import { useEffectAsync, useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
-import { 
+import {
 	ReportTypeEnum,
-	Report as ReportT, 
+	Report as ReportT,
 	Review as ReviewT
 } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
@@ -41,7 +41,7 @@ export default function Report(): AnyElem {
 			} else {
 				router.push("/report");
 			}
-			
+
 			if (isNaN(qId) || qId < 0 || !qId) {
 				router.push("/report");
 			} else {
@@ -103,7 +103,7 @@ export default function Report(): AnyElem {
 					}
 					break;
 				}
-				
+
 				case ReportTypeEnum.Screenshot: {
 					try {
 						const resp = await API.screenshots().getScreenshot(qId);
@@ -168,7 +168,7 @@ export default function Report(): AnyElem {
 		return (
 			<>
 				<p>
-					You are submitting a report for the following {type}: 
+					You are submitting a report for the following {type}:
 					<span className="font-bold ml-1">{game && <>{game}</>}</span>
 				</p>
 				{user && <h2>{user}</h2>}
@@ -243,7 +243,7 @@ export default function Report(): AnyElem {
 				</p>
 				<p>If you would like to continue, please fill out the form below.</p>
 				<form onSubmit={handleSubmit}>
-					<textarea 
+					<textarea
 						name="report"
 						value={report}
 						maxLength={2000}
