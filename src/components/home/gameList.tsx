@@ -8,7 +8,7 @@ export default function GameList(): JSX.Element {
 
 	const [games, setGames] = useState<GameProps[]>([]);
 	const [count, setCount] = useState<number>(0);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {

@@ -5,10 +5,13 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import ReviewList from "@/components/home/reviewList";
 import Pagination from "@/components/helpers/pagination";
-
+import { API } from "@/utils/api";
 
 export default function Reviews(): JSX.Element {
 	const [page, setPage] = useState<number>(0);
+	const [totalPage, setTotalPage] = useState<number>(0);
+	const [error, setError] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -22,10 +25,21 @@ export default function Reviews(): JSX.Element {
 			}
 
 			setPage(id);
+
+			(async () => {
+				try {
+					const resp = await API.reviews().getReviewCount();
+					const total = Math.ceil(resp.data.count/25);
+					setTotalPage(total);
+					setError(false);
+				} catch (err: any) {
+					setError(true);
+				} finally {
+					setLoading(false);
+				}
+			})();
 		}
 	}, [router, router.isReady, router.query.id]);
-
-	const totalPages = 10818; // HARD-CODED FOR NOW, RETRIEVE FROM API
 
 	return (
 		<div>
@@ -36,9 +50,13 @@ export default function Reviews(): JSX.Element {
 				<Header />
 				<div id="content">
 					<h2>Latest Reviews</h2>
-					<Pagination page={page} totalPages={totalPages} basePath="/reviews/[id]"/>
-					<ReviewList page={page} limit={25} />
-					<Pagination page={page} totalPages={totalPages} basePath="/reviews/[id]"/>
+					{!loading && !error && (
+						<>
+							<Pagination page={page} totalPages={totalPage} basePath="/reviews/[id]"/>
+							<ReviewList page={page} limit={25} />
+							<Pagination page={page} totalPages={totalPage} basePath="/reviews/[id]"/>
+						</>
+					)}
 				</div>
 				<Footer />
 			</div>

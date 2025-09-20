@@ -13,10 +13,9 @@ export default function Home(): AnyElem {
 
 	const [count, setCount] = useState<number>(0);
 	const [error, setError] = useState(false);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		setLoading(true);
 		(async () => {
 			try {
 				const resp = await API.reviews().getReviewCount();
