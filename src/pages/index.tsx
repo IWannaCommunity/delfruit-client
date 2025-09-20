@@ -6,8 +6,30 @@ import ReviewList from "@/components/home/reviewList";
 import Footer from "@/components/footer";
 import Link from "next/link";
 import { AnyElem } from "@/utils/element";
+import { useEffect, useState } from "react";
+import { API } from "@/utils/api";
 
 export default function Home(): AnyElem {
+
+	const [count, setCount] = useState<number>(0);
+	const [error, setError] = useState(false);
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		setLoading(true);
+		(async () => {
+			try {
+				const resp = await API.reviews().getReviewCount();
+				setCount(resp.data.count);
+				setError(false);
+			} catch (err: any) {
+				setError(true);
+			} finally {
+				setLoading(false);
+			}
+		})();
+	}, []);
+
 	return (
 		<div>
 			<Head>
@@ -20,7 +42,7 @@ export default function Home(): AnyElem {
 					<GameList />
 					<div>
 						<h2>Latest Reviews</h2>
-						<p className="notes">Showing 5 of 115447</p>
+						{!error && !loading && <p className="notes">Showing 5 of {count}</p>}
 						<ReviewList page={0} limit={5} />
 					</div>
 					<Link className="standalone" href="/reviews/0">
