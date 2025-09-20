@@ -111,7 +111,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 							<a
 								className="absolute block bg-no-repeat h-full w-[50px] top-[10px] left-[10px] cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
 								style={{
-									backgroundImage: "url(/images/prev.png)",
+									backgroundImage: "url(/images/prev.avif)",
 									backgroundPositionX: "left",
 									backgroundPositionY: "45%",
 								}}
