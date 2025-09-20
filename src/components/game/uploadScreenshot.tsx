@@ -107,7 +107,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 							onLoad={(e) => { URL.revokeObjectURL((e.target as HTMLImageElement).src); }}
 						/>
 					) : (
-						<Image src="/images/noimage.png" alt="Placeholder" priority width={200} height={150}/>
+						<Image src="/images/noimage.avif" alt="Placeholder" priority width={200} height={150}/>
 					)}
 				</div>
 				<hr/>
