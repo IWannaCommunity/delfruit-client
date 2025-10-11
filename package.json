@@ -1,6 +1,6 @@
 {
   "name": "weeping-higan",
-  "version": "1.0.0-preview.7",
+  "version": "1.0.0-preview.8",
   "private": true,
   "engines": {
     "node": ">=16"
@@ -20,7 +20,7 @@
     "@heroicons/react": "1.0.6",
     "axios": "1.2.6",
     "clsx": "2.0.0",
-    "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node",
+    "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#11e6a1ce1dea3c5bcdd831fec82cfef42aeae1ab",
     "emoji-mart": "5.5.2",
     "isomorphic-dompurify": "1.4.0",
     "jquery": "3.6.4",
