@@ -1,0 +1,1 @@
+Screenshots can be deleted. (Starz0r)

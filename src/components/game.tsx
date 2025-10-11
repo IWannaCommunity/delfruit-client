@@ -1,4 +1,6 @@
+import { AnyElem } from "@/utils/element";
 import Link from "next/link";
+import { ComponentProps } from "react";
 
 export type GameProps = {
 	name: string;
@@ -7,9 +9,9 @@ export type GameProps = {
 	rating: number | null;
 	difficulty: number | null;
 	rating_count: number;
-};
+} & ComponentProps<"div">;
 
-export default function Game(props: GameProps): JSX.Element {
+export default function Game(props: GameProps): AnyElem {
 	return (
 		<tr>
 			<td>
@@ -21,7 +23,7 @@ export default function Game(props: GameProps): JSX.Element {
 					{props.name}
 				</Link>
 			</td>
-			<td className="rating">{props.date_created}</td>
+			<td className="rating">{props.date_created.toString()}</td>
 			<td className="rating">
 				{props.difficulty === null ? "N/A" : `${props.difficulty}`}
 			</td>
