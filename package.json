@@ -20,7 +20,7 @@
     "@heroicons/react": "1.0.6",
     "axios": "1.2.6",
     "clsx": "2.0.0",
-    "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#11e6a1ce1dea3c5bcdd831fec82cfef42aeae1ab",
+    "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#c03216bf9a8fa8d2a134edb16c1da175bb5b2919",
     "emoji-mart": "5.5.2",
     "isomorphic-dompurify": "1.4.0",
     "jquery": "3.6.4",
