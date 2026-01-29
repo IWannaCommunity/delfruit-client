@@ -11,8 +11,8 @@ function ContribPortrait(props: {
 }): AnyElem {
 	return (
 		<table className="w-[50%] max-w-[156px] min-w-[156px] mr-8">
-			<thead className="w-min inline-block">
-				<h3 className="!ml-0">{props.name}</h3>
+			<thead className="w-min inline-block text-[#667] font-[georgia,serif] font-bold">
+				{props.name}
 			</thead>
 			<tbody className="w-[40%]">
 				<tr>
@@ -28,10 +28,11 @@ function ContribPortrait(props: {
 					</td>
 				</tr>
 			</tbody>
-			<tfoot className="w-min inline-block">
-				<h3 className="!ml-0" style={{ textWrap: "nowrap" }}>
-					{props.title}
-				</h3>
+			<tfoot
+				className="w-min inline-block text-[#667] font-[georgia,serif] font-bold !ml-0"
+				style={{ textWrap: "nowrap" }}
+			>
+				{props.title}
 			</tfoot>
 		</table>
 	);
@@ -43,38 +44,51 @@ export default function Thanks(): AnyElem {
 			<Head>
 				<title>Special Thanks - Delicious Fruit</title>
 			</Head>
-			<body>
-				<div id="container">
-					<Header />
-					<div id="content">
-						<h2>Developers</h2>
-						<div className="flex">
-							<ContribPortrait
-								name="Starz0r"
-								title="Main Developer"
-								avatarSrc="/images/avatars/starz0r.png"
-							/>
-							<ContribPortrait
-								name="TTBB"
-								title="Head Assistant"
-								avatarSrc="/images/avatars/ttbb.webp"
-							/>
-						</div>
-						<h2>Original Designers</h2>
-						<div className="flex">
-							<ContribPortrait
-								name="klazen0108"
-								avatarSrc="/images/avatars/klazen0108.png"
-							/>
-							<ContribPortrait
-								name="tehjman1993"
-								avatarSrc="/images/avatars/tehjman1993.webp"
-							/>
-						</div>
+			<div id="container">
+				<Header />
+				<div id="content">
+					<h2>Developers</h2>
+					<div className="flex">
+						<ContribPortrait
+							name="Starz0r"
+							title="Main Developer"
+							avatarSrc="/images/avatars/starz0r.png"
+						/>
+						<ContribPortrait
+							name="TTBB"
+							title="Head Assistant"
+							avatarSrc="/images/avatars/ttbb.webp"
+						/>
 					</div>
-					<Footer />
+					<h2>Moderation</h2>
+					<div className="flex">
+						<ContribPortrait
+							name="Canus"
+							avatarSrc="/images/avatars/canus.webp"
+						/>
+						<ContribPortrait
+							name="GaspacoZanis"
+							avatarSrc="/images/avatars/gaspacozanis.webp"
+						/>
+						<ContribPortrait
+							name="Patrick"
+							avatarSrc="/images/avatars/patrick.webp"
+						/>
+					</div>
+					<h2>Original Designers</h2>
+					<div className="flex">
+						<ContribPortrait
+							name="klazen0108"
+							avatarSrc="/images/avatars/klazen0108.png"
+						/>
+						<ContribPortrait
+							name="tehjman1993"
+							avatarSrc="/images/avatars/tehjman1993.webp"
+						/>
+					</div>
 				</div>
-			</body>
+				<Footer />
+			</div>
 		</>
 	);
 }
