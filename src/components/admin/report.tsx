@@ -22,7 +22,6 @@ export default function Report(props: ReportT): JSX.Element {
 			<button id="btnResolve" type="submit" className="btnResolve">
 				Resolve
 			</button>
-			<span>alert</span>
 		</div>
 	);
 }
