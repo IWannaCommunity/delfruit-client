@@ -126,7 +126,7 @@ export default function AdminDashboard(): JSX.Element {
 
 			// Anti-trolling measures
 			if (isNaN(id) || id < 0) {
-				router.replace({ pathname: "/admin/reports/[id]", query: { id: 0 } });
+				router.replace({ pathname: "/admin/[id]", query: { id: 0 } });
 				return;
 			}
 
@@ -135,7 +135,7 @@ export default function AdminDashboard(): JSX.Element {
 	}, [router, router.isReady, router.query.id]);
 
 	const renderContent = () => {
-		if (!session.active && !session.admin) {
+		if (!session.active || !session.admin) {
 			return <span>You do not have access to this page</span>;
 		}
 
@@ -194,9 +194,9 @@ export default function AdminDashboard(): JSX.Element {
 						<input type="submit" value="Filter" />
 					</div>
 				</form>
-				<Pagination page={page} totalPages={totalPages} basePath="/admin/reports/[id]"/>
+				<Pagination page={page} totalPages={totalPages} basePath="/admin/[id]"/>
 				<ReportList page={page} limit={20} filters={filters} searchId={searchId}/>
-				<Pagination page={page} totalPages={totalPages} basePath="/admin/reports/[id]"/>
+				<Pagination page={page} totalPages={totalPages} basePath="/admin/[id]"/>
 			</>
 		);
 	}
