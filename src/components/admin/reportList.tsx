@@ -4,6 +4,7 @@ import { API } from "@/utils/api";
 import { useCallback, useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
 import { Filters } from "@/utils/types";
+import { useSessionContext } from "@/utils/hooks";
 
 type ReportListProps = {
 	page: number;
@@ -12,10 +13,24 @@ type ReportListProps = {
 	filters: Filters;
 };
 
+function formatDateTime(date: Date): string {
+	const pad = (n: number) => n.toString().padStart(2, "0");
+
+	return (
+		`${date.getFullYear()}-` +
+		`${pad(date.getMonth() + 1)}-` +
+		`${pad(date.getDate())} ` +
+		`${pad(date.getHours())}:` +
+		`${pad(date.getMinutes())}:` +
+		`${pad(date.getSeconds())}`
+	);
+}
+
 export default function ReportList(props: ReportListProps): JSX.Element {
 	const [reports, setReports] = useState<ReportT[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [session] = useSessionContext();
 
 	const fetchReports = useCallback(async () => {
 		const { type, answered, order } = props.filters;
@@ -30,6 +45,30 @@ export default function ReportList(props: ReportListProps): JSX.Element {
 		);
 		return resp.data;
 	}, [props.limit, props.page, props.filters, props.searchId]);
+
+	const resolveReport = async (report: ReportT) => {
+		if (!session?.admin || !session?.user_id) return;
+
+		const now = formatDateTime(new Date());
+
+		const patchedReport: ReportT = {
+			...report,
+			dateAnswered: now,
+			answeredById: session.user_id,
+			answeredByName: session.username,
+		};
+
+		try {
+			await API.reports().patchReport(patchedReport, report.id);
+			setReports((prev) =>
+				prev.map((r) =>
+					r.id === report.id ? patchedReport : r
+				)
+			);
+		} catch (err) {
+			console.error("Failed to resolve report", err);
+		}
+	};
 
 	useEffect(() => {
 		setLoading(true);
@@ -85,6 +124,7 @@ export default function ReportList(props: ReportListProps): JSX.Element {
 								answeredByName={r.answeredByName}
 								dateCreated={r.dateCreated}
 								dateAnswered={r.dateAnswered}
+								onResolve={() => resolveReport(r)}
 							/>
 						);
 					})}
