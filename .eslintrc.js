@@ -126,6 +126,7 @@ module.exports = {
 		"no-import-assign": "off",
 		"no-unused-expressions": "off",
 		"no-unsafe-optional-chaining": "warn",
+		"no-confusing-arrow": "warn",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
