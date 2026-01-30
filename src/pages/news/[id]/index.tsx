@@ -9,14 +9,33 @@ import { API } from "@/utils/api";
 import { News as NewsT } from "delfruit-swagger-cg-sdk";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { useSessionContext } from "@/utils/hooks";
 import { formatDate } from "@/utils/formatDate";
 
 export default function NewsPage(): AnyElem {
 	const [news, setNews] = useState<NewsT>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [session] = useSessionContext();
 
 	const router = useRouter();
+
+	const handleDelete = async () => {
+		if (!news || !session?.admin) return;
+
+		const confirmed = window.confirm(
+			"Are you sure you want to delete this news entry?"
+		);
+
+		if (!confirmed) return;
+
+		try {
+			await API.news().deleteNews(news.id);
+			router.replace("/news");
+		} catch (err) {
+			setError("Failed to delete news entry.");
+		}
+	};
 
 	useEffect(() => {
 		if (!router.isReady) return;
@@ -68,7 +87,18 @@ export default function NewsPage(): AnyElem {
 
 		return (
 			<>
-				<h2>News Entry</h2>
+				<div className="flex items-center justify-between">
+					<h2>News Entry</h2>
+					{session?.admin && (
+						<button
+							type="button"
+							onClick={handleDelete}
+							className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-1.5 rounded"
+						>
+							Delete
+						</button>
+					)}
+				</div>
 				<p>
 					<Link href="/news">
 						Return to news page
