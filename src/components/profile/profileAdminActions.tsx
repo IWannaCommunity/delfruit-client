@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
-import { Permission } from "delfruit-swagger-cg-sdk";
+import { PartialUserCan_ } from "delfruit-swagger-cg-sdk";
 
 type UserInfoProps = {
 	user: UserExt;
@@ -10,81 +10,89 @@ type UserInfoProps = {
 
 export default function ProfileAdminActions({ user }: UserInfoProps) {
 	const [session] = useSessionContext();
-	const [permissions, setPermissions] = useState<Permission[] | null>([]); // TODO: SAVE PERMISSION STATE (NO GET CALL AVAILABLE CURRENTLY)
+	const [can, setCan] = useState<PartialUserCan_ | null>(null);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (!session.active || !session.admin || !user) return;
+
+		(async () => {
+			try {
+				const res = await API.users().getUsersCan(user.id);
+				setCan(res.data);
+				setError(null);
+			} catch {
+				setError("Failed to load user permissions");
+			}
+		})();
+	}, [session.active, session.admin, user?.id]);
 
 	const togglePermission = async (
 		e: React.ChangeEvent<HTMLInputElement>,
-		perm: Permission
+		key: keyof PartialUserCan_
 	) => {
-		if (!user || !session.active || !session.token) return;
+		if (!user || !session.active || !session.token || !can) return;
 
 		const checked = e.target.checked;
-		
+
 		try {
-			if (checked) {
-				await API.users().patchUsersPermissions(user.id, perm, {
-					// I'm forced to put a date here since backend doesn't handle null properly
-					// But this essentially means not revoked
-					revokedUntil: new Date("1970-01-02T00:00:00Z").toISOString()
-				} as any);
-			} else {
-				await API.users().patchUsersPermissions(user.id, perm, {
-					// The Epochalypse is coming...
-					revokedUntil: new Date("2037-12-31T23:59:59Z").toISOString()
-				} as any);
-			}
-			
-			setPermissions((prev) => (
-				checked ? [...prev, perm] : prev.filter((p) => p !== perm)
-			));
+			await API.users().patchUserCan(
+				{ [key]: checked },
+				user.id
+			);
+
+			setCan((prev) =>
+				prev ? { ...prev, [key]: checked } : prev
+			);
+
 			setError(null);
-		} catch (error) {
+		} catch {
 			setError("Failed to change permissions");
 		}
-	}
+	};
 
 	if (!session.active && !session.admin) return null;
+	if (!can) { return <span>Loading permissions...</span>; }
 
 	return (
 		<>
 			<input
 				id="chk_games"
 				type="checkbox"
-				checked={permissions.includes(Permission.CANSUBMIT)}
-				onChange={(e) => togglePermission(e, Permission.CANSUBMIT)}
+				checked={!!can?.canSubmit}
+				onChange={(e) => togglePermission(e, "canSubmit")}
 			/>
 			<span> Can submit new games</span>
 			<br />
 			<input
 				id="chk_report"
 				type="checkbox"
-				checked={permissions.includes(Permission.CANREPORT)}
-				onChange={(e) => togglePermission(e, Permission.CANREPORT)}
+				checked={!!can?.canReport}
+				onChange={(e) => togglePermission(e, "canReport")}
 			/> 
 			<span> Can report</span>
 			<br />
 			<input
 				id="chk_screenshot" 
 				type="checkbox"
-				checked={permissions.includes(Permission.CANSCREENSHOT)}
-				onChange={(e) => togglePermission(e, Permission.CANSCREENSHOT)}
+				checked={!!can?.canScreenshot}
+				onChange={(e) => togglePermission(e, "canScreenshot")}
 			/> 
 			<span> Can submit screenshots</span>
 			<br />
 			<input
 				id="chk_review" 
 				type="checkbox"
-				checked={permissions.includes(Permission.CANREVIEW)}
-				onChange={(e) => togglePermission(e, Permission.CANREVIEW)}
+				checked={!!can?.canReview}
+				onChange={(e) => togglePermission(e, "canReview")}
 			/> 
 			<span> Can submit reviews</span>
 			<br />
 			<input
 				id="chk_message" 
 				type="checkbox"
-				checked={permissions.includes(Permission.CANMESSAGE)}
-				onChange={(e) => togglePermission(e, Permission.CANMESSAGE)}
+				checked={!!can?.canMessage}
+				onChange={(e) => togglePermission(e, "canMessage")}
 			/> 
 			<span> Can send Private Messages</span>
 			<br />
