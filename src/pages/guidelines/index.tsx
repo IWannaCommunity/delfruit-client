@@ -12,7 +12,7 @@ export default function Guidelines(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Guidelines - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

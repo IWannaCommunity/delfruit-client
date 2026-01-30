@@ -72,7 +72,7 @@ export default function ScreenshotUploadPage(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Upload a Screenshot - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

@@ -46,7 +46,7 @@ export default function Reviews(): JSX.Element {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Review List - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

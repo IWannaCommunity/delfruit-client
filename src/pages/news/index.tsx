@@ -105,7 +105,7 @@ export default function NewsListPage(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>News - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

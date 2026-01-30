@@ -120,7 +120,7 @@ export default function Game(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>{`${details?.name} - Delicious Fruit`}</title>
 			</Head>
 			<div id="container">
 				<Header />

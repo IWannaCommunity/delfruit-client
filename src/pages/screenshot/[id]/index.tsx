@@ -54,7 +54,7 @@ export default function Screenshot(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Screenshot - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

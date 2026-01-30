@@ -8,7 +8,7 @@ export default function SearchPage(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Game List - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

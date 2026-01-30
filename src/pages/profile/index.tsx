@@ -99,7 +99,7 @@ export default function Profile(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>{`${user?.name}'s profile - Delicious Fruit`}</title>
 			</Head>
 			<div id="container">
 				<Header />

@@ -127,7 +127,7 @@ export default function NewsPage(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>News - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

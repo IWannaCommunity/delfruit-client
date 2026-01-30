@@ -132,7 +132,7 @@ const tabs = session.admin
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>{`${user?.name}'s profile - Delicious Fruit`}</title>
 			</Head>
 			<div id="container">
 				<Header />

@@ -28,7 +28,7 @@ export default function Register(): AnyElem {
 	return (
 		<>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Register - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

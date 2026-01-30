@@ -11,7 +11,7 @@ export default function ProfileEditPage(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Edit Your Profile - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

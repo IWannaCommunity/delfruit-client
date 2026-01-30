@@ -118,7 +118,7 @@ export default function WriteNews(): AnyElem {
 return (
 	<div>
 		<Head>
-			<title>Delicious Fruit</title>
+			<title>Write News - Delicious Fruit</title>
 		</Head>
 		<div id="container">
 			<Header />

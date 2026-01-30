@@ -199,7 +199,7 @@ export default function RemoveReview(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Remove Review - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

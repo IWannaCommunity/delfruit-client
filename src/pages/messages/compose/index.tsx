@@ -12,7 +12,7 @@ export default function ComposePage(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Send a PM - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

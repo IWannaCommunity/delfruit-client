@@ -13,7 +13,7 @@ export default function MessagePage(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Private Messages - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

@@ -123,7 +123,7 @@ export default function UserList(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>User List - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

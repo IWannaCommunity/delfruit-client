@@ -201,7 +201,7 @@ export default function AdminDashboard(): JSX.Element {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>Admin Portal - Delicious Fruit</title>
 			</Head>
 			<div id="container">
 				<Header />

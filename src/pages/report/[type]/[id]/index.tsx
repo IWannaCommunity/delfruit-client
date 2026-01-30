@@ -261,7 +261,7 @@ export default function Report(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>Delicious Fruit</title>
+				<title>{`Reporting ${type} - Delicious Fruit`}</title>
 			</Head>
 			<div id="container">
 				<Header />
