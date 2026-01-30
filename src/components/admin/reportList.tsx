@@ -60,13 +60,13 @@ export default function ReportList(props: ReportListProps): JSX.Element {
 
 		try {
 			await API.reports().patchReport(patchedReport, report.id);
-			setReports((prev) =>
-				prev.map((r) =>
-					r.id === report.id ? patchedReport : r
-				)
-			);
+			setReports((prev) => {
+				return prev.map((r) => {
+					return r.id === report.id ? patchedReport : r;
+				});
+			});
 		} catch (err) {
-			console.error("Failed to resolve report", err);
+			setError("Failed to resolve report");
 		}
 	};
 

@@ -146,9 +146,6 @@ export default function AdminDashboard(): JSX.Element {
 				<h2>Tools</h2>
 				<div>
 					<p>
-						<Link href="/admin/display_logs">Display logs</Link>
-					</p>
-					<p>
 						<Link href="/admin/write_news">Write news entry</Link>
 					</p>
 				</div>
