@@ -80,7 +80,7 @@ export default function Report(): AnyElem {
 						setReviewDetails({
 							id: Number(resp.data.id),
 							user_id: Number(resp.data.user_id),
-							game_id: null,
+							game_id: resp.data.game_id,
 							user_name: resp.data.user_name,
 							game_name: resp.data.game_name,
 							date_created: formatDate(new Date(resp.data.date_created)),
@@ -186,8 +186,9 @@ export default function Report(): AnyElem {
 						user_name={reviewDetails.user_name}
 						game_name={reviewDetails.game_name}
 						like_count={reviewDetails.like_count}
-						owner_reviewDetails={reviewDetails.owner_reviewDetails}
+						owner_review={reviewDetails.owner_review}
 						tags={reviewDetails.tags}
+						hideActions
 					/>
 				)}
 				{screenshotURL && (

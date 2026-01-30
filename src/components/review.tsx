@@ -8,7 +8,14 @@ import { useSessionContext } from "@/utils/hooks";
 import BBCode from "@bbob/react/lib";
 import { preset } from "@/utils/bbobPreset";
 
-export default function Review(props: ReviewT): JSX.Element {
+type ReviewProps = ReviewT & {
+	hideActions: boolean;
+};
+
+export default function Review({
+	hideActions = false,
+	...props
+}: ReviewProps): JSX.Element {
 	const [expanded, setExpanded] = useState(false);
 	const [session] = useSessionContext();
 	const [liked, setLiked] = useState(false);
@@ -89,13 +96,6 @@ export default function Review(props: ReviewT): JSX.Element {
 		}
 	}
 
-	async function actionAdminRemoveReview(
-		evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-	) {
-		evt.preventDefault();
-		// TODO: no proper API call to do this currently
-	}
-
 	return (
 		<div className={`review ${props.owner_review ? "owner-review" : ""}`}>
 			{/* AUTHOR */}
@@ -145,7 +145,7 @@ export default function Review(props: ReviewT): JSX.Element {
 			<span className="r-like-span">{likeCount}</span>
 			<span>] </span>
 			<span className="r-like-span-label">Likes</span>
-			{session.active && (
+			{session.active && !hideActions && (
 				<a
 					onClick={!disabled ? (liked ? unlikeReview : likeReview) : undefined}
 					className={`underline ml-1 cursor-pointer ${
@@ -185,18 +185,24 @@ export default function Review(props: ReviewT): JSX.Element {
 					{props.date_created}
 
 					{/* Buttons */}
-					{session.active && (
-						<Link href={`/report/review/${props.id}`} className="ml-1">
-							Report
-						</Link>
-					)}
-					{session.admin && (
-						<button
-							className="ml-1"
-							type="submit"
-							onClick={actionAdminRemoveReview}>
-							(ADMIN) Remove
-						</button>
+					{!hideActions && (
+						<>
+							{session.active && (
+								<Link href={`/report/review/${props.id}`} className="ml-1">
+									Report
+								</Link>
+							)}
+							{session.admin && (
+								<Link
+									href={`/admin/remove_review/${props.id}`}
+									className="inline-flex items-center justify-center ml-2 bg-red-600 hover:bg-red-700 hover:text-white text-white 
+									visited:text-white font-semibold text-sm px-2 py-1 rounded select-none no-underline focus:outline-none
+									"
+								>
+									(ADMIN) Remove
+								</Link>
+							)}
+						</>
 					)}
 				</div>
 			</div>

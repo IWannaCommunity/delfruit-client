@@ -111,7 +111,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 						<li>Make sure to properly tag your spoilers with the spoiler tag:</li>
 						<li className="list-none">
 							<ul>
-								<li>"[spoiler]This game has apples![spoiler]"</li>
+								<li>"[spoiler]This game has apples![/spoiler]"</li>
 							</ul>
 						</li>
 						<li>

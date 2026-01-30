@@ -8,7 +8,7 @@ import { useState } from "react";
 import { API } from "@/utils/api";
 
 export default function WriteNews(): AnyElem {
-  const [session] = useSessionContext();
+	const [session] = useSessionContext();
 	const [title, setTitle] = useState("");
 	const [short, setShort] = useState("");
 	const [news, setNews] = useState("");
@@ -46,23 +46,23 @@ export default function WriteNews(): AnyElem {
 		}
 	}
 
-  const renderContent = () => {
-    if (!session.active || !session.admin) {
-      return <span>You do not have access to this page</span>;
-    }
+	const renderContent = () => {
+		if (!session.active || !session.admin) {
+			return <span>You do not have access to this page</span>;
+		}
 
-    return (
-	<>
-		<h2>Add a news item</h2>
-		<p>
-			<>Note: we support </> 
-			<a href="https://en.wikipedia.org/wiki/BBCode">BBCode</a>
-			<> in news, so feel free to mark up your post!</>
-		</p>
-		<form onSubmit={handleSubmit}>
-			<label className="group">
-				<span className="group-focus-within:font-bold">Title: </span>
-				<input
+		return (
+			<>
+				<h2>Add a news item</h2>
+				<p>
+					<>Note: we support </> 
+					<a href="https://en.wikipedia.org/wiki/BBCode">BBCode</a>
+					<> in news, so feel free to mark up your post!</>
+				</p>
+				<form onSubmit={handleSubmit}>
+					<label className="group">
+						<span className="group-focus-within:font-bold">Title: </span>
+						<input
 							id="title"
 							name="title"
 							value={title}
@@ -72,15 +72,15 @@ export default function WriteNews(): AnyElem {
 								setError(null);
 							}}
 						/>
-			</label>
-			<br/>
-			<br/>
-			<label className="group">
-				<span className="group-focus-within:font-bold">
-					Short Version: (This will be displayed on the index page, so keep it brief!)
-				</span>
-				<br/>
-				<textarea
+					</label>
+					<br/>
+					<br/>
+					<label className="group">
+						<span className="group-focus-within:font-bold">
+							Short Version: (This will be displayed on the index page, so keep it brief!)
+						</span>
+						<br/>
+						<textarea
 							id="short"
 							name="short"
 							value={short}
@@ -90,11 +90,11 @@ export default function WriteNews(): AnyElem {
 								setError(null);
 							}}
 						/>
-			</label>
-			<label className="group">
-				<span className="group-focus-within:font-bold">Content:</span>
-				<br/>
-				<textarea
+					</label>
+					<label className="group">
+						<span className="group-focus-within:font-bold">Content:</span>
+						<br/>
+						<textarea
 							id="news"
 							name="news"
 							value={news}
@@ -104,16 +104,16 @@ export default function WriteNews(): AnyElem {
 								setError(null);
 							}}
 						/>
-			</label>
-			<input type="submit" value="Submit"/>
-			{error && !success && <span className="text-red-600 ml-1">{error}</span>}
-			{success && !error && <span className="text-green-600 ml-1">News posted!</span>}
-		</form>
-		<br/>
-		<Link href="/admin/0" className="standalone">Return to admin page</Link>
-	</>
-    )
-  }
+					</label>
+					<input type="submit" value="Submit"/>
+					{error && !success && <span className="text-red-600 ml-1">{error}</span>}
+					{success && !error && <span className="text-green-600 ml-1">News posted!</span>}
+				</form>
+				<br/>
+				<Link href="/admin/0" className="standalone">Return to admin page</Link>
+			</>
+		)
+	}
 
 return (
 	<div>
