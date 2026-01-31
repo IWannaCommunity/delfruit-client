@@ -111,18 +111,26 @@ const tabs = session.admin
 							activeTab={activeTab}
 							onTabChange={setActiveTab}
 						/>
-
 						{/* Profile */}
-						{activeTab === "profile" && user && <ProfileMain user={user} />}
+						<div hidden={activeTab !== "profile"}>
+							{user && <ProfileMain user={user} />}
+						</div>
 
 						{/* Ratings */}
-						{activeTab === "ratings" && user && <ProfileRatings user={user} />}
+						<div hidden={activeTab !== "ratings"}>
+							{user && <ProfileRatings user={user} />}
+						</div>
 
 						{/* Reviews */}
-						{activeTab === "reviews" && user && <ProfileReviews user={user} />}
-
+						<div hidden={activeTab !== "reviews"}>
+							{user && <ProfileReviews user={user} />}
+						</div>
+						
 						{/* Admin */}
-						{activeTab === "admin" && session.admin && user && <ProfileAdminActions user={user} />}
+						<div hidden={activeTab !== "admin"}>
+							{session.admin && user && <ProfileAdminActions user={user} />}
+						</div>
+
 					</div>
 				</div>
 			</>
