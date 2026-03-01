@@ -1,1 +1,0 @@
-Dropped deprecated links from the navigation bar. (Starz0r)

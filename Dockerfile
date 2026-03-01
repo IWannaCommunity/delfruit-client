@@ -1,7 +1,7 @@
 ### STAGE 1: Build ###
 
 # We label our stage as ‘builder’
-FROM node:16.20.2-alpine3.17 as builder
+FROM node:18.17.0-alpine3.17 as builder
 
 COPY package.json package-lock.json ./
 
@@ -30,6 +30,6 @@ RUN npm run export
 
 ### STAGE 2: Setup ###
 
-FROM alpine:3.16.9
+FROM alpine:3.17.0
 
 COPY --from=builder /nextjs-app/out /app/

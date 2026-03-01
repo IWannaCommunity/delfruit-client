@@ -1,3 +1,29 @@
+Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.8 (2026-03-01)
+====================================================================
+
+### ➕ Added
+
+- A game can now be randomly found and choosen. (Starz0r)
+- Games can now have their owners changed, or their game removed entirely by admins. (Starz0r, TTBB)
+- Messages from a thread can be replied to. (TTBB)
+- More Report functionality. (TTBB)
+- News entries can now be visited and read. (TTBB)
+- News is now rendered, and displayed. (Starz0r, TTBB)
+- Pages now display their current title in the web browser tab. (TTBB)
+- Reviews can now be removed. (TTBB)
+- Screenshots can be deleted. (Starz0r)
+- Sortable columns on the user list. (TTBB)
+
+### 🔧 Fixed
+
+- Game and Review count on the Home page now accurately displays the correct value. (TTBB)
+- Reviews now properly word wrap. (TTBB)
+
+### 🗑 Removed
+
+- Dropped deprecated links from the navigation bar. (Starz0r)
+
+
 Delicious Fruit [Client, Weeping Higan] 1.0.0-preview.6 (2025-09-09)
 ====================================================================
 

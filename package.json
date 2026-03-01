@@ -1,9 +1,9 @@
 {
   "name": "weeping-higan",
-  "version": "1.0.0-preview.8",
+  "version": "1.0.0-rc.0",
   "private": true,
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "scripts": {
     "dev": "next dev",
