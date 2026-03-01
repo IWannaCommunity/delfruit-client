@@ -1,11 +1,10 @@
-import Game, { GameProps } from "@/components/game";
-import { API } from "@/utils/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Game, { type GameProps } from "@/components/game";
+import { API } from "@/utils/api";
 import { formatDate } from "@/utils/formatDate";
 
 export default function GameList(): JSX.Element {
-
 	const [games, setGames] = useState<GameProps[]>([]);
 	const [count, setCount] = useState<number>(0);
 	const [loading, setLoading] = useState(true);
@@ -13,9 +12,9 @@ export default function GameList(): JSX.Element {
 
 	useEffect(() => {
 		setLoading(true);
-    const fetchData = async () => {
-      const results = await Promise.allSettled([
-        API.games().getGames(
+		const fetchData = async () => {
+			const results = await Promise.allSettled([
+				API.games().getGames(
 					undefined, // authorization
 					undefined, // q
 					undefined, // id
@@ -35,39 +34,45 @@ export default function GameList(): JSX.Element {
 					undefined, // ratingTo
 					undefined, // difficultyFrom
 					undefined, // difficultyTo
-          0,
-          25,
-          "date_created",
-          "desc"
-        ),
-        API.games().getGameCount()
-      ]);
+					0,
+					25,
+					"date_created",
+					"desc",
+				),
+				API.games().getGameCount(),
+			]);
 
-      // Games result
-      if (results[0].status === "fulfilled") {
-        const resp = results[0].value;
-        const gameProps: GameProps[] = resp.data.map((game) => ({
+			// Games result
+			if (results[0].status === "fulfilled") {
+				const resp = results[0].value;
+				const gameProps: GameProps[] = resp.data.map((game) => ({
 					name: game.name,
 					id: game.id,
-					date_created: game.date_created ? formatDate(new Date(game.date_created)) : null,
-					rating: game.rating === null ? null : Number(game.rating / 10).toFixed(1),
-					difficulty: game.difficulty === null ? null : Number(game.difficulty).toFixed(1),
+					date_created: game.date_created
+						? formatDate(new Date(game.date_created))
+						: null,
+					rating:
+						game.rating === null ? null : Number(game.rating / 10).toFixed(1),
+					difficulty:
+						game.difficulty === null
+							? null
+							: Number(game.difficulty).toFixed(1),
 					rating_count: game.rating_count,
-        }));
-        setGames(gameProps);
+				}));
+				setGames(gameProps);
 				setLoading(false);
-      } else {
-        setError("Failed to load games.");
-      }
+			} else {
+				setError("Failed to load games.");
+			}
 
-      // Count result
-      if (results[1].status === "fulfilled") {
-        setCount(results[1].value.data.count);
-      }
-    };
+			// Count result
+			if (results[1].status === "fulfilled") {
+				setCount(results[1].value.data.count);
+			}
+		};
 
-    fetchData();
-  }, []);
+		fetchData();
+	}, []);
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
@@ -100,7 +105,7 @@ export default function GameList(): JSX.Element {
 						})}
 					</tbody>
 				</table>
-				<br/>
+				<br />
 			</>
 		);
 	};
@@ -118,7 +123,7 @@ export default function GameList(): JSX.Element {
 							</Link>
 						</td>
 						<td className="!text-center">
-							<Link className="text-base" href="/">
+							<Link className="text-base" href="/game/imfeelinlucky">
 								Random Game!
 							</Link>
 						</td>

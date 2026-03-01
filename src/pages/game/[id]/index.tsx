@@ -1,15 +1,17 @@
+import type { GameExt } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
-import Header from "@/components/header";
-import GameInfo from "@/components/game/gameInfo";
-import Carousel from "@/components/game/carousel";
-import GameReviews from "@/components/game/gameReviews";
-import { GameExt } from "delfruit-swagger-cg-sdk";
-import { API } from "@/utils/api";
-import React, { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { formatDate } from "@/utils/formatDate";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Footer from "@/components/footer";
-import { AnyElem } from "@/utils/element";
+import Carousel from "@/components/game/carousel";
+import GameInfo from "@/components/game/gameInfo";
+import GameReviews from "@/components/game/gameReviews";
+import Header from "@/components/header";
+import Whitespace from "@/components/whitespace";
+import { API } from "@/utils/api";
+import type { AnyElem } from "@/utils/element";
+import { formatDate } from "@/utils/formatDate";
 import { makeScrnshotURL } from "@/utils/url";
 
 export default function Game(): AnyElem {
@@ -21,17 +23,31 @@ export default function Game(): AnyElem {
 	const [error, setError] = useState(false);
 
 	const router = useRouter();
-	const id = Number(router.query.id);
+	const lucky = router.query.id === "imfeelinlucky";
+	const id = useRef(
+		Number.isNaN(Number(router.query.id)) || router.query.id === "imfeelinlucky"
+			? -1
+			: Number(router.query.id),
+	);
 
 	const fetchDetails = useCallback(async () => {
 		try {
-			const resp = await API.composite().getGameCompositeAll(id);
+			const resp = await (() => {
+				if (id.current !== -1) {
+					return API.composite().getGameCompositeAll(id.current);
+				}
+				return API.composite().getGameCompositeAll("random");
+			})();
 			const game = resp.data;
 
 			if (!game || !game.id) {
 				setError(true);
 				return;
 			}
+
+			// prevent the app from re-fetching a new game when randoming
+			// and a user event action occurs
+			id.current = game.id;
 
 			const gameProps: GameExt = {
 				id: game.id,
@@ -93,13 +109,16 @@ export default function Game(): AnyElem {
 
 	useEffect(() => {
 		if (!router.isReady) return;
-		if (isNaN(id) || id <= 0) {
+		if (
+			router.query.id !== "imfeelinlucky" &&
+			(isNaN(id.current) || id.current <= 0)
+		) {
 			setError(true);
 			setLoading(false);
 			return;
 		}
 		fetchDetails();
-	}, [id, router.isReady, fetchDetails]);
+	}, [id, router.isReady, fetchDetails, router.query.id]);
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
@@ -108,6 +127,25 @@ export default function Game(): AnyElem {
 
 		return (
 			<>
+				{(() => {
+					if (lucky) {
+						return (
+							<h2>
+								You Randomed:{" "}
+								<a
+									onClick={(e) => {
+										e.preventDefault();
+										router.reload();
+									}}
+								>
+									(Reroll)
+								</a>
+								<Whitespace />
+								<Link href={`/game/${id.current}`}>(Current Game)</Link>
+							</h2>
+						);
+					}
+				})()}
 				<div className="!w-full">
 					<GameInfo game={details} onGameUpdated={fetchDetails} />
 					<Carousel images={images} />
