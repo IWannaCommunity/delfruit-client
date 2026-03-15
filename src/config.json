@@ -1,5 +1,5 @@
 {
 	"apiURL": "http://localhost:4201",
-	"screenshotURLPrefix": "http://localhost:9001"
+	"screenshotURLPrefix": "http://localhost:9001",
+	"cfTurnstileSiteKey": "1x00000000000000000000AA"
 }
-
