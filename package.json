@@ -18,6 +18,7 @@
     "@bbob/react": "3.0.0",
     "@emoji-mart/react": "1.1.1",
     "@heroicons/react": "1.0.6",
+    "@marsidev/react-turnstile": "1.4.2",
     "axios": "1.2.6",
     "clsx": "2.0.0",
     "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#c03216bf9a8fa8d2a134edb16c1da175bb5b2919",
