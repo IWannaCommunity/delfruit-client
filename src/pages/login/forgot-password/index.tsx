@@ -1,7 +1,8 @@
-import Header from "@/components/header";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
+import Captcha from "@/components/captcha";
+import Header from "@/components/header";
 
 enum ServerResponse {
 	None = -1,
@@ -12,6 +13,8 @@ enum ServerResponse {
 
 export default function ForgotPassword(): NextPage {
 	const [response, setResponse] = useState<ServerResponse>(ServerResponse.None);
+
+	const noop1 = (_: string): void => {};
 
 	return (
 		<div>
@@ -32,8 +35,8 @@ export default function ForgotPassword(): NextPage {
 									<label htmlFor="email">Email :</label>
 									<input type="email" id="email" name="email" />
 								</p>
-								<div>PUT RECAPTCHA HERE</div>
-								<input type="hidden" id="form" value="1" />
+								<Captcha onSuccess={noop1} />
+								{/* <input type="hidden" id="form" value="1" /> */}
 								<input type="submit" value="Send Email" />
 							</form>
 						</div>

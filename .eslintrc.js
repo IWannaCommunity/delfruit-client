@@ -127,6 +127,7 @@ module.exports = {
 		"no-unused-expressions": "off",
 		"no-unsafe-optional-chaining": "warn",
 		"no-confusing-arrow": "warn",
+		"react/jsx-boolean-value": "warn",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };

@@ -1,26 +1,30 @@
-import { AnyElem } from "@/utils/element";
 import Image from "next/image";
-import { useSessionContext } from "@/utils/hooks";
+import Link from "next/link";
 import { useState } from "react";
 import { API } from "@/utils/api";
-import Link from "next/link";
+import type { AnyElem } from "@/utils/element";
+import { useSessionContext } from "@/utils/hooks";
+import Captcha from "../captcha";
 
 export type GameProps = {
-	id: number,
-	name: string
-}
+	id: number;
+	name: string;
+};
 
 type UploadScreenshotProps = {
-	game: GameProps
-}
+	game: GameProps;
+};
 
-export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyElem {
+export default function UploadScreenshot({
+	game,
+}: UploadScreenshotProps): AnyElem {
 	const [session] = useSessionContext();
 	const [loading, setLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const [description, setDescription] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+	const [file, setFile] = useState<File | null>(null);
 
 	if (!game) {
 		return <h4>Loading...</h4>;
@@ -39,7 +43,13 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 
 			const token = session.token;
 
-			await API.games().postGameScreenshotForm(description, file, `Bearer ${token}`, game.id);
+			await API.games().postGameScreenshotForm(
+				description,
+				file,
+				captchaToken,
+				`Bearer ${token}`,
+				game.id,
+			);
 
 			setSuccess(true);
 			setError(null);
@@ -55,7 +65,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 	function validateImageFile(
 		file: File,
 		onValid: (file: File) => void,
-		onError: (msg: string) => void
+		onError: (msg: string) => void,
 	) {
 		const MAX_SIZE = 1048576; // 1024x1024 = 1 MB
 		const MAX_WIDTH = 1024;
@@ -71,7 +81,9 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 		const img = new window.Image();
 		img.onload = () => {
 			if (img.width > MAX_WIDTH || img.height > MAX_HEIGHT) {
-				onError(`Image too large! Max dimensions are ${MAX_WIDTH}x${MAX_HEIGHT}`);
+				onError(
+					`Image too large! Max dimensions are ${MAX_WIDTH}x${MAX_HEIGHT}`,
+				);
 			} else {
 				onValid(file);
 			}
@@ -104,16 +116,24 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 							alt="Screenshot Preview"
 							width={200}
 							height={150}
-							onLoad={(e) => { URL.revokeObjectURL((e.target as HTMLImageElement).src); }}
+							onLoad={(e) => {
+								URL.revokeObjectURL((e.target as HTMLImageElement).src);
+							}}
 						/>
 					) : (
-						<Image src="/images/noimage.avif" alt="Placeholder" priority width={200} height={150}/>
+						<Image
+							src="/images/noimage.avif"
+							alt="Placeholder"
+							priority
+							width={200}
+							height={150}
+						/>
 					)}
 				</div>
-				<hr/>
+				<hr />
 				<div>
 					<span> Description: (100 character max)</span>
-					<br/>
+					<br />
 					<input
 						id="description"
 						name="description"
@@ -128,7 +148,8 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 				<div>
 					<div>
 						<p>
-							Select an image to upload: (max file size: 1MB, max image size: 1024x768, JPG/PNG only)
+							Select an image to upload: (max file size: 1MB, max image size:
+							1024x768, JPG/PNG only)
 						</p>
 						<input
 							type="file"
@@ -147,46 +168,53 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 										(errMsg) => {
 											setFile(null);
 											setError(errMsg);
-										}
+										},
 									);
 								}
 							}}
 						/>
-						<br/>
+						<br />
+						<Captcha onSuccess={setCaptchaToken} />
 						<input type="submit" value={loading ? "Uploading..." : "Upload"} />
 						{success && !error && (
 							<span className="text-green-600 ml-1">
 								Screenshot successfully uploaded!
 							</span>
 						)}
-						<br/>
+						<br />
 					</div>
 					<p className="mb-0">
 						The best screenshots include the title screen & a couple of
 						representative screens from the game.
-						<br/>
+						<br />
 						<span className="font-bold">Please,</span>
 					</p>
 					<ul className="mt-0">
 						<li>Do not upload clear screenshots</li>
 						<li>
-							Do not upload spoilers (secrets, clear screens, etc...)
-							will be removed if found to be significant.
+							Do not upload spoilers (secrets, clear screens, etc...) will be
+							removed if found to be significant.
 						</li>
 						<li>
-							When taking a screenshot to upload, please consider using the ingame
-							screenshot button (F9 by default). If it doesn't exist, please include
-							a screenshot of the game itself and not include the window border.
+							When taking a screenshot to upload, please consider using the
+							ingame screenshot button (F9 by default). If it doesn't exist,
+							please include a screenshot of the game itself and not include the
+							window border.
 						</li>
 						<li>
-							If a screenshot for the game doesn't exist,
-							consider uploading a screenshot of the title screen.
+							If a screenshot for the game doesn't exist, consider uploading a
+							screenshot of the title screen.
 						</li>
 						<li>Do not submit too many similar screenshots</li>
-						<li>Do not upload a screenshot of glitches or bugs that the game might contant.</li>
+						<li>
+							Do not upload a screenshot of glitches or bugs that the game might
+							contant.
+						</li>
 					</ul>
 					<p>
-						<span>By uploading a screenshot, you release your work under the </span>
+						<span>
+							By uploading a screenshot, you release your work under the{" "}
+						</span>
 						<a href="http://creativecommons.org/licenses/by-sa/3.0/">
 							Creative Commons by-sa 3.0 license.
 						</a>
@@ -197,9 +225,7 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 							Daniel Bruce
 						</a>
 						<span> from </span>
-						<a href="https://www.flaticon.com">
-							www.flaticon.com
-						</a>
+						<a href="https://www.flaticon.com">www.flaticon.com</a>
 					</p>
 				</div>
 			</form>
@@ -207,3 +233,4 @@ export default function UploadScreenshot({ game }: UploadScreenshotProps): AnyEl
 		</>
 	);
 }
+

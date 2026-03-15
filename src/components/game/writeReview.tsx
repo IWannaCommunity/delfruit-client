@@ -1,25 +1,34 @@
-import { useState, useEffect } from "react";
+import type { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import Image from "next/image";
 import Link from "next/link";
-import { getRatingDescription, getDifficultyDescription } from "@/utils/ratingHelpers"
-import { API } from "@/utils/api";
-import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Captcha from "@/components/captcha";
+import { API } from "@/utils/api";
 import { useSessionContext } from "@/utils/hooks";
+import {
+	getDifficultyDescription,
+	getRatingDescription,
+} from "@/utils/ratingHelpers";
 
 type WriteReviewProps = {
 	onReviewUpdated: () => void;
 	existingReview: ReviewT | null;
 };
 
-export default function WriteReview({ onReviewUpdated, existingReview }: WriteReviewProps): JSX.Element {
-
+export default function WriteReview({
+	onReviewUpdated,
+	existingReview,
+}: WriteReviewProps): JSX.Element {
 	const [showWrite, setShowWrite] = useState(false);
 	const [rating, setRating] = useState(existingReview?.rating ?? -0.1);
-	const [difficulty, setDifficulty] = useState(existingReview?.difficulty ?? -1);
+	const [difficulty, setDifficulty] = useState(
+		existingReview?.difficulty ?? -1,
+	);
 	const [comment, setComment] = useState(existingReview?.comment ?? "");
 	const [tags, setTags] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const [error, setError] = useState<string | null>(null);
 	const [session] = useSessionContext();
 
@@ -27,7 +36,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 	const gameId = Number(router.query.id);
 
 	function isReviewEmpty() {
-		return (rating < 0) && (difficulty < 0) && (comment.trim() === "") && (tags === "");
+		return rating < 0 && difficulty < 0 && comment.trim() === "" && tags === "";
 	}
 
 	async function handleSubmit() {
@@ -35,9 +44,10 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 		setError(null);
 
 		try {
-
 			if (isReviewEmpty()) {
-				setError("Please provide at least a rating, difficulty, comment, or tag before submitting.");
+				setError(
+					"Please provide at least a rating, difficulty, comment, or tag before submitting.",
+				);
 				setLoading(false);
 				return;
 			}
@@ -45,12 +55,17 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 			const body: ReviewT = {
 				rating: rating >= 0 ? rating : undefined,
 				difficulty: difficulty >= 0 ? difficulty : undefined,
-				comment
+				comment,
 			};
 
 			const token = session.token;
 
-			await API.reviews().putGameReview(body, `Bearer ${token}`, gameId);
+			await API.reviews().putGameReview(
+				body,
+				`Bearer ${token}`,
+				captchaToken,
+				gameId,
+			);
 
 			onReviewUpdated();
 			setShowWrite(false);
@@ -69,14 +84,11 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 		}
 	}, [existingReview]);
 
-	return(
+	return (
 		<>
 			{/* Write Review Button */}
 			{!showWrite && (
-				<div
-					id="myreviewtoggle"
-					onClick={() => setShowWrite(true)}
-				>
+				<div id="myreviewtoggle" onClick={() => setShowWrite(true)}>
 					<Image
 						src="/images/pencil.png"
 						width={24}
@@ -90,7 +102,7 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 			{/* Hide Button */}
 			{showWrite && (
 				<button
-				type="button"
+					type="button"
 					onClick={() => setShowWrite(false)}
 					className="text-sm text-gray-600 hover:text-black"
 				>
@@ -108,7 +120,9 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 							<Link href="/guidelines">rules</Link>
 							<span> for reviewing games when writing your review.</span>
 						</li>
-						<li>Make sure to properly tag your spoilers with the spoiler tag:</li>
+						<li>
+							Make sure to properly tag your spoilers with the spoiler tag:
+						</li>
 						<li className="list-none">
 							<ul>
 								<li>"[spoiler]This game has apples![/spoiler]"</li>
@@ -132,7 +146,9 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 					{/* Rating Slider */}
 					<div className="mt-4">
 						<span className="font-medium">My Rating: </span>
-						<span id="ratingSpan">{rating !== -0.1 ? rating : "None"} {getRatingDescription(rating)}</span>
+						<span id="ratingSpan">
+							{rating !== -0.1 ? rating : "None"} {getRatingDescription(rating)}
+						</span>
 					</div>
 					<input
 						type="range"
@@ -148,7 +164,10 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 					{/* Difficulty Slider */}
 					<div className="mt-4">
 						<span className="font-medium">My Difficulty: </span>
-						<span id="diffSpan">{difficulty !== -1 ? difficulty : "None"} {getDifficultyDescription(difficulty)}</span>
+						<span id="diffSpan">
+							{difficulty !== -1 ? difficulty : "None"}{" "}
+							{getDifficultyDescription(difficulty)}
+						</span>
 					</div>
 					<input
 						type="range"
@@ -184,8 +203,9 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 						value={tags}
 						onChange={(e) => setTags(e.target.value)}
 					/>
-					<span className="tags_alert"/>
+					<span className="tags_alert" />
 					<br />
+					<Captcha onSuccess={setCaptchaToken} />
 					<input
 						type="button"
 						id="update_button"
@@ -199,3 +219,4 @@ export default function WriteReview({ onReviewUpdated, existingReview }: WriteRe
 		</>
 	);
 }
+

@@ -1,13 +1,15 @@
+import type { UserRegistration } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
-import Header from "@/components/header";
-import React, { FormEvent, useState } from "react";
-import { AnyElem } from "@/utils/element";
-import { UserRegistration } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
+import React, { type FormEvent, useState } from "react";
+import Captcha from "@/components/captcha";
+import Header from "@/components/header";
 import { API } from "@/utils/api";
+import type { AnyElem } from "@/utils/element";
 
 export default function Register(): AnyElem {
 	const [error, setError] = useState<string | null>(null);
+	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const router = useRouter();
 
 	async function attemptUserRegistration(evt: FormEvent<HTMLFormElement>) {
@@ -19,10 +21,11 @@ export default function Register(): AnyElem {
 		try {
 			const resp = await API.users().postUser(
 				Object.fromEntries(frmData) as any as UserRegistration,
+				captchaToken,
 			);
 			router.reload();
 		} catch (err) {
-			setError("Something went wrong")
+			setError("Something went wrong");
 		}
 	}
 	return (
@@ -48,21 +51,20 @@ export default function Register(): AnyElem {
 					</p>
 					<ol>
 						<li>
-							<span className="font-bold mr-1">Write Honest Reviews</span>
-							- Please do not intentionally give games a rating
-							that would be considered sarcastic or a troll. (You are allowed to
-							be funny with your comments.)
+							<span className="font-bold mr-1">Write Honest Reviews</span>-
+							Please do not intentionally give games a rating that would be
+							considered sarcastic or a troll. (You are allowed to be funny with
+							your comments.)
 						</li>
 						<li>
 							<span className="font-bold mr-1">Don't Attack Other Reviews</span>
-							- We do not take lightly to bashing other people's
-							opinions. If your comment attacks others, it will be taken down.
+							- We do not take lightly to bashing other people's opinions. If
+							your comment attacks others, it will be taken down.
 						</li>
 						<li>
-							<span className="font-bold mr-1">Be Respectful</span>
-							- You may not like a game, but do not bash the
-							creator directly. State what you did/did not like about the game,
-							and leave it at that.
+							<span className="font-bold mr-1">Be Respectful</span>- You may not
+							like a game, but do not bash the creator directly. State what you
+							did/did not like about the game, and leave it at that.
 						</li>
 						<li>Do not impersonate another user of the community.</li>
 						<li>
@@ -138,7 +140,9 @@ export default function Register(): AnyElem {
 								/>
 							</div>
 							<p>
-								<span className="font-bold mr-1">Why do you need my email?</span>
+								<span className="font-bold mr-1">
+									Why do you need my email?
+								</span>
 								We only keep your email so we can send you a password reset link
 								if you ever forget!
 							</p>
@@ -151,6 +155,8 @@ export default function Register(): AnyElem {
 								name="securityquestion"
 								defaultValue="1"
 							/>
+
+							<Captcha onSuccess={setCaptchaToken} />
 
 							<div className="pure-control-group">
 								<button

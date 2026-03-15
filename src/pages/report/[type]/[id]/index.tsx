@@ -1,20 +1,21 @@
+import {
+	type Report as ReportT,
+	ReportTypeEnum,
+	type Review as ReviewT,
+} from "delfruit-swagger-cg-sdk";
+import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import Captcha from "@/components/captcha";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import Review from "@/components/review";
-import { AnyElem } from "@/utils/element";
-import { useEffectAsync, useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
-import {
-	ReportTypeEnum,
-	Report as ReportT,
-	Review as ReviewT
-} from "delfruit-swagger-cg-sdk";
-import Head from "next/head";
-import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { useState } from "react";
+import type { AnyElem } from "@/utils/element";
 import { formatDate } from "@/utils/formatDate";
+import { useEffectAsync, useSessionContext } from "@/utils/hooks";
 import { makeScrnshotURL } from "@/utils/url";
 
 export default function Report(): AnyElem {
@@ -28,6 +29,7 @@ export default function Report(): AnyElem {
 	const [report, setReport] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
+	const [captchaToken, setCaptchaToken] = useState<string>("");
 
 	const router = useRouter();
 
@@ -36,7 +38,10 @@ export default function Report(): AnyElem {
 			const qType = router.query.type;
 			const qId = Number(router.query.id);
 
-			if (typeof qType === "string" && Object.values(ReportTypeEnum).includes(qType as ReportTypeEnum)) {
+			if (
+				typeof qType === "string" &&
+				Object.values(ReportTypeEnum).includes(qType as ReportTypeEnum)
+			) {
 				setType(qType as ReportTypeEnum);
 			} else {
 				router.push("/report");
@@ -48,8 +53,7 @@ export default function Report(): AnyElem {
 				setTargetId(qId);
 			}
 
-			switch(qType) {
-
+			switch (qType) {
 				case ReportTypeEnum.Game: {
 					try {
 						const resp = await API.games().getGame(qId);
@@ -91,7 +95,9 @@ export default function Report(): AnyElem {
 									? null
 									: Number(resp.data.rating / 10).toFixed(1),
 							difficulty:
-								resp.data.difficulty === null ? null : Number(resp.data.difficulty),
+								resp.data.difficulty === null
+									? null
+									: Number(resp.data.difficulty),
 							like_count: Number(resp.data.like_count),
 							owner_review: resp.data.owner_review === 1,
 							tags: resp.data.tags,
@@ -120,13 +126,14 @@ export default function Report(): AnyElem {
 					setLoading(false);
 					break;
 				}
-
 			}
 		}
-	},
-	async () => {},
-	[router, router.isReady, router.query.id, router.query.type],
-	);
+	}, async () => {}, [
+		router,
+		router.isReady,
+		router.query.id,
+		router.query.type,
+	]);
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
@@ -137,10 +144,14 @@ export default function Report(): AnyElem {
 			type,
 			targetId,
 			report,
-		}
+		};
 
 		try {
-			const response = await API.reports().postReport(body, `Bearer ${session.token}`);
+			const response = await API.reports().postReport(
+				body,
+				captchaToken,
+				`Bearer ${session.token}`,
+			);
 			const createdReport = response.data;
 			router.push(`/report/submit?id=${createdReport.id}`);
 		} catch (err: any) {
@@ -223,8 +234,7 @@ export default function Report(): AnyElem {
 						<li>Off-topic content</li>
 						<li>Messages directed toward other users</li>
 						<li>
-							<a
-								href="http://www.reddit.com/r/TheoryOfReddit/comments/1faqdm/downvoting_all_of_a_users_comments/">
+							<a href="http://www.reddit.com/r/TheoryOfReddit/comments/1faqdm/downvoting_all_of_a_users_comments/">
 								Witchhunt downvotes
 							</a>
 						</li>
@@ -251,12 +261,13 @@ export default function Report(): AnyElem {
 						onChange={(e) => setReport(e.target.value)}
 						required
 					/>
+					<Captcha onSucess={setCaptchaToken} />
 					<input type="submit" value="Submit Report" />
 					{error && <span className="text-red-600 ml-1">{error}</span>}
 				</form>
 			</>
 		);
-	}
+	};
 
 	return (
 		<div>
@@ -265,9 +276,7 @@ export default function Report(): AnyElem {
 			</Head>
 			<div id="container">
 				<Header />
-				<div id="content">
-					{renderContent()}
-				</div>
+				<div id="content">{renderContent()}</div>
 				<Footer />
 			</div>
 		</div>

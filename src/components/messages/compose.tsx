@@ -5,6 +5,7 @@ import { API } from "@/utils/api";
 import { Message as MessageT, UserExt as UserT } from "delfruit-swagger-cg-sdk";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Captcha from "../captcha";
 
 export default function Compose(): AnyElem {
 	const [session] = useSessionContext();
@@ -19,6 +20,7 @@ export default function Compose(): AnyElem {
 		message: "",
 	});
 	const [lastRecipient, setLastRecipient] = useState<string | null>(null);
+	const [captchaToken, setCaptchaToken] = useState<string>("");
 
 	const router = useRouter();
 
@@ -120,7 +122,7 @@ export default function Compose(): AnyElem {
 		}
 
 		try {
-			await API.messages().postMessage(message, `Bearer ${session.token}`);
+			await API.messages().postMessage(message, captchaToken,`Bearer ${session.token}`);
 			setLastRecipient(selectedUser?.name ?? null);
 			setFormData({ to: "", subject: "", message: "" });
 			setSelectedUser(null);
@@ -192,6 +194,7 @@ export default function Compose(): AnyElem {
 				</div>
 
 				<div>
+                    <Captcha onSuccess={setCaptchaToken}/>
 					<button type="submit">Send</button>
 					{error && !success && <span className="text-red-600 ml-1">{error}</span>}
 					{success && !error && <span className="text-green-600 ml-1">Message sent to {lastRecipient}!</span>}

@@ -1,20 +1,22 @@
-import Head from "next/head";
-import Header from "@/components/header";
-import { useSessionContext } from "@/utils/hooks";
-import { API } from "@/utils/api";
-import { UserCredentials } from "delfruit-swagger-cg-sdk";
-import { FormEvent, useEffect, useState } from "react";
+import type { UserCredentials } from "delfruit-swagger-cg-sdk";
 import Cookies from "js-cookie";
-import { useRouter } from "next/router";
+import Head from "next/head";
 import Link from "next/link";
-import { AnyElem } from "@/utils/element";
+import { useRouter } from "next/router";
+import { type FormEvent, useEffect, useState } from "react";
+import Captcha from "@/components/captcha";
 import Footer from "@/components/footer";
+import Header from "@/components/header";
+import { API } from "@/utils/api";
+import type { AnyElem } from "@/utils/element";
+import { useSessionContext } from "@/utils/hooks";
 
 export default function Login(): AnyElem {
 	const [session] = useSessionContext();
 	const router = useRouter();
 	const [successfulLogin, setSuccessfulLogin] = useState<boolean>(false);
 	const [idempotency, setIdempotency] = useState<boolean>(false);
+	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -37,6 +39,7 @@ export default function Login(): AnyElem {
 		try {
 			const resp = await API.authentication().postLogin(
 				Object.fromEntries(frmData) as any as UserCredentials,
+				captchaToken,
 			);
 
 			Cookies.set("session", resp.data.token);
@@ -47,10 +50,10 @@ export default function Login(): AnyElem {
 			router.reload();
 		} catch (err) {
 			if (err.response?.status === 401) {
-        setError("Incorrect credentials");
-      } else {
-        setError("Something went wrong");
-      }
+				setError("Incorrect credentials");
+			} else {
+				setError("Something went wrong");
+			}
 		}
 	}
 
@@ -68,11 +71,22 @@ export default function Login(): AnyElem {
 								<form onSubmit={attemptLogin}>
 									<p>
 										<label htmlFor="username">Username: </label>
-										<input id="username" type="text" name="username" autoComplete="on" required />
+										<input
+											id="username"
+											type="text"
+											name="username"
+											autoComplete="on"
+											required
+										/>
 									</p>
 									<p>
 										<label htmlFor="password">Password: </label>
-										<input id="password" type="password" name="password" required />
+										<input
+											id="password"
+											type="password"
+											name="password"
+											required
+										/>
 									</p>
 									{/*
 									<p>
@@ -89,6 +103,7 @@ export default function Login(): AnyElem {
 										hidden
 									/>
 									*/}
+									<Captcha onSuccess={setCaptchaToken} />
 									<button type="submit">Login</button>
 									{error && <span className="text-red-600 ml-1">{error}</span>}
 								</form>
