@@ -6,7 +6,7 @@ export default function Captcha(onSuccess: (token: string) => void): AnyElem {
 	return (
 		<Turnstile
 			siteKey={CFG.cfTurnstileSiteKey}
-			rerenderOnCallbackChange={true}
+			rerenderOnCallbackChange={false}
 			onSuccess={onSuccess}
 		/>
 	);
