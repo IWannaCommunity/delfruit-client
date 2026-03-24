@@ -43,10 +43,13 @@ export default function UploadScreenshot({
 
 			const token = session.token;
 
+			const frmData = new FormData(e.currentTarget as HTMLFormElement);
+			const proof = frmData.get("cf-turnstile-response");
+			frmData.delete("cf-turnstile-response");
 			await API.games().postGameScreenshotForm(
 				description,
 				file,
-				captchaToken,
+				proof.toString(),
 				`Bearer ${token}`,
 				game.id,
 			);
