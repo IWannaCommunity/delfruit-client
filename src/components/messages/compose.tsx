@@ -1,10 +1,13 @@
-import { AnyElem } from "@/utils/element";
-import { useState, useEffect } from "react";
-import { useSessionContext } from "@/utils/hooks";
-import { API } from "@/utils/api";
-import { Message as MessageT, UserExt as UserT } from "delfruit-swagger-cg-sdk";
-import { useRouter } from "next/router";
+import type {
+	Message as MessageT,
+	UserExt as UserT,
+} from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { type FormEvent, useEffect, useState } from "react";
+import { API } from "@/utils/api";
+import type { AnyElem } from "@/utils/element";
+import { useSessionContext } from "@/utils/hooks";
 import Captcha from "../captcha";
 
 export default function Compose(): AnyElem {
@@ -12,27 +15,30 @@ export default function Compose(): AnyElem {
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [searchResults, setSearchResults] = useState<UserT[]>([]);
-  const [selectedUser, setSelectedUser] = useState<UserT | null>(null);
+	const [selectedUser, setSelectedUser] = useState<UserT | null>(null);
 	const [dropdownVisible, setDropdownVisible] = useState(false);
 	const [formData, setFormData] = useState({
 		to: "",
 		subject: "",
 		message: "",
+		"cf-turnstile-response": "",
 	});
 	const [lastRecipient, setLastRecipient] = useState<string | null>(null);
 	const [captchaToken, setCaptchaToken] = useState<string>("");
 
 	const router = useRouter();
 
-	const handleChange = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+	const handleChange = async (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
 		const { name, value } = e.target;
-		setFormData((prev) => ({...prev,[name]: value}));
+		setFormData((prev) => ({ ...prev, [name]: value }));
 
 		if (name === "to") {
-      setSelectedUser(null);
+			setSelectedUser(null);
 			setDropdownVisible(true);
 		}
-	}
+	};
 
 	useEffect(() => {
 		if (!router.isReady) return;
@@ -53,13 +59,12 @@ export default function Compose(): AnyElem {
 	}, [router.isReady, router.query.to, session.token]);
 
 	useEffect(() => {
-    if (!dropdownVisible || !formData.to || formData.to.length < 2) {
-      setSearchResults([]);
-      return;
-    }
+		if (!dropdownVisible || !formData.to || formData.to.length < 2) {
+			setSearchResults([]);
+			return;
+		}
 
 		const timer = setTimeout(async () => {
-
 			try {
 				const res = await API.users().getUsers(
 					`Bearer ${session.token}`,
@@ -67,7 +72,7 @@ export default function Compose(): AnyElem {
 					undefined,
 					false,
 					0,
-					10
+					10,
 				);
 				setSearchResults(res.data);
 			} catch (err) {
@@ -77,25 +82,32 @@ export default function Compose(): AnyElem {
 		}, 300); // 300ms limit to not spam api calls per key stroke
 
 		return () => clearTimeout(timer);
-
-  }, [formData.to, session.token, dropdownVisible]);
+	}, [formData.to, session.token, dropdownVisible]);
 
 	const handleSelectUser = (user: UserT) => {
-    setSelectedUser(user);
-    setFormData((prev) => ({ ...prev, to: user.name }));
+		setSelectedUser(user);
+		setFormData((prev) => ({ ...prev, to: user.name }));
 		setDropdownVisible(false);
-    setSearchResults([]);
-  };
+		setSearchResults([]);
+	};
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = async (
+		e: React.FormEvent & FormEvent<HTMLFormElement>,
+	) => {
 		e.preventDefault();
 		setError(null);
+
+		const frmData: FormData = new FormData(e.currentTarget); // prolly not recommended due to staleness, but ok for captcha purposes
+		const captchaProof = ((frmData: FormData) => {
+			const t = captchaToken ?? frmData.get("cf-turnstile-response").toString();
+			return t;
+		})(frmData);
 
 		if (!selectedUser) {
 			setError("Please select a user first.");
 			setSuccess(false);
-      return;
-    }
+			return;
+		}
 
 		const message: MessageT = {
 			userToId: selectedUser.id,
@@ -122,13 +134,18 @@ export default function Compose(): AnyElem {
 		}
 
 		try {
-			await API.messages().postMessage(message, captchaToken,`Bearer ${session.token}`);
+			await API.messages().postMessage(
+				message,
+				`Bearer ${session.token}`,
+				captchaProof,
+			);
 			setLastRecipient(selectedUser?.name ?? null);
 			setFormData({ to: "", subject: "", message: "" });
 			setSelectedUser(null);
 			setSuccess(true);
 			setError(null);
 		} catch (error) {
+			console.log(error);
 			setError("Failed to send message. Please try again.");
 			setSuccess(false);
 		}
@@ -142,7 +159,9 @@ export default function Compose(): AnyElem {
 			<h2>Send a PM</h2>
 			<form onSubmit={handleSubmit}>
 				<div className="relative">
-					<label htmlFor="to" className="ml-9">To: </label>
+					<label htmlFor="to" className="ml-9">
+						To:{" "}
+					</label>
 					<input
 						id="to"
 						type="text"
@@ -166,7 +185,7 @@ export default function Compose(): AnyElem {
 								</li>
 							))}
 						</ul>
-          )}
+					)}
 				</div>
 
 				<div>
@@ -194,10 +213,16 @@ export default function Compose(): AnyElem {
 				</div>
 
 				<div>
-                    <Captcha onSuccess={setCaptchaToken}/>
+					<Captcha onSuccess={setCaptchaToken} />
 					<button type="submit">Send</button>
-					{error && !success && <span className="text-red-600 ml-1">{error}</span>}
-					{success && !error && <span className="text-green-600 ml-1">Message sent to {lastRecipient}!</span>}
+					{error && !success && (
+						<span className="text-red-600 ml-1">{error}</span>
+					)}
+					{success && !error && (
+						<span className="text-green-600 ml-1">
+							Message sent to {lastRecipient}!
+						</span>
+					)}
 				</div>
 			</form>
 		</>
