@@ -7,7 +7,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
 import Captcha from "@/components/captcha";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
@@ -135,8 +135,10 @@ export default function Report(): AnyElem {
 		router.query.type,
 	]);
 
-	async function handleSubmit(e: React.FormEvent) {
+	async function handleSubmit(e: React.FormEvent & FormEvent<HTMLFormElement>) {
 		e.preventDefault();
+
+		const frmData: FormData = new FormData(e.currentTarget);
 
 		if (!type || !targetId || !report) return;
 
@@ -146,11 +148,16 @@ export default function Report(): AnyElem {
 			report,
 		};
 
+		const captchaProof = ((frmData: FormData) => {
+			const t = captchaToken ?? frmData.get("cf-turnstile-response").toString();
+			return t;
+		})(frmData);
+
 		try {
 			const response = await API.reports().postReport(
 				body,
-				captchaToken,
 				`Bearer ${session.token}`,
+				captchaProof,
 			);
 			const createdReport = response.data;
 			router.push(`/report/submit?id=${createdReport.id}`);
