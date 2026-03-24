@@ -23,6 +23,7 @@ ARG SCRNSHOT_URL_PRFX="/scrn_shot"
 RUN apk --no-cache add sd --repository=http://dl-cdn.alpinelinux.org/alpine/v3.19/community/
 RUN sd --string-mode "http://localhost:4201" "$API_URL" ./src/config.json
 RUN sd --string-mode "http://localhost:9001" "$SCRNSHOT_URL_PRFX" ./src/config.json
+RUN sd --string-mode "1x00000000000000000000AA" "$CF_TURNSTILE_SITE_KEY" ./src/config.json
 
 RUN npm run build
 RUN npm run export
