@@ -60,10 +60,14 @@ export default function WriteReview({
 
 			const token = session.token;
 
+			const frmData = new FormData(
+				document.getElementById("captchaContainer") as HTMLFormElement,
+			);
+			const proof = frmData.get("cf-turnstile-response");
 			await API.reviews().putGameReview(
 				body,
+				proof.toString(),
 				`Bearer ${token}`,
-				captchaToken,
 				gameId,
 			);
 
@@ -205,7 +209,9 @@ export default function WriteReview({
 					/>
 					<span className="tags_alert" />
 					<br />
-					<Captcha onSuccess={setCaptchaToken} />
+					<form id="captchaContainer">
+						<Captcha onSuccess={setCaptchaToken} />
+					</form>
 					<input
 						type="button"
 						id="update_button"
