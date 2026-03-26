@@ -19,6 +19,7 @@ RUN npm cache clean --force
 
 ARG API_URL="/api"
 ARG SCRNSHOT_URL_PRFX="/scrn_shot"
+ARG CF_TURNSTILE_SITE_KEY="1x0"
 
 RUN apk --no-cache add sd --repository=http://dl-cdn.alpinelinux.org/alpine/v3.19/community/
 RUN sd --string-mode "http://localhost:4201" "$API_URL" ./src/config.json
