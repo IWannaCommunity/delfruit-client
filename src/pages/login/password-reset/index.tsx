@@ -50,7 +50,7 @@ export default function PasswordReset(): AnyElem {
 					>
 						<fieldset>
 							<div className="pure-control-group">
-								<label for="password">Password</label>
+								<label htmlFor="password">Password</label>
 								<input
 									className="pure-input-1-3"
 									id="password"
@@ -62,7 +62,7 @@ export default function PasswordReset(): AnyElem {
 							</div>
 
 							<div className="pure-control-group">
-								<label for="password">Confirm Password</label>
+								<label htmlFor="password">Confirm Password</label>
 								<input
 									className="pure-input-1-3"
 									id="password_confirm"
@@ -73,7 +73,7 @@ export default function PasswordReset(): AnyElem {
 								/>
 							</div>
 
-							<div class="pure-control-group">
+							<div className="pure-control-group">
 								<button
 									type="submit"
 									className="pure-button pure-button-primary"
