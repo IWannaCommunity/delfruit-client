@@ -1,4 +1,7 @@
-import type { UserCredentials } from "delfruit-swagger-cg-sdk";
+import type {
+	ResultAuthResponseProblem_,
+	UserCredentials,
+} from "delfruit-swagger-cg-sdk";
 import Cookies from "js-cookie";
 import Head from "next/head";
 import Link from "next/link";
@@ -37,10 +40,24 @@ export default function Login(): AnyElem {
 		// frmData.set("notARobot", 386);
 		// TODO: check if we've actually logged in
 		try {
+			// HACK: onSuccess does not always get called, or at least
+			// in the order it should.
+			const token = ((): string => {
+				if (captchaToken === "") {
+					return String(frmData.get("cf-turnstile-response"));
+				}
+				return captchaToken;
+			})();
+			// HACK: delete the proof because the server will
+			// complain if it's in the request body
+			frmData.delete("cf-turnstile-response");
 			const resp = await API.authentication().postLogin(
 				Object.fromEntries(frmData) as any as UserCredentials,
-				captchaToken,
+				token,
 			);
+			// HACK: since this api is hotpatched, we have to manually
+			// parse the json object
+			resp.data = JSON.parse(resp.data) as ResultAuthResponseProblem_;
 
 			Cookies.set("session", resp.data.token);
 			Cookies.set("loggedInSuccessfully", "1", {
@@ -108,7 +125,7 @@ export default function Login(): AnyElem {
 									{error && <span className="text-red-600 ml-1">{error}</span>}
 								</form>
 								<br />
-								<Link href="/">Forgot Password?</Link>
+								<Link href="/login/forgot-password">Forgot Password?</Link>
 							</div>
 							<div>
 								Don't have an account? It only takes 10 seconds to register, and

@@ -19,11 +19,14 @@ export default function Register(): AnyElem {
 
 		// TODO: check if we actually registered
 		try {
+			const proof = frmData.get("cf-turnstile-response");
+			frmData.delete("cf-turnstile-response");
+			frmData.delete("pass_confirm");
 			const resp = await API.users().postUser(
 				Object.fromEntries(frmData) as any as UserRegistration,
-				captchaToken,
+				proof,
 			);
-			router.reload();
+			await router.push("/register/finalize");
 		} catch (err) {
 			setError("Something went wrong");
 		}
@@ -95,7 +98,7 @@ export default function Register(): AnyElem {
 									required
 									pattern={"[A-Za-z0-9_]{3,50}"}
 									placeholder=""
-									name="user"
+									name="username"
 								/>
 							</div>
 							<p>
@@ -112,7 +115,7 @@ export default function Register(): AnyElem {
 									required
 									pattern=".{4,}"
 									placeholder=""
-									name="pass"
+									name="password"
 								/>
 							</div>
 
@@ -147,14 +150,12 @@ export default function Register(): AnyElem {
 								if you ever forget!
 							</p>
 
-							<div className="pure-control-group">PUT RECAPTCHA HERE</div>
-
-							<input
+							{/*<input
 								type="hidden"
 								id="securityquestion"
 								name="securityquestion"
 								defaultValue="1"
-							/>
+							/>*/}
 
 							<Captcha onSuccess={setCaptchaToken} />
 
