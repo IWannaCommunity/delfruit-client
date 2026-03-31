@@ -1,8 +1,10 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import type React from "react";
+import { type FormEvent, useCallback, useState } from "react";
 import Captcha from "@/components/captcha";
 import Header from "@/components/header";
+import { API } from "@/utils/api";
 
 enum ServerResponse {
 	None = -1,
@@ -16,6 +18,29 @@ export default function ForgotPassword(): NextPage {
 
 	const noop1 = (_: string): void => {};
 
+	const reqPwdReset = useCallback(
+		async (e: React.FormEvent & FormEvent<HTMLFormElement>) => {
+			e.preventDefault();
+
+			const frmData: FormData = new FormData(e.currentTarget);
+			const captchaProof = frmData.get("cf-turnstile-response").toString();
+
+			try {
+				await API.authentication().postResetRequest(
+					{
+						username: frmData.get("username").toString(),
+						email: frmData.get("email").toString(),
+					},
+					captchaProof,
+				);
+			} catch (e) {
+				return setResponse(ServerResponse.Failed);
+			}
+			setResponse(ServerResponse.Success);
+		},
+		[],
+	);
+
 	return (
 		<div>
 			<Head>
@@ -26,7 +51,7 @@ export default function ForgotPassword(): NextPage {
 				<div id="content">
 					{response === ServerResponse.None ? (
 						<div>
-							<form>
+							<form onSubmit={reqPwdReset}>
 								<p>
 									<label htmlFor="username">Username: </label>
 									<input type="text" id="username" name="username" />
