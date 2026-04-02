@@ -15,7 +15,7 @@ COPY . .
 
 ## Build the nextjs app in production mode and store the artifacts in dist folder
 
-RUN npm cache clean --force
+#RUN npm cache clean --force
 
 ARG API_URL="/api"
 ARG SCRNSHOT_URL_PRFX="/scrn_shot"
