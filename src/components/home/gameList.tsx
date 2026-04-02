@@ -25,7 +25,7 @@ export default function GameList(): JSX.Element {
 					undefined, // tags
 					undefined, // author
 					undefined, // ownerUserId
-					undefined, // hasDownload
+					true, // hasDownload
 					undefined, // createdFrom
 					undefined, // createdTo
 					undefined, // clearedByUserId
