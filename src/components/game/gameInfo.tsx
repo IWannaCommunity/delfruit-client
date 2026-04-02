@@ -118,7 +118,7 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 			<h2 id="creator-label" className="mb-[13px]">
 				<span>Creator: </span>
 				{game.author.length > 0 &&
-					game.author[0].split(",").map((author, i, arr) => {
+					game.author.map((author, i, arr) => {
 						const trimmed = author.trim();
 						return (
 							<React.Fragment key={trimmed}>
