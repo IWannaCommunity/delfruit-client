@@ -1,6 +1,6 @@
-import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type CarouselProps = {
 	images: {
@@ -19,7 +19,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 	const hasImages = images.length > 0;
 	const thumbWidth = 122;
 
-	const scrollThumbnails = (index: number) => {
+	const scrollThumbnails = useCallback((index: number) => {
 		if (!thumbsRef.current) return;
 
 		const container = thumbsRef.current;
@@ -37,7 +37,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 			left: scrollTo,
 			behavior: "smooth",
 		});
-	};
+	}, []);
 
 	const next = useCallback(() => {
 		setCurrent((prev) => {
@@ -45,15 +45,15 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 			scrollThumbnails(nextIndex);
 			return nextIndex;
 		});
-	}, [images.length]);
+	}, [images.length, scrollThumbnails]);
 
-	const prev = () => {
+	const prev = useCallback(() => {
 		setCurrent((prev) => {
 			const prevIndex = (prev - 1 + images.length) % images.length;
 			scrollThumbnails(prevIndex);
 			return prevIndex;
 		});
-	};
+	}, [scrollThumbnails, images.length]);
 
 	// autoscroller
 	useEffect(() => {
@@ -68,7 +68,24 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 	useEffect(() => {
 		if (!thumbsRef.current || images.length <= 1) return;
 		scrollThumbnails(current);
-	}, [current, images.length]);
+	}, [current, images.length, scrollThumbnails]);
+
+	const mapImagesToElem = useCallback(() => {
+		return images.map((img, index) => (
+			<Link key={img.id} href={`/screenshot/${images[current].id}`}>
+				<Image
+					src={img.src}
+					alt={img.alt || `Screenshot ${index + 1}`}
+					width={350}
+					height={250}
+					priority
+					className={`absolute top-0 left-0 h-full max-w-[350px] 
+									object-contain transition-opacity duration-500 ease-in-out 
+									${current === index ? "opacity-100" : "opacity-0"}`}
+				/>
+			</Link>
+		));
+	}, [current, images]);
 
 	return (
 		<div className="ml-[50%]">
@@ -82,22 +99,7 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 					onMouseLeave={() => setPaused(false)}
 				>
 					{hasImages ? (
-						<div className="relative h-full w-full">
-							{images.map((img, index) => (
-								<Link key={img.id} href={`/screenshot/${img.id}`}>
-									<Image
-										src={img.src}
-										alt={img.alt || `Screenshot ${index + 1}`}
-										width={350}
-										height={250}
-										priority
-										className={`absolute top-0 left-0 h-full max-w-[350px] 
-									object-contain transition-opacity duration-500 ease-in-out 
-									${current === index ? "opacity-100" : "opacity-0"}`}
-									/>
-								</Link>
-							))}
-						</div>
+						<div className="relative h-full w-full">{mapImagesToElem()}</div>
 					) : (
 						<div className="text-center text-gray-500 p-6">
 							No Screenshots for this game... Why not add one?
