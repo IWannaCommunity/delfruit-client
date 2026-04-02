@@ -55,6 +55,7 @@ export default function Search(): JSX.Element {
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 	const [initialized, setInitialized] = useState(false);
+	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
 	const router = useRouter();
 
@@ -215,16 +216,21 @@ export default function Search(): JSX.Element {
 		]);
 
 	const loadMore = async () => {
+		if (isLoadingMore) return;
+		setIsLoadingMore(true);
+
 		const nextPage = page + 1;
 		const moreGames = await fetchGames(nextPage, sortConfig);
 
 		if (moreGames.length === 0) {
 			setHasMore(false);
+			setIsLoadingMore(false);
 			return;
 		}
 
 		setGames((prev) => dedupeArray([...prev, ...moreGames], (g) => g.id));
 		setPage(nextPage);
+		setIsLoadingMore(false);
 	};
 
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(
@@ -302,7 +308,7 @@ export default function Search(): JSX.Element {
 				{(searchCreatedFrom || searchCreatedTo) && (
 					<>
 						<span className="ml-[1em]">
-							Created between: {searchCreatedFrom === "" ? "any" : searchCreatedFrom}`
+							Created between: {searchCreatedFrom === "" ? "any" : searchCreatedFrom}
 						</span>
 						<span> - </span>
 						<span className="ml-1">
@@ -356,10 +362,16 @@ export default function Search(): JSX.Element {
 					onSortChange={setSortConfig}
 				/>
 				{/* Infinite scroll trigger */}
-				{loaderRef && hasMore ? (
-					<div ref={loaderRef} className="h-10" />
+				{hasMore ? (
+					<div ref={loaderRef} className="flex justify-center items-center h-16">
+						{isLoadingMore && (
+							<div className="animate-pulse text-blue-500">Loading...</div>
+						)}
+					</div>
 				) : (
-					<span>No more results.</span>
+					<div ref={loaderRef} className="flex justify-center items-center h-16">
+						<span>No more results.</span>
+					</div>
 				)}
 			</div>
 		</div>
