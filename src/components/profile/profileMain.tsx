@@ -31,21 +31,21 @@ export default function ProfileMain({ user }: UserInfoProps): JSX.Element {
 			{user.twitchLink && (
 				<>
 					<Image src="/images/twitch16.png" alt="" width={16} height={16}/>
-					<a className="ml-2" href={user.twitchLink}>Twitch Stream</a>
+					<a className="ml-2" href={`https://www.twitch.tv/${user.twitchLink}`}>Twitch Stream</a>
 					<br/>
 				</>
 			)}
 			{user.youtubeLink && (
 				<>
 					<Image src="/images/youtube16.png" alt="" width={16} height={16}/>
-					<a className="ml-2" href={user.youtubeLink}>Youtube Channel</a>
+					<a className="ml-2" href={`https://www.youtube.com/@${user.youtubeLink}`}>Youtube Channel</a>
 					<br/>
 				</>
 			)}
 			{user.twitterLink && (
 				<>
 					<Image src="/images/twitter16.png" alt="" width={16} height={16}/>
-					<a className="ml-2" href={user.twitterLink}>Twittter</a>
+					<a className="ml-2" href={`https://www.x.com/${user.twitterLink}`}>Twittter</a>
 					<br/>
 				</>
 			)}
