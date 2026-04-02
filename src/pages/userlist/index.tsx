@@ -49,6 +49,7 @@ export default function UserList(): AnyElem {
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 	const [initialized, setInitialized] = useState(false);
+	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
 	const router = useRouter();
 
@@ -58,7 +59,7 @@ export default function UserList(): AnyElem {
 				undefined, // authorization
 				undefined, // name
 				undefined, // following
-				undefined, // banned
+				false, // banned
 				requestedPage, // page number
 				50, // limit
 				sort?.column, // orderCol
@@ -103,16 +104,21 @@ export default function UserList(): AnyElem {
 	}, [sortConfig, router.isReady, fetchUsers]);
 
 	const loadMore = async () => {
+		if (isLoadingMore) return;
+		setIsLoadingMore(true);
+
 		const nextPage = page + 1;
 		const moreUsers = await fetchUsers(nextPage, sortConfig);
 
 		if (moreUsers.length === 0) {
 			setHasMore(false);
+			setIsLoadingMore(false);
 			return;
 		}
 
 		setUsers((prev) => dedupeArray([...prev, ...moreUsers], (u) => u.id));
 		setPage(nextPage);
+		setIsLoadingMore(false);
 	};
 
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(
@@ -136,10 +142,16 @@ export default function UserList(): AnyElem {
 						onSortChange={setSortConfig}
 					/>
 					{/* Infinite scroll trigger */}
-					{loaderRef && hasMore ? (
-						<div ref={loaderRef} className="h-10" />
+					{hasMore ? (
+						<div ref={loaderRef} className="flex justify-center items-center h-16">
+							{isLoadingMore && (
+								<div className="animate-pulse text-blue-500">Loading...</div>
+							)}
+						</div>
 					) : (
-						<span>No more results.</span>
+						<div ref={loaderRef} className="flex justify-center items-center h-16">
+							<span>No more results.</span>
+						</div>
 					)}
 				</div>
 				<Footer />
