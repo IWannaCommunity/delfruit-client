@@ -124,20 +124,21 @@ export default function Game(): AnyElem {
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
-		if (error || details.removed) {
-			<>
-				<h2>404 Page Not Found!</h2>
-				<p>The page you accessed doesnt exist! How about a random fangame since you're lost?</p>
-				<p>
-					<Link href="/game/imfeelinlucky">Give me a random fangame!</Link>
-				</p>
-				<p>
-					<Link href="/">Return home</Link>
-				</p>
-			</>
+		if (error || details.removed || (!loading && !details)) {
+			return (
+				<>
+					<h2>404 Page Not Found!</h2>
+					<p>The page you accessed doesnt exist! How about a random fangame since you're lost?</p>
+					<p>
+						<Link href="/game/imfeelinlucky">Give me a random fangame!</Link>
+					</p>
+					<p>
+						<Link href="/">Return home</Link>
+					</p>
+				</>
+			)
 		}
-		if (!details) return null;
-
+		
 		return (
 			<>
 				{(() => {
