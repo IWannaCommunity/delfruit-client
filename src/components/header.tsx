@@ -90,9 +90,9 @@ export default function Header(): AnyElem {
 				</a>
 				<a
 					className="navbutton2 mr-1"
-					href="https://www.twitch.tv/team/thewannabes"
+					href="https://www.twitch.tv/directory/category/i-wanna-be-the-guy"
 				>
-					Twitch Team
+					Twitch Streams
 				</a>
 				<a className="navbutton2" href="https://www.fangam.es/intro">
 					Intro
