@@ -8,6 +8,7 @@ import Carousel from "@/components/game/carousel";
 import GameInfo from "@/components/game/gameInfo";
 import GameReviews from "@/components/game/gameReviews";
 import Header from "@/components/header";
+import Review from "@/components/review";
 import Whitespace from "@/components/whitespace";
 import { API } from "@/utils/api";
 import type { AnyElem } from "@/utils/element";
@@ -65,6 +66,7 @@ export default function Game(): AnyElem {
 				difficulty:
 					game.difficulty === null ? null : Number(game.difficulty).toFixed(1),
 				urlSpdrn: game.urlSpdrn,
+				ownerBio: game.ownerBio,
 				tags: game.tags,
 				reviews:
 					game.reviews?.map((review) => ({
@@ -150,6 +152,26 @@ export default function Game(): AnyElem {
 					<GameInfo game={details} onGameUpdated={fetchDetails} />
 					<Carousel images={images} />
 				</div>
+				{details.ownerBio && !details.ownerBio.removed && (
+					<div>
+						<h2 className="clear-both">Creator's Comments:</h2>
+						<Review
+							id={details.ownerBio.id}
+							user_id={details.ownerBio.user_id}
+							game_id={details.ownerBio.game_id}
+							rating={details.ownerBio.rating}
+							difficulty={details.ownerBio.difficulty}
+							comment={details.ownerBio.comment}
+							date_created={formatDate(new Date(details.ownerBio.date_created))}
+							removed={details.ownerBio.removed}
+							user_name={details.ownerBio.user_name}
+							game_name={details.ownerBio.game_name}
+							like_count={details.ownerBio.like_count}
+							owner_review={details.ownerBio.owner_review}
+							tags={details.ownerBio.tags}
+						/>
+					</div>
+				)}
 				<GameReviews reviews={details.reviews} />
 			</>
 		);
