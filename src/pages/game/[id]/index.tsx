@@ -137,8 +137,8 @@ export default function Game(): AnyElem {
 									if (randomGame?.id) {
 										router.push(`/game/${randomGame.id}?random=1`);
 									}
-								} catch (err) {
-									console.error(err);
+								} catch {
+									// aborted
 								}
 							}}
 						>
@@ -168,8 +168,8 @@ export default function Game(): AnyElem {
 									if (randomGame?.id) {
 										router.replace(`/game/${randomGame.id}?random=1`);
 									}
-								} catch (err) {
-									console.error(err);
+								} catch {
+									// aborted
 								}
 							}}
 						>
