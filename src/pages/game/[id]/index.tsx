@@ -9,7 +9,6 @@ import GameInfo from "@/components/game/gameInfo";
 import GameReviews from "@/components/game/gameReviews";
 import Header from "@/components/header";
 import Review from "@/components/review";
-import Whitespace from "@/components/whitespace";
 import { API } from "@/utils/api";
 import type { AnyElem } from "@/utils/element";
 import { formatDate } from "@/utils/formatDate";

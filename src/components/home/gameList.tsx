@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Game, { type GameProps } from "@/components/game";
 import { API } from "@/utils/api";
@@ -9,6 +10,8 @@ export default function GameList(): JSX.Element {
 	const [count, setCount] = useState<number>(0);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+
+	const router = useRouter();
 
 	useEffect(() => {
 		setLoading(true);
@@ -123,9 +126,24 @@ export default function GameList(): JSX.Element {
 							</Link>
 						</td>
 						<td className="!text-center">
-							<Link className="text-base" href="/game/imfeelinlucky">
+							<a
+								href="#"
+								onClick={async (e) => {
+									e.preventDefault();
+									try {
+										const resp = await API.composite().getGameCompositeAll("random");
+										const randomGame = resp.data;
+
+										if (randomGame?.id) {
+											router.push(`/game/${randomGame.id}?random=1`);
+										}
+									} catch (err) {
+										console.error(err);
+									}
+								}}
+							>
 								Random Game!
-							</Link>
+							</a>
 						</td>
 						<td className="!text-center">
 							<Link className="text-base" href="/userlist">
