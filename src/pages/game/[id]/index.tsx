@@ -2,7 +2,7 @@ import type { GameExt } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Footer from "@/components/footer";
 import Carousel from "@/components/game/carousel";
 import GameInfo from "@/components/game/gameInfo";
@@ -15,7 +15,7 @@ import { formatDate } from "@/utils/formatDate";
 import { makeScrnshotURL } from "@/utils/url";
 
 export default function Game(): AnyElem {
-	const [details, setDetails] = useState<GameExt>(null);
+	const [details, setDetails] = useState<GameExt | null>(null);
 	const [images, setImages] = useState<
 		Array<{ id: number; src: string; alt: string; user_name: string }>
 	>([]);
@@ -120,7 +120,7 @@ export default function Game(): AnyElem {
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
-		if (error || details.removed || (!loading && !details)) {
+		if (error || !details || details.removed) {
 			return (
 				<>
 					<h2>404 Page Not Found!</h2>
