@@ -5,6 +5,26 @@
 import reactPreset from "@bbob/preset-react/lib";
 import { useState } from "react";
 
+const VALID_BBCODE_TAGS = new Set([
+	"b", "/b",
+	"i", "/i",
+	"u", "/u",
+	"s", "/s",
+	"url", "/url",
+	"quote", "/quote",
+	"code", "/code",
+	"list", "/list",
+	"*",
+	"spoiler", "/spoiler",
+]);
+
+export function sanitizeBBCode(text: string): string {
+	return text.replace(/$$([^[$$]+)\]/g, (full, inner) => {
+		const tagName = inner.split("=")[0].trim().toLowerCase();
+		return VALID_BBCODE_TAGS.has(tagName) ? full : `[${inner}]`;
+	});
+}
+
 function Spoiler({ children }) {
 	const [open, setOpen] = useState(false);
 

@@ -6,7 +6,7 @@ import { API } from "@/utils/api";
 import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { useSessionContext } from "@/utils/hooks";
 import BBCode from "@bbob/react/lib";
-import { preset } from "@/utils/bbobPreset";
+import { preset, sanitizeBBCode } from "@/utils/bbobPreset";
 
 type ReviewProps = ReviewT & {
 	hideActions: boolean;
@@ -30,6 +30,8 @@ export default function Review({
 		expanded || !shouldTruncate
 			? props.comment
 			: props.comment.slice(0, maxLength) + "...";
+
+	const safeDisplayText = displayText ? sanitizeBBCode(displayText) : "";
 
 	function tempDisable(): void {
 		setDisabled(true);
@@ -116,7 +118,7 @@ export default function Review({
 			{props.comment !== "" && props.comment !== null && (
 				<div>
 					<div className="review-text break-words whitespace-pre-wrap">
-						<BBCode plugins={[preset()]}>{displayText}</BBCode>
+						<BBCode plugins={[preset()]}>{safeDisplayText}</BBCode>
 					</div>
 
 					{shouldTruncate && (
