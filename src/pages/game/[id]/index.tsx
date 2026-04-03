@@ -24,31 +24,26 @@ export default function Game(): AnyElem {
 	const [error, setError] = useState(false);
 
 	const router = useRouter();
-	const lucky = router.query.id === "imfeelinlucky";
-	const id = useRef(
-		Number.isNaN(Number(router.query.id)) || router.query.id === "imfeelinlucky"
-			? -1
-			: Number(router.query.id),
-	);
+	const lucky = router.query.random === "1";
+	const gameId =
+		typeof router.query.id === "string" && !Number.isNaN(Number(router.query.id))
+			? Number(router.query.id)
+			: -1;
 
 	const fetchDetails = useCallback(async () => {
 		try {
-			const resp = await (() => {
-				if (id.current !== -1) {
-					return API.composite().getGameCompositeAll(id.current);
-				}
-				return API.composite().getGameCompositeAll("random");
-			})();
+			if (gameId <= 0) {
+				setError(true);
+				return;
+			}
+
+			const resp = await API.composite().getGameCompositeAll(gameId);
 			const game = resp.data;
 
 			if (!game || !game.id) {
 				setError(true);
 				return;
 			}
-
-			// prevent the app from re-fetching a new game when randoming
-			// and a user event action occurs
-			id.current = game.id;
 
 			const gameProps: GameExt = {
 				id: game.id,
@@ -91,7 +86,7 @@ export default function Game(): AnyElem {
 			};
 
 			const carouselProps =
-				game.screenshots.map((scrnShot) => ({
+				game.screenshots?.map((scrnShot) => ({
 					id: scrnShot.id,
 					src: makeScrnshotURL(scrnShot.gameId, scrnShot.id).toString(),
 					alt: "",
@@ -100,6 +95,7 @@ export default function Game(): AnyElem {
 
 			setDetails(gameProps);
 			setImages(carouselProps);
+			setError(false);
 		} catch (err: any) {
 			if (err.response?.status === 404) {
 				setError(true);
@@ -107,20 +103,21 @@ export default function Game(): AnyElem {
 		} finally {
 			setLoading(false);
 		}
-	}, [id]);
+	}, [gameId]);
 
 	useEffect(() => {
 		if (!router.isReady) return;
-		if (
-			router.query.id !== "imfeelinlucky" &&
-			(isNaN(id.current) || id.current <= 0)
-		) {
+
+		setLoading(true);
+
+		if (gameId <= 0) {
 			setError(true);
 			setLoading(false);
 			return;
 		}
+
 		fetchDetails();
-	}, [id, router.isReady, fetchDetails, router.query.id]);
+	}, [router.isReady, gameId, fetchDetails]);
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
@@ -130,7 +127,24 @@ export default function Game(): AnyElem {
 					<h2>404 Page Not Found!</h2>
 					<p>The page you accessed doesnt exist! How about a random fangame since you're lost?</p>
 					<p>
-						<Link href="/game/imfeelinlucky">Give me a random fangame!</Link>
+						<a
+							href="#"
+							onClick={async (e) => {
+								e.preventDefault();
+								try {
+									const resp = await API.composite().getGameCompositeAll("random");
+									const randomGame = resp.data;
+
+									if (randomGame?.id) {
+										router.push(`/game/${randomGame.id}?random=1`);
+									}
+								} catch (err) {
+									console.error(err);
+								}
+							}}
+						>
+							Give me a random fangame!
+						</a>
 					</p>
 					<p>
 						<Link href="/">Return home</Link>
@@ -141,25 +155,29 @@ export default function Game(): AnyElem {
 		
 		return (
 			<>
-				{(() => {
-					if (lucky) {
-						return (
-							<h2>
-								You Randomed:{" "}
-								<a
-									onClick={(e) => {
-										e.preventDefault();
-										router.reload();
-									}}
-								>
-									(Reroll)
-								</a>
-								<Whitespace />
-								<Link href={`/game/${id.current}`}>(Current Game)</Link>
-							</h2>
-						);
-					}
-				})()}
+				{lucky && (
+					<h2>
+						You Randomed:{" "}
+						<a
+							href="#"
+							onClick={async (e) => {
+								e.preventDefault();
+								try {
+									const resp = await API.composite().getGameCompositeAll("random");
+									const randomGame = resp.data;
+
+									if (randomGame?.id) {
+										router.replace(`/game/${randomGame.id}?random=1`);
+									}
+								} catch (err) {
+									console.error(err);
+								}
+							}}
+						>
+							(Reroll)
+						</a>
+					</h2>
+				)}
 				<div className="!w-full">
 					<GameInfo game={details} onGameUpdated={fetchDetails} />
 					<Carousel images={images} />
@@ -192,7 +210,7 @@ export default function Game(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>{`${details?.name} - Delicious Fruit`}</title>
+				<title>{details?.name ? `${details.name} - Delicious Fruit` : "Delicious Fruit"}</title>
 			</Head>
 			<div id="container">
 				<Header />
