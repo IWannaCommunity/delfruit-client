@@ -21,7 +21,7 @@ const VALID_BBCODE_TAGS = new Set([
 export function sanitizeBBCode(text: string): string {
 	return text.replace(/$$([^[$$]+)\]/g, (full, inner) => {
 		const tagName = inner.split("=")[0].trim().toLowerCase();
-		return VALID_BBCODE_TAGS.has(tagName) ? full : `［${inner}］`;
+		return VALID_BBCODE_TAGS.has(tagName) ? full : `&#91;${inner}&#93;`;
 	});
 }
 
