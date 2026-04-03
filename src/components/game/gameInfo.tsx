@@ -116,7 +116,9 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 			<h1 className="break-words">{game.name}</h1>
 
 			<h2 id="creator-label" className="mb-[13px]">
-				<span>Creator: </span>
+				<span>
+					{game.author.length === 1 ? "Creator: " : "Creators: "}
+				</span>
 				{game.author.length > 0 &&
 					game.author.map((author, i, arr) => {
 						const trimmed = author.trim();
