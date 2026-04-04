@@ -188,8 +188,8 @@ export default function Game(): AnyElem {
 							id={details.ownerBio.id}
 							user_id={details.ownerBio.user_id}
 							game_id={details.ownerBio.game_id}
-							rating={details.ownerBio.rating}
-							difficulty={details.ownerBio.difficulty}
+							rating={details.ownerBio.rating === null ? null : Number(details.ownerBio.rating / 10).toFixed(1)}
+							difficulty={details.ownerBio.difficulty === null ? null : Number(details.ownerBio.difficulty).toFixed(1)}
 							comment={details.ownerBio.comment}
 							date_created={formatDate(new Date(details.ownerBio.date_created))}
 							removed={details.ownerBio.removed}
