@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import Tag from "@/components/game/tag";
 import { API } from "@/utils/api";
-import { preset, sanitizeBBCode } from "@/utils/bbobPreset";
+import { preset } from "@/utils/bbobPreset";
 import { useSessionContext } from "@/utils/hooks";
 
 type ReviewProps = ReviewT & {
@@ -29,8 +29,6 @@ export default function Review({
 		expanded || !shouldTruncate
 			? props.comment
 			: props.comment.slice(0, maxLength) + "...";
-
-	const safeDisplayText = displayText ? sanitizeBBCode(displayText) : "";
 
 	function tempDisable(): void {
 		setDisabled(true);
@@ -134,7 +132,7 @@ export default function Review({
 								],
 							}}
 						>
-							{safeDisplayText}
+							{displayText}
 						</BBCode>
 					</div>
 

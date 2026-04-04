@@ -2,7 +2,7 @@ import { News as NewsT } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
 import { useState } from "react";
 import BBCode from "@bbob/react/lib";
-import { preset, sanitizeBBCode } from "@/utils/bbobPreset";
+import { preset } from "@/utils/bbobPreset";
 
 export default function News(props: NewsT): JSX.Element {
 
@@ -16,7 +16,6 @@ export default function News(props: NewsT): JSX.Element {
 		expanded || !shouldTruncate
 			? props.news
 			: props.news.slice(0, maxLength) + "...";
-	const safeDisplayText = displayText ? sanitizeBBCode(displayText) : "";
 
 	return (
 		<div className="!relative !p-[0.5em] !bg-[#e8e8e8]">
@@ -30,7 +29,25 @@ export default function News(props: NewsT): JSX.Element {
 			{props.news !== "" && props.news !== null && (
 				<div>
 					<div className="break-words whitespace-pre-wrap">
-						<BBCode plugins={[preset()]}>{safeDisplayText}</BBCode>
+						<BBCode
+							plugins={[preset()]}
+							options={{
+								onlyAllowTags: [
+									"b",
+									"i",
+									"u",
+									"s",
+									"url",
+									"quote",
+									"code",
+									"list",
+									"*",
+									"spoiler",
+								],
+							}}
+						>
+							{displayText}
+						</BBCode>
 					</div>
 
 					{shouldTruncate && (
