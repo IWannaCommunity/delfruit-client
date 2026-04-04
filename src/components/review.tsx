@@ -1,12 +1,11 @@
-import Tag from "@/components/game/tag";
-import Link from "next/link";
-import React from "react";
-import { useState, useEffect } from "react";
-import { API } from "@/utils/api";
-import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
-import { useSessionContext } from "@/utils/hooks";
 import BBCode from "@bbob/react/lib";
+import type { Review as ReviewT } from "delfruit-swagger-cg-sdk";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import Tag from "@/components/game/tag";
+import { API } from "@/utils/api";
 import { preset, sanitizeBBCode } from "@/utils/bbobPreset";
+import { useSessionContext } from "@/utils/hooks";
 
 type ReviewProps = ReviewT & {
 	hideActions: boolean;
@@ -118,7 +117,25 @@ export default function Review({
 			{props.comment !== "" && props.comment !== null && (
 				<div>
 					<div className="review-text break-words whitespace-pre-wrap">
-						<BBCode plugins={[preset()]}>{safeDisplayText}</BBCode>
+						<BBCode
+							plugins={[preset()]}
+							options={{
+								onlyAllowTags: [
+									"b",
+									"i",
+									"u",
+									"s",
+									"url",
+									"quote",
+									"code",
+									"list",
+									"*",
+									"spoiler",
+								],
+							}}
+						>
+							{safeDisplayText}
+						</BBCode>
 					</div>
 
 					{shouldTruncate && (
@@ -137,7 +154,9 @@ export default function Review({
 				<div className="!mb-[0px]">
 					<span> Tagged as: </span>
 					{props.tags.map((tag: any) => {
-						return <Tag key={tag.id} id={tag.id} name={tag.name} count={null} />;
+						return (
+							<Tag key={tag.id} id={tag.id} name={tag.name} count={null} />
+						);
 					})}
 				</div>
 			)}
