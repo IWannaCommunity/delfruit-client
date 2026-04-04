@@ -52,7 +52,7 @@ export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 			const res = await API.users().getUsersReviews(
 				user.id, // id
 				requestedPage, // page number
-				10, // limit
+				50, // limit
 				sort?.column, // orderCol
 				sort?.direction, // orderDir
 			);
@@ -78,7 +78,7 @@ export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 			if (!isCancelled) {
 				setRatings(firstPage);
 				setPage(0);
-				setHasMore(firstPage.length === 50);
+				setHasMore(firstPage.length === 10);
 				setInitialized(true);
 			}
 		};

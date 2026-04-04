@@ -14,6 +14,7 @@ export default function ProfileReviews({ user }: UserInfoProps): JSX.Element {
 	const [reviews, setReviews] = useState<ReviewT[]>([]);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
+	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
 	const fetchReviews = useCallback(
 		async (requestedPage: number, userID: number): Promise<ReviewT[]> => {
@@ -63,16 +64,21 @@ export default function ProfileReviews({ user }: UserInfoProps): JSX.Element {
 	}, [fetchReviews, user.id]);
 
 	const loadMore = async () => {
+		if (isLoadingMore) return;
+		setIsLoadingMore(true);
+
 		const nextPage = page + 1;
 		const moreReviews = await fetchReviews(nextPage, user.id);
 
 		if (moreReviews.length === 0) {
 			setHasMore(false);
+			setIsLoadingMore(false);
 			return;
 		}
 
 		setReviews((prev) => dedupeArray([...prev, ...moreReviews], (r) => r.id));
 		setPage(nextPage);
+		setIsLoadingMore(false);
 	};
 
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(() => {
@@ -103,10 +109,16 @@ export default function ProfileReviews({ user }: UserInfoProps): JSX.Element {
 				);
 			})}
 			{/* Infinite scroll trigger */}
-			{loaderRef && hasMore ? (
-				<div ref={loaderRef} className="h-10" />
+			{hasMore ? (
+				<div ref={loaderRef} className="flex justify-center items-center h-16">
+					{isLoadingMore && (
+						<div className="animate-pulse text-blue-500">Loading...</div>
+					)}
+				</div>
 			) : (
-				<span>No more reviews.</span>
+				<div ref={loaderRef} className="flex justify-center items-center h-16">
+					<span>No more results.</span>
+				</div>
 			)}
 		</div>
 	);
