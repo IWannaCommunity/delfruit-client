@@ -45,13 +45,14 @@ export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 	const [initialized, setInitialized] = useState(false);
+	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
 	const fetchRatings = useCallback(
 		async (requestedPage: number, sort: SortConfig<Rating> | null): Promise<Rating[]> => {
 			const res = await API.users().getUsersReviews(
 				user.id, // id
 				requestedPage, // page number
-				50, // limit
+				10, // limit
 				sort?.column, // orderCol
 				sort?.direction, // orderDir
 			);
@@ -90,16 +91,21 @@ export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 	}, [sortConfig, fetchRatings]);
 
 	const loadMore = async () => {
+		if (isLoadingMore) return;
+		setIsLoadingMore(true);
+
 		const nextPage = page + 1;
 		const moreRatings = await fetchRatings(nextPage, sortConfig);
 
 		if (moreRatings.length === 0) {
 			setHasMore(false);
+			setIsLoadingMore(false);
 			return;
 		}
 
 		setRatings((prev) => dedupeArray([...prev, ...moreRatings], (r) => r.id));
 		setPage(nextPage);
+		setIsLoadingMore(false);
 	};
 
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(
@@ -118,10 +124,16 @@ export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 					onSortChange={setSortConfig}
 				/>
 				{/* Infinite scroll trigger */}
-				{loaderRef && hasMore ? (
-					<div ref={loaderRef} className="h-10" />
+				{hasMore ? (
+					<div ref={loaderRef} className="flex justify-center items-center h-16">
+						{isLoadingMore && (
+							<div className="animate-pulse text-blue-500">Loading...</div>
+						)}
+					</div>
 				) : (
-					<span>No more results.</span>
+					<div ref={loaderRef} className="flex justify-center items-center h-16">
+						<span>No more results.</span>
+					</div>
 				)}
 			</div>
 		</div>
