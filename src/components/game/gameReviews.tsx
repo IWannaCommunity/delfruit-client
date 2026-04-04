@@ -20,6 +20,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
 	const [initialized, setInitialized] = useState(props.reviews.length > 0);
+	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
 	const router = useRouter();
 	const id = Number(router.query.id);
@@ -62,16 +63,21 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const loadMore = useCallback(async () => {
 		if (!router.isReady) return;
 
+		if (isLoadingMore) return;
+		setIsLoadingMore(true);
+
 		const nextPage = page + 1;
 		const moreReviews = await fetchReviews(nextPage);
 
 		if (moreReviews.length === 0) {
 			setHasMore(false);
+			setIsLoadingMore(false);
 			return;
 		}
 
 		setReviews((prev) => dedupeArray([...prev, ...moreReviews], (r) => r.id));
 		setPage(nextPage);
+		setIsLoadingMore(false);
 		setInitialized(true);
 	}, [fetchReviews, page, router.isReady]);
 
@@ -123,10 +129,16 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 				})}
 			</div>
 			{/* Infinite scroll trigger */}
-			{loaderRef && hasMore ? (
-				<div ref={loaderRef} className="h-10" />
+			{hasMore ? (
+				<div ref={loaderRef} className="flex justify-center items-center h-16">
+					{isLoadingMore && (
+						<div className="animate-pulse text-blue-500">Loading...</div>
+					)}
+				</div>
 			) : (
-				<span>No more reviews.</span>
+				<div ref={loaderRef} className="flex justify-center items-center h-16">
+					<span>No more results.</span>
+				</div>
 			)}
 		</div>
 	);

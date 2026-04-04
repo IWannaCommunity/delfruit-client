@@ -78,7 +78,7 @@ export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 			if (!isCancelled) {
 				setRatings(firstPage);
 				setPage(0);
-				setHasMore(firstPage.length === 10);
+				setHasMore(firstPage.length === 50);
 				setInitialized(true);
 			}
 		};
