@@ -56,9 +56,9 @@ export default function Game(): AnyElem {
 					? formatDate(new Date(game.dateCreated))
 					: null,
 				rating:
-					game.rating === null ? null : Number(game.rating / 10).toFixed(1),
+					game.ratings.rating === -1 ? null : Number(game.ratings.rating / 10).toFixed(1),
 				difficulty:
-					game.difficulty === null ? null : Number(game.difficulty).toFixed(1),
+					game.ratings.difficulty === -1 ? null : Number(game.ratings.difficulty).toFixed(1),
 				urlSpdrn: game.urlSpdrn,
 				ownerBio: game.ownerBio,
 				tags: game.tags,
