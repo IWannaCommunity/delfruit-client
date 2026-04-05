@@ -1,7 +1,7 @@
 import BBCode from "@bbob/react/lib";
 import type { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Tag from "@/components/game/tag";
 import { API } from "@/utils/api";
 import { preset } from "@/utils/bbobPreset";
@@ -16,24 +16,35 @@ export default function Review({
 	...props
 }: ReviewProps): JSX.Element {
 	const [expanded, setExpanded] = useState(false);
+	const [shouldTruncate, setShouldTruncate] = useState(false);
 	const [session] = useSessionContext();
 	const [liked, setLiked] = useState(false);
 	const [likeCount, setLikeCount] = useState(props.like_count);
 	const [disabled, setDisabled] = useState(false);
-
-	const maxLength = 500;
-	const shouldTruncate = props.comment
-		? props.comment.length > maxLength
-		: false;
-	const displayText =
-		expanded || !shouldTruncate
-			? props.comment
-			: props.comment.slice(0, maxLength) + "...";
+	
+	const reviewTextRef = useRef<HTMLDivElement | null>(null);
+	const collapsedHeight = 120;
 
 	function tempDisable(): void {
 		setDisabled(true);
 		setTimeout(() => setDisabled(false), 1000);
 	}
+
+	useEffect(() => {
+		const el = reviewTextRef.current;
+		if (!el || !props.comment) {
+			setShouldTruncate(false);
+			return;
+		}
+
+		const measure = () => {
+			setShouldTruncate(el.scrollHeight > collapsedHeight);
+		};
+
+		measure();
+		window.addEventListener("resize", measure);
+		return () => window.removeEventListener("resize", measure);
+	}, [props.comment]);
 
 	useEffect(() => {
 		const checkLiked = async () => {
@@ -113,36 +124,60 @@ export default function Review({
 
 			{/* COMMENT */}
 			{props.comment !== "" && props.comment !== null && (
-				<div>
-					<div className="review-text break-words whitespace-pre-wrap">
-						<BBCode
-							plugins={[preset()]}
-							options={{
-								onlyAllowTags: [
-									"b",
-									"i",
-									"u",
-									"s",
-									"url",
-									"quote",
-									"code",
-									"list",
-									"*",
-									"spoiler",
-								],
-							}}
-						>
-							{displayText}
-						</BBCode>
-					</div>
+				<div
+					ref={reviewTextRef}
+					className={`review-text break-words whitespace-pre-wrap ${
+						shouldTruncate && !expanded ? "review-text2" : ""
+					}`}
+				>
+					<BBCode
+						plugins={[preset()]}
+						options={{
+							onlyAllowTags: [
+								"b",
+								"i",
+								"u",
+								"s",
+								"url",
+								"quote",
+								"code",
+								"list",
+								"*",
+								"spoiler",
+							],
+						}}
+					>
+						{props.comment}
+					</BBCode>
 
-					{shouldTruncate && (
-						<a
-							className="standalone underline cursor-pointer"
-							onClick={() => setExpanded(!expanded)}
-						>
-							{expanded ? "Show less" : "Read more"}
-						</a>
+					{shouldTruncate && !expanded && (
+						<p className="read-more">
+							<a
+								href="#"
+								className="button"
+								onClick={(e) => {
+									e.preventDefault();
+									setExpanded(true);
+								}}
+							>
+								Read more
+							</a>
+						</p>
+					)}
+
+					{shouldTruncate && expanded && (
+						<div className="mt-2">
+							<a
+								href="#"
+								className="standalone underline cursor-pointer"
+								onClick={(e) => {
+									e.preventDefault();
+									setExpanded(false);
+								}}
+							>
+								Show less
+							</a>
+						</div>
 					)}
 				</div>
 			)}

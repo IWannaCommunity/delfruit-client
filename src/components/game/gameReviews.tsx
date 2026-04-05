@@ -79,7 +79,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 		setPage(nextPage);
 		setIsLoadingMore(false);
 		setInitialized(true);
-	}, [fetchReviews, page, router.isReady]);
+	}, [fetchReviews, page, router.isReady, isLoadingMore]);
 
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(
 		() => { if (hasMore) loadMore(); },
