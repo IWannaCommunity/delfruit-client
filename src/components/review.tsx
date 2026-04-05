@@ -1,7 +1,7 @@
 import BBCode from "@bbob/react/lib";
 import type { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Tag from "@/components/game/tag";
 import { API } from "@/utils/api";
 import { preset } from "@/utils/bbobPreset";
@@ -21,7 +21,7 @@ export default function Review({
 	const [liked, setLiked] = useState(false);
 	const [likeCount, setLikeCount] = useState(props.like_count);
 	const [disabled, setDisabled] = useState(false);
-	
+
 	const reviewTextRef = useRef<HTMLDivElement | null>(null);
 	const collapsedHeight = 120;
 
@@ -144,6 +144,7 @@ export default function Review({
 								"list",
 								"*",
 								"spoiler",
+								"attribute",
 							],
 						}}
 					>
