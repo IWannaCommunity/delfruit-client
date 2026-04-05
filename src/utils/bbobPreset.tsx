@@ -3,17 +3,59 @@
 */
 
 import reactPreset from "@bbob/preset-react/lib";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
-function Spoiler({ children }) {
+function Spoiler({ children }: { children: React.ReactNode }) {
 	const [open, setOpen] = useState(false);
+	const spoilerRef = useRef<HTMLSpanElement | null>(null);
 
-	return open ? (
-		<div>{children}</div>
-	) : (
-		<span className="reveal" onClick={() => setOpen(true)}>
-			Reveal Spoiler
-		</span>
+	function handleReveal() {
+		setOpen(true);
+
+		requestAnimationFrame(() => {
+			const spoilerEl = spoilerRef.current;
+			if (!spoilerEl) return;
+
+			const reviewText = spoilerEl.closest(".review-text") as HTMLElement | null;
+			if (!reviewText) return;
+
+			if (reviewText.classList.contains("review-text2")) {
+				reviewText.style.height = `${reviewText.offsetHeight}px`;
+				reviewText.style.maxHeight = "9999px";
+
+				requestAnimationFrame(() => {
+					reviewText.style.height = `${reviewText.scrollHeight}px`;
+				});
+			}
+		});
+	}
+
+	return (
+		<>
+			<span
+				className="reveal"
+				onClick={handleReveal}
+				style={{
+					display: open ? "none" : "inline",
+					opacity: open ? 0 : 1,
+					transition: "opacity 0.6s ease",
+				}}
+			>
+				Reveal Spoiler
+			</span>
+			<span
+				ref={spoilerRef}
+				className="spoiler"
+				style={{
+					display: "inline",
+					visibility: open ? "visible" : "hidden",
+					opacity: open ? 1 : 0,
+					transition: "opacity 2.5s ease",
+				}}
+			>
+				{children}
+			</span>
+		</>
 	);
 }
 
