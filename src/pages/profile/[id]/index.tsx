@@ -1,17 +1,18 @@
+import type { UserExt } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
-import { AnyElem } from "@/utils/element";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Footer from "@/components/footer";
+import Header from "@/components/header";
 import TabBar from "@/components/helpers/tabBar";
-import ProfileMain from "@/components/profile/profileMain";
 import ProfileActions from "@/components/profile/profileActions";
+import ProfileAdminActions from "@/components/profile/profileAdminActions";
+import ProfileFavorites from "@/components/profile/profileFavorites";
+import ProfileMain from "@/components/profile/profileMain";
 import ProfileRatings from "@/components/profile/profileRatings";
 import ProfileReviews from "@/components/profile/profileReviews";
-import ProfileAdminActions from "@/components/profile/profileAdminActions";
 import { API } from "@/utils/api";
-import { UserExt } from "delfruit-swagger-cg-sdk";
+import type { AnyElem } from "@/utils/element";
 import { formatDate } from "@/utils/formatDate";
 import { useSessionContext } from "@/utils/hooks";
 
@@ -34,20 +35,17 @@ export default function Profile(): AnyElem {
 	const router = useRouter();
 
 	const baseTabs = [
-  { label: "User Profile", value: "profile" },
-  { label: "Ratings", value: "ratings" },
-  { label: "Reviews", value: "reviews" },
-  { label: "Games", value: "games" },
-  { label: "Favorites List", value: "favorites" },
-  { label: "Clear List", value: "clearList" },
-] as const;
+		{ label: "User Profile", value: "profile" },
+		{ label: "Ratings", value: "ratings" },
+		{ label: "Reviews", value: "reviews" },
+		{ label: "Games", value: "games" },
+		{ label: "Favorites List", value: "favorites" },
+		{ label: "Clear List", value: "clearList" },
+	] as const;
 
-const tabs = session.admin
-  ? [
-      ...baseTabs,
-      { label: "Admin", value: "admin" },
-    ] as const
-  : baseTabs;
+	const tabs = session.admin
+		? ([...baseTabs, { label: "Admin", value: "admin" }] as const)
+		: baseTabs;
 
 	useEffect(() => {
 		if (!router.isReady) return;
@@ -80,7 +78,7 @@ const tabs = session.admin
 					reviewCount: user.reviewCount,
 					ratingsCount: user.ratingsCount,
 					screenshotCount: user.screenshotCount,
-					isFollowing: user.isFollowing
+					isFollowing: user.isFollowing,
 				};
 				setUser(newData);
 			} catch (err: any) {
@@ -125,12 +123,16 @@ const tabs = session.admin
 						<div hidden={activeTab !== "reviews"}>
 							{user && <ProfileReviews user={user} />}
 						</div>
-						
+
+						{/* Favorites */}
+						<div hidden={activeTab !== "favorites"}>
+							{user && <ProfileFavorites user={user} />}
+						</div>
+
 						{/* Admin */}
 						<div hidden={activeTab !== "admin"}>
 							{session.admin && user && <ProfileAdminActions user={user} />}
 						</div>
-
 					</div>
 				</div>
 			</>
@@ -150,4 +152,3 @@ const tabs = session.admin
 		</div>
 	);
 }
-
