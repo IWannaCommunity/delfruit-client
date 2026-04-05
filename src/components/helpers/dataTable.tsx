@@ -45,7 +45,7 @@ export function DataTable<T extends { id: number | string }>({
 						{columns.map(({ key, label }) => (
 							<th
 								key={String(key)}
-								className={`cursor-pointer ${
+								className={`cursor-pointer whitespace-nowrap ${
 									sortConfig?.column === key ? "bg-[#8DBDD8]" : "bg-[#E6EEEE]"
 								} bg-right bg-no-repeat p-[4px] border border-solid border-white`}
 								style={{ backgroundImage: `url(${getSortIcon(key)})` }}
