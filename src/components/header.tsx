@@ -1,9 +1,9 @@
 import Image from "next/image";
-import type { AnyElem } from "@/utils/element";
-import { useSessionContext } from "@/utils/hooks";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import type { AnyElem } from "@/utils/element";
+import { useSessionContext } from "@/utils/hooks";
 
 export default function Header(): AnyElem {
 	const [session] = useSessionContext();
@@ -82,6 +82,9 @@ export default function Header(): AnyElem {
 				</p>
 			</div>
 			<div className="!clear-both">
+				<Link className="navbutton2 mr-1" href="/news">
+					News
+				</Link>
 				<Link className="navbutton2 mr-1" href="/">
 					Fangames
 				</Link>
