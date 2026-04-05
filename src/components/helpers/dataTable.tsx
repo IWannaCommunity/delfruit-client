@@ -45,10 +45,14 @@ export function DataTable<T extends { id: number | string }>({
 						{columns.map(({ key, label }) => (
 							<th
 								key={String(key)}
-								className={`cursor-pointer whitespace-nowrap pt-[4px] pb-[4px] pl-[4px] pr-[29px] ${
+								className={`cursor-pointer whitespace-nowrap ${
 									sortConfig?.column === key ? "bg-[#8DBDD8]" : "bg-[#E6EEEE]"
 								} bg-right bg-no-repeat border border-solid border-white`}
-								style={{ backgroundImage: `url(${getSortIcon(key)})` }}
+									style={{
+										backgroundImage: `url(${getSortIcon(key)})`,
+										backgroundPosition: "right 4px center",
+										padding: "4px 29px 4px 4px"
+								}}
 								onClick={() => handleSort(key)}
 							>
 								{label}
