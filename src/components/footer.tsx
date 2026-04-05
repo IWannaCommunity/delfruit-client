@@ -13,7 +13,9 @@ export default function Footer(): AnyElem {
 				<br />
 				<Link href="/thanks">Staff &amp; Notable Mentions</Link>
 				<br />
-				Powered By <Link href="/">Next.js</Link>
+				Powered By <a href="https://expressjs.com">Express</a> &{" "}
+				<a href="https://react.dev">React</a> +{" "}
+				<a href="https://nextjs.org">Next.js</a>
 			</p>
 		</div>
 	);
