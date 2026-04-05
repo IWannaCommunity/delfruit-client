@@ -33,7 +33,7 @@ export function getDifficultyDescription(value: number | null): string {
   if (value < 80) return "Veteran";
   if (value < 90) return "Expert";
   if (value < 100) return "Master";
-  if (value === 100) return "There's No Way!";
+  if (value >= 100) return "There's No Way!";
 
   return "";
 }

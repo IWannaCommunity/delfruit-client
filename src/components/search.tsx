@@ -320,11 +320,11 @@ export default function Search(): JSX.Element {
 				{(searchRatingFrom || searchRatingTo) && (
 					<>
 						<span className="ml-[1em]">
-							Rating: [{searchRatingFrom === "" ? "any" : searchRatingFrom}
+							Rating: [{searchRatingFrom === "" ? "any" : Number(searchRatingFrom)/10}
 						</span>
 						<span> - </span>
 						<span className="ml-1">
-							{searchRatingTo === "" ? "any" : searchRatingTo}]
+							{searchRatingTo === "" ? "any" : Number(searchRatingTo)/10}]
 						</span>
 						<br/>
 					</>
