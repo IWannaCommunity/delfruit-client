@@ -7,6 +7,7 @@ import Header from "@/components/header";
 import TabBar from "@/components/helpers/tabBar";
 import ProfileActions from "@/components/profile/profileActions";
 import ProfileAdminActions from "@/components/profile/profileAdminActions";
+import ProfileClears from "@/components/profile/profileClears";
 import ProfileFavorites from "@/components/profile/profileFavorites";
 import ProfileMain from "@/components/profile/profileMain";
 import ProfileRatings from "@/components/profile/profileRatings";
@@ -127,6 +128,11 @@ export default function Profile(): AnyElem {
 						{/* Favorites */}
 						<div hidden={activeTab !== "favorites"}>
 							{user && <ProfileFavorites user={user} />}
+						</div>
+
+						{/* Clears */}
+						<div hidden={activeTab !== "clearList"}>
+							{user && <ProfileClears user={user} />}
 						</div>
 
 						{/* Admin */}
