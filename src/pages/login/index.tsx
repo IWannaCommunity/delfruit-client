@@ -57,7 +57,10 @@ export default function Login(): AnyElem {
 			);
 			// HACK: since this api is hotpatched, we have to manually
 			// parse the json object
-			resp.data = JSON.parse(resp.data) as ResultAuthResponseProblem_;
+			// QUEST: but only sometimes?
+			if (typeof resp.data === "string") {
+				resp.data = JSON.parse(resp.data) as ResultAuthResponseProblem_;
+			}
 
 			Cookies.set("session", resp.data.token);
 			Cookies.set("loggedInSuccessfully", "1", {
