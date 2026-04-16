@@ -69,6 +69,8 @@ export default function Login(): AnyElem {
 			if (err.response?.status === 401) {
 				setError("Incorrect credentials");
 			} else {
+				console.error(`error: ${err}`);
+				console.error(err);
 				setError("Something went wrong");
 			}
 		}
