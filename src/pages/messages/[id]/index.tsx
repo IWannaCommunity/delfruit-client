@@ -10,6 +10,7 @@ import { useSessionContext } from "@/utils/hooks";
 import { API } from "@/utils/api";
 import { Message as MessageT } from "delfruit-swagger-cg-sdk";
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import Captcha from "@/components/captcha";
 
 export default function MessagePage(): AnyElem {
 
@@ -19,6 +20,7 @@ export default function MessagePage(): AnyElem {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [cooldown, setCooldown] = useState(0);
+	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
 	const router = useRouter();
@@ -59,6 +61,11 @@ export default function MessagePage(): AnyElem {
 
 		const lastMessage = messages[messages.length - 1];
 
+		if (!captchaToken) {
+			setError("Please complete the captcha.");
+			return;
+		}
+
 		try {
 			// Determine recipient for reply
 			let recipientId: number | undefined;
@@ -80,10 +87,15 @@ export default function MessagePage(): AnyElem {
 				subject: lastMessage.subject,
 			};
 
-			await API.messages().postMessage(newMessage, `Bearer ${session.token}`);
+			await API.messages().postMessage(
+				newMessage, 
+				`Bearer ${session.token}`,
+				captchaToken
+			);
 
 			// Reset input
 			setReplyText("");
+			setCaptchaToken("");
 			const textarea = document.querySelector<HTMLTextAreaElement>("textarea");
 			if (textarea) textarea.style.height = "auto";
 
@@ -284,10 +296,11 @@ export default function MessagePage(): AnyElem {
 							}
 						}}
 					/>
+					<Captcha onSuccess={setCaptchaToken} />
 					<button
 						onClick={handleSend}
 						type="button"
-						disabled={cooldown > 0}
+						disabled={cooldown > 0 || !captchaToken}
 						className={`styled-button-1 w-20 mb-[1em] ${cooldown > 0 ? "opacity-50" : ""}`}
 					>
 						{cooldownText}
