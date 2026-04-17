@@ -268,7 +268,7 @@ export default function Report(): AnyElem {
 						onChange={(e) => setReport(e.target.value)}
 						required
 					/>
-					<Captcha onSucess={setCaptchaToken} />
+					<Captcha onSuccess={setCaptchaToken} />
 					<input type="submit" value="Submit Report" />
 					{error && <span className="text-red-600 ml-1">{error}</span>}
 				</form>
