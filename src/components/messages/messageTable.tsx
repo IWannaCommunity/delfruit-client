@@ -50,7 +50,11 @@ export default function MessageTable(): JSX.Element {
 						}, {})
 					);
 
-				setInboxMessages(latestByThread);
+					const sortedMessages = [...latestByThread].sort(
+						(a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+					);
+
+					setInboxMessages(sortedMessages);
 
 				} else {
 					const res = await API.messages().getMessagesFromOutbox(`Bearer ${session.token}`);
@@ -68,8 +72,12 @@ export default function MessageTable(): JSX.Element {
 							return acc;
 						}, {})
 					);
+				
+					const sortedMessages = [...latestByThread].sort(
+						(a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+					);
 
-					setOutboxMessages(latestByThread);
+					setOutboxMessages(sortedMessages);
 				}
 			} catch (err) {
 				setError("Failed to fetch messages.");
