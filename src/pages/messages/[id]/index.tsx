@@ -274,37 +274,31 @@ export default function MessagePage(): AnyElem {
 
 					</div>
 				</div>
-				<div className="fixed bottom-0 left-[45em] right-[45em] bg-white border-t rounded-md mb-2 pt-4 px-2 flex items-center">
-					<textarea
-						value={replyText}
-						maxLength={2000}
-						onChange={(e) => setReplyText(e.target.value)}
-						className="flex-1 border rounded px-2 py-1 mr-2 resize-none
-						overflow-hidden text-sm leading-tight focus:outline-none
-						min-h-[28px] max-h-32"
-						rows={1}
-						placeholder="Type your reply..."
-						onInput={(e) => {
-							const el = e.currentTarget;
-							el.style.height = "auto";
-							el.style.height = el.scrollHeight + "px";
-						}}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" && !e.shiftKey) {
-								e.preventDefault();
-								handleSend();
-							}
-						}}
-					/>
-					<Captcha onSuccess={setCaptchaToken} />
-					<button
-						onClick={handleSend}
-						type="button"
-						disabled={cooldown > 0 || !captchaToken}
-						className={`styled-button-1 w-20 mb-[1em] ${cooldown > 0 ? "opacity-50" : ""}`}
-					>
-						{cooldownText}
-					</button>
+				<div className="fixed bottom-0 left-0 right-0 flex justify-center px-2">
+					<div className="w-full max-w-3xl bg-white border-t rounded-md mb-2 p-3 space-y-2">
+						
+						<div className="flex justify-center">
+							<Captcha onSuccess={setCaptchaToken} />
+						</div>
+
+						<div className="flex items-center gap-2">
+							<textarea
+								id="reply"
+								value={replyText}
+								onChange={(e) => setReplyText(e.target.value)}
+								className="flex-1 min-w-0 border rounded px-2 py-1 resize-none"
+							/>
+
+							<button
+								onClick={handleSend}
+								disabled={cooldown > 0 || !captchaToken}
+								className="styled-button-1 w-20"
+							>
+								{cooldownText}
+							</button>
+						</div>
+
+					</div>
 				</div>
 			</>
 		)
