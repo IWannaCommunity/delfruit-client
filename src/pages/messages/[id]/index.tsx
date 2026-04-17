@@ -283,10 +283,26 @@ export default function MessagePage(): AnyElem {
 
 						<div className="flex items-center gap-2">
 							<textarea
-								id="reply"
 								value={replyText}
+								placeholder="Type your reply..."
 								onChange={(e) => setReplyText(e.target.value)}
-								className="flex-1 min-w-0 border rounded px-2 py-1 resize-none"
+								className="flex-1 min-w-0 border rounded px-2 py-1 resize-none
+								overflow-y-auto text-sm leading-tight focus:outline-none
+								h-[36px] max-h-24"
+								rows={1}
+								onInput={(e) => {
+									const el = e.currentTarget;
+									el.style.height = "36px";
+									el.style.height = Math.min(el.scrollHeight, 96) + "px";
+								}}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" && !e.shiftKey) {
+										e.preventDefault();
+										if (captchaToken && cooldown === 0) {
+											handleSend();
+										}
+									}
+								}}
 							/>
 
 							<button
