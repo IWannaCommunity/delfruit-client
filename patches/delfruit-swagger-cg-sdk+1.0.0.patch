@@ -1,0 +1,13 @@
+diff --git a/node_modules/delfruit-swagger-cg-sdk/apis/lists-api.ts b/node_modules/delfruit-swagger-cg-sdk/apis/lists-api.ts
+index ddff885..bf4e448 100644
+--- a/node_modules/delfruit-swagger-cg-sdk/apis/lists-api.ts
++++ b/node_modules/delfruit-swagger-cg-sdk/apis/lists-api.ts
+@@ -18,7 +18,7 @@ import { Configuration } from '../configuration';
+ // @ts-ignore
+ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from '../base';
+ import { APIError } from '../models';
+-import { Game &amp; any } from '../models';
++import { Game } from '../models';
+ import { InlineResponse2003 } from '../models';
+ import { List } from '../models';
+ /**
