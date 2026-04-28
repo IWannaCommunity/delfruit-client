@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 
 ## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
 
-RUN npm ci && mkdir /nextjs-app && mv ./node_modules ./nextjs-app
+RUN npm ci && npm run postinstall && mkdir /nextjs-app && mv ./node_modules ./nextjs-app
 
 WORKDIR /nextjs-app
 
