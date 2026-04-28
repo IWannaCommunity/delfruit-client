@@ -9,6 +9,7 @@ import ProfileActions from "@/components/profile/profileActions";
 import ProfileAdminActions from "@/components/profile/profileAdminActions";
 import ProfileClears from "@/components/profile/profileClears";
 import ProfileFavorites from "@/components/profile/profileFavorites";
+import ProfileGames from "@/components/profile/profileGames";
 import ProfileMain from "@/components/profile/profileMain";
 import ProfileRatings from "@/components/profile/profileRatings";
 import ProfileReviews from "@/components/profile/profileReviews";
@@ -123,6 +124,11 @@ export default function Profile(): AnyElem {
 						{/* Reviews */}
 						<div hidden={activeTab !== "reviews"}>
 							{user && <ProfileReviews user={user} />}
+						</div>
+
+						{/* User Games */}
+						<div hidden={activeTab !== "games"}>
+							{user && <ProfileGames user={user} />}
 						</div>
 
 						{/* Favorites */}
