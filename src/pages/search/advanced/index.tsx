@@ -1,13 +1,24 @@
+import { isUndefined } from "lodash";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import type React from "react";
+import {
+	type ChangeEvent,
+	MouseEventHandler,
+	useCallback,
+	useEffect,
+	useState,
+} from "react";
+import { useDebouncedCallback } from "use-debounce";
 import Header from "@/components/header";
 import Whitespace from "@/components/whitespace";
 import type { AnyElem } from "@/utils/element";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
 
 export default function AdvancedSearch(): AnyElem {
 	const router = useRouter();
+
+	const [title, setTitle] = useState<string>("");
+	const [author, setAuthor] = useState<string>("");
 
 	const [specifiedRating, toggleSpecifiedRating] = useState<boolean>(false);
 	const [ratingRange, setRatingRange] = useState<[number, number]>([0, 100]);
@@ -16,11 +27,16 @@ export default function AdvancedSearch(): AnyElem {
 	const [difficultyRange, setDifficultyRange] = useState<[number, number]>([
 		0, 100,
 	]);
+
+	const [tags, setTags] = useState<string>("");
+	const [hasCleared, setHasCleared] = useState<boolean | null>(null);
+	const [hasReviewed, setHasReviewed] = useState<boolean | null>(null);
+
 	const [requireDL, setRequireDL] = useState<number | 0 | 1 | -1 | undefined>(
 		undefined,
 	);
-	const [createdFrom, setCreatedFrom] = useState<string, undefined>(undefined);
-	const [createdTo, setCreatedTo] = useState<string, undefined>(undefined);
+	const [createdFrom, setCreatedFrom] = useState<string | undefined>(undefined);
+	const [createdTo, setCreatedTo] = useState<string | undefined>(undefined);
 
 	const uiSetRatingRange = useDebouncedCallback((value) => {
 		setRatingRange(value);
@@ -106,23 +122,45 @@ export default function AdvancedSearch(): AnyElem {
 		uiSetCreatedTo,
 	]);
 
-	async function startSearch(evt: React.FormEvent<HTMLFormElement>) {
-		evt.preventDefault();
+	const startSearch = useCallback(
+		async (evt: React.FormEvent<HTMLFormElement>): Promise<void> => {
+			evt.preventDefault();
 
-		const searchParams = new URLSearchParams();
-		// TODO: set these all at once
-		specifiedRating && searchParams.set("ratingFrom", String(ratingRange[0]));
-		specifiedRating && searchParams.set("ratingTo", String(ratingRange[1]));
-		specifiedDifficulty &&
-			searchParams.set("difficultyFrom", String(difficultyRange[0]));
-		specifiedDifficulty &&
-			searchParams.set("difficultyTo", String(difficultyRange[1]));
-		requireDL && searchParams.set("hasDownload", String(requireDL));
-		createdFrom && searchParams.set("createdFrom", createdFrom);
-		createdTo && searchParams.set("createdTo", createdTo);
+			const searchParams = new URLSearchParams();
+			// TODO: set these all at once
+			title && searchParams.set("name", title);
+			specifiedRating && searchParams.set("ratingFrom", String(ratingRange[0]));
+			specifiedRating && searchParams.set("ratingTo", String(ratingRange[1]));
+			specifiedDifficulty &&
+				searchParams.set("difficultyFrom", String(difficultyRange[0]));
+			specifiedDifficulty &&
+				searchParams.set("difficultyTo", String(difficultyRange[1]));
+			author && searchParams.set("author", author);
+			tags && searchParams.set("tags", tags);
+			!isUndefined(hasCleared) && searchParams.set("cleared", hasCleared);
+			!isUndefined(hasReviewed) && searchParams.set("reviewed", hasReviewed);
+			requireDL && searchParams.set("hasDownload", String(requireDL));
+			createdFrom && searchParams.set("createdFrom", createdFrom);
+			createdTo && searchParams.set("createdTo", createdTo);
 
-		router.push(`/search?${searchParams}`);
-	}
+			router.push(`/search?${searchParams}`);
+		},
+		[
+			createdFrom,
+			createdTo,
+			difficultyRange,
+			ratingRange,
+			requireDL,
+			router,
+			specifiedDifficulty,
+			specifiedRating,
+			title,
+			author,
+			hasCleared,
+			hasReviewed,
+			tags,
+		],
+	);
 
 	return (
 		<div>
@@ -144,6 +182,9 @@ export default function AdvancedSearch(): AnyElem {
 									placeholder="I wanna be the Guy Remastered"
 									name="title"
 									defaultValue=""
+									onChange={async (evt) => {
+										setTitle(evt.currentTarget.value);
+									}}
 								/>
 							</div>
 
@@ -156,6 +197,11 @@ export default function AdvancedSearch(): AnyElem {
 									placeholder="Cherry Treehouse"
 									name="author"
 									defaultValue=""
+									onChange={async (
+										evt: ChangeEvent<HTMLInputElement>,
+									): Promise<void> => {
+										setAuthor(evt.currentTarget.value);
+									}}
 								/>
 							</div>
 
@@ -215,13 +261,20 @@ export default function AdvancedSearch(): AnyElem {
 									type="text"
 									placeholder="Needle Avoidance"
 									name="tags"
-									value=""
+									defaultValue=""
+									onChange={async (
+										evt: ChangeEvent<HTMLInputElement>,
+									): Promise<void> => {
+										setTags(evt.currentTarget.value);
+									}}
 								/>
 
-								<input type="radio" id="include" name="t_inc" value="include" />
-								<label htmlFor="include">Include</label>
-								<input type="radio" id="exclude" name="t_inc" value="exclude" />
-								<label htmlFor="exclude">Exclude</label>
+								{/*
+                                <input type="radio" id="include" name="t_inc" value="include" />
+                                <label htmlFor="include">Include</label>
+                                <input type="radio" id="exclude" name="t_inc" value="exclude" />
+                                <label htmlFor="exclude">Exclude</label>
+                                */}
 
 								<br />
 								<button type="button" id="show-tags" className="mb-[5px]">
@@ -242,7 +295,17 @@ export default function AdvancedSearch(): AnyElem {
 									Cleared by me?
 									<br />
 									<label htmlFor="clear-any">
-										<input id="clear-any" type="radio" name="clear" value="" />{" "}
+										<input
+											id="clear-any"
+											type="radio"
+											name="clear"
+											value=""
+											onClick={async (
+												_: MouseEvent<HTMLInputElement, MouseEvent>,
+											): Promise<void> => {
+												setHasCleared(void 0);
+											}}
+										/>{" "}
 										Any
 									</label>
 									<label htmlFor="clear-uncleared">
@@ -251,6 +314,9 @@ export default function AdvancedSearch(): AnyElem {
 											type="radio"
 											name="clear"
 											value="0"
+											onClick={async (_): Promise<void> => {
+												setHasCleared(false);
+											}}
 										/>{" "}
 										Not Cleared
 									</label>
@@ -260,6 +326,9 @@ export default function AdvancedSearch(): AnyElem {
 											type="radio"
 											name="clear"
 											value="1"
+											onClick={async (_): Promise<void> => {
+												setHasCleared(true);
+											}}
 										/>{" "}
 										Cleared
 									</label>
@@ -274,6 +343,9 @@ export default function AdvancedSearch(): AnyElem {
 											type="radio"
 											name="ireviewed"
 											value=""
+											onClick={async (_): Promise<void> => {
+												setHasReviewed(void 0);
+											}}
 										/>{" "}
 										Any
 									</label>
@@ -283,6 +355,9 @@ export default function AdvancedSearch(): AnyElem {
 											type="radio"
 											name="ireviewed"
 											value="0"
+											onClick={async (_): Promise<void> => {
+												setHasReviewed(false);
+											}}
 										/>{" "}
 										Not Reviewed
 									</label>
@@ -292,6 +367,9 @@ export default function AdvancedSearch(): AnyElem {
 											type="radio"
 											name="ireviewed"
 											value="1"
+											onClick={async (_): Promise<void> => {
+												setHasReviewed(true);
+											}}
 										/>{" "}
 										Reviewed
 									</label>

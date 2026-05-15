@@ -1,218 +1,218 @@
 import Cookies from "js-cookie";
 import jwt from "jsonwebtoken";
 import {
-    createContext,
-    type Dispatch,
-    type ReactNode,
-    type SetStateAction,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
+	createContext,
+	type Dispatch,
+	type ReactNode,
+	type SetStateAction,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
 } from "react";
 import { API } from "@/utils/api";
 
 interface TimerOptions {
-    initialTime?: number;
-    interval?: number;
-    autostart?: boolean;
-    endTime?: number;
-    countdown?: boolean;
-    autoreset?: boolean;
-    onEnd?: () => void;
+	initialTime?: number;
+	interval?: number;
+	autostart?: boolean;
+	endTime?: number;
+	countdown?: boolean;
+	autoreset?: boolean;
+	onEnd?: () => void;
 }
 
 export function useTimer({
-    initialTime = 0,
-    interval = 1000,
-    autostart = false,
-    endTime,
-    countdown = false,
-    autoreset = false,
-    onEnd,
+	initialTime = 0,
+	interval = 1000,
+	autostart = false,
+	endTime,
+	countdown = false,
+	autoreset = false,
+	onEnd,
 }: TimerOptions = {}) {
-    const [time, setTime] = useState(initialTime);
-    const [isRunning, setIsRunning] = useState(autostart);
+	const [time, setTime] = useState(initialTime);
+	const [isRunning, setIsRunning] = useState(autostart);
 
-    const start = useCallback(() => setIsRunning(true), []);
-    const pause = useCallback(() => setIsRunning(false), []);
-    const reset = useCallback(() => {
-        setIsRunning(false);
-        setTime(initialTime);
-    }, [initialTime]);
+	const start = useCallback(() => setIsRunning(true), []);
+	const pause = useCallback(() => setIsRunning(false), []);
+	const reset = useCallback(() => {
+		setIsRunning(false);
+		setTime(initialTime);
+	}, [initialTime]);
 
-    const toggle = useCallback(() => {
-        setIsRunning((prev) => !prev);
-    }, []);
+	const toggle = useCallback(() => {
+		setIsRunning((prev) => !prev);
+	}, []);
 
-    useEffect(() => {
-        if (!isRunning) return;
+	useEffect(() => {
+		if (!isRunning) return;
 
-        const intervalId = setInterval(() => {
-            setTime((currentTime) => {
-                const newTime = countdown
-                    ? currentTime - interval
-                    : currentTime + interval;
+		const intervalId = setInterval(() => {
+			setTime((currentTime) => {
+				const newTime = countdown
+					? currentTime - interval
+					: currentTime + interval;
 
-                if (endTime !== undefined) {
-                    if (
-                        (countdown && newTime <= endTime) ||
-                        (!countdown && newTime >= endTime)
-                    ) {
-                        if (autoreset === true) {
-                            setIsRunning(true);
-                            setTime(initialTime);
-                        } else {
-                            setIsRunning(false);
-                        }
-                        onEnd?.();
-                        return endTime;
-                    }
-                }
+				if (endTime !== undefined) {
+					if (
+						(countdown && newTime <= endTime) ||
+						(!countdown && newTime >= endTime)
+					) {
+						if (autoreset === true) {
+							setIsRunning(true);
+							setTime(initialTime);
+						} else {
+							setIsRunning(false);
+						}
+						onEnd?.();
+						return endTime;
+					}
+				}
 
-                return newTime;
-            });
-        }, interval);
+				return newTime;
+			});
+		}, interval);
 
-        return () => clearInterval(intervalId);
-    }, [isRunning, interval, endTime, countdown, onEnd]);
+		return () => clearInterval(intervalId);
+	}, [isRunning, interval, endTime, countdown, onEnd]);
 
-    return {
-        time,
-        isRunning,
-        start,
-        pause,
-        reset,
-        toggle,
-    } as const;
+	return {
+		time,
+		isRunning,
+		start,
+		pause,
+		reset,
+		toggle,
+	} as const;
 }
 
 export type Session = {
-    active: boolean;
-    username: string;
-    user_id: number | null;
-    admin: boolean;
-    token: string;
-    expiresOn: number;
+	active: boolean;
+	username: string;
+	user_id: number | null;
+	admin: boolean;
+	token: string;
+	expiresOn: number;
 };
 
 function useSession(): [
-    Session,
-    Dispatch<SetStateAction<Session | undefined>>,
+	Session,
+	Dispatch<SetStateAction<Session | undefined>>,
 ] {
-    try {
-        useState(void 0);
-    } catch (e) {
-        console.log("If you only see this once then it should be ok!");
-        console.error(e);
-    }
-    const [session, setSession] = useState<Session>({
-        active: false,
-        username: "Guest",
-        user_id: null,
-        admin: false,
-        token: "",
-        expiresOn: 0,
-    });
+	try {
+		useState(void 0);
+	} catch (e) {
+		console.log("If you only see this once then it should be ok!");
+		console.error(e);
+	}
+	const [session, setSession] = useState<Session>({
+		active: false,
+		username: "Guest",
+		user_id: null,
+		admin: false,
+		token: "",
+		expiresOn: 0,
+	});
 
-    const [token, setToken] = useState<string>("");
+	const [token, setToken] = useState<string>("");
 
-    const refreshAuth = useCallback(async () => {
-        const renewMargin = Number(session.expiresOn - 60 * 10);
-        if (!(renewMargin <= Math.floor(Date.now() / 1000))) {
-            return;
-        }
+	const refreshAuth = useCallback(async () => {
+		const renewMargin = Number(session.expiresOn - 60 * 10);
+		if (!(renewMargin <= Math.floor(Date.now() / 1000))) {
+			return;
+		}
 
-        try {
-            const newToken = await API.authentication().postRefresh(token);
-            setToken(newToken.data.token);
-            Cookies.set("session", newToken.data.token);
-        } catch (e) {
-            console.error("Couldn't refresh token.");
-            console.error(e);
-        }
-    }, [token, session]);
+		try {
+			const newToken = await API.authentication().postRefresh(token);
+			setToken(newToken.data.token);
+			Cookies.set("session", newToken.data.token);
+		} catch (e) {
+			console.error("Couldn't refresh token.");
+			console.error(e);
+		}
+	}, [token, session]);
 
-    const refreshTimer = useTimer({
-        initialTime: 30,
-        countdown: true,
-        autostart: false,
-        autoreset: true,
-        onEnd: refreshAuth,
-    });
+	const refreshTimer = useTimer({
+		initialTime: 30,
+		countdown: true,
+		autostart: false,
+		autoreset: true,
+		onEnd: refreshAuth,
+	});
 
-    useEffectAsync(async () => {
-        console.log("session effect running");
-        const sessionCookie = Cookies.get("session");
-        if (sessionCookie === undefined) {
-            return;
-        }
+	useEffectAsync(async () => {
+		console.log("session effect running");
+		const sessionCookie = Cookies.get("session");
+		if (sessionCookie === undefined) {
+			return;
+		}
 
-        refreshTimer.start();
+		refreshTimer.start();
 
-        setToken(sessionCookie);
-        const sessionToken = jwt.decode(sessionCookie);
+		setToken(sessionCookie);
+		const sessionToken = jwt.decode(sessionCookie);
 
-        const renewMargin = Number(sessionToken["useExp"] - 60 * 10);
-        // renew now
-        if (renewMargin <= Math.floor(Date.now() / 1000)) {
-            await refreshAuth();
-        }
+		const renewMargin = Number(sessionToken["useExp"] - 60 * 10);
+		// renew now
+		if (renewMargin <= Math.floor(Date.now() / 1000)) {
+			await refreshAuth();
+		}
 
-        const username = sessionToken["username"];
-        const admin = Boolean(sessionToken["isAdmin"]);
-        const userId = Number(sessionToken["sub"]); // If your IDE says this is deprecated, it is literally stupid (thanks vscode)
+		const username = sessionToken["username"];
+		const admin = Boolean(sessionToken["isAdmin"]);
+		const userId = Number(sessionToken["sub"]); // If your IDE says this is deprecated, it is literally stupid (thanks vscode)
 
-        API.setToken(sessionCookie);
+		API.setToken(sessionCookie);
 
-        setSession({
-            active: true,
-            username,
-            user_id: userId,
-            admin,
-            token: sessionCookie,
-            expiresOn: Number(sessionToken["useExp"]),
-        });
+		setSession({
+			active: true,
+			username,
+			user_id: userId,
+			admin,
+			token: sessionCookie,
+			expiresOn: Number(sessionToken["useExp"]),
+		});
 
-        return;
-    }, async () => { }, []);
-    return [session, setSession];
+		return;
+	}, async () => {}, []);
+	return [session, setSession];
 }
 
 const SessionContext = createContext<
-    [Session, React.Dispatch<SetStateAction<Session>>] | undefined
+	[Session, React.Dispatch<SetStateAction<Session>>] | undefined
 >(void 0);
 
 export function SessionContextProvider(props: {
-    children: ReactNode;
+	children: ReactNode;
 }): JSX.Element {
-    const [session, setSession] = useSession();
+	const [session, setSession] = useSession();
 
-    const SessionContextStore = useMemo(
-        () => [session, setSession] as const,
-        [session, setSession],
-    );
+	const SessionContextStore = useMemo(
+		() => [session, setSession] as const,
+		[session, setSession],
+	);
 
-    return (
-        <SessionContext.Provider value={SessionContextStore}>
-            {props.children}
-        </SessionContext.Provider>
-    );
+	return (
+		<SessionContext.Provider value={SessionContextStore}>
+			{props.children}
+		</SessionContext.Provider>
+	);
 }
 
 export function useSessionContext(): [
-    Session,
-    Dispatch<SetStateAction<Session>>,
+	Session,
+	Dispatch<SetStateAction<Session>>,
 ] {
-    return useContext(SessionContext);
+	return useContext(SessionContext);
 }
 
 export interface UseEffectAsyncResult {
-    result: any;
-    error: any;
-    isLoading: boolean;
+	result: any;
+	error: any;
+	isLoading: boolean;
 }
 /**
  * Hook to run an effect asyncronously on mount and another on unmount.
@@ -223,71 +223,71 @@ export interface UseEffectAsyncResult {
  * @returns UseEffectAsyncResult
  */
 export function useEffectAsync(
-    mountCallback: () => Promise<any>,
-    unmountCallback: () => Promise<any>,
-    deps: any[] = [],
+	mountCallback: () => Promise<any>,
+	unmountCallback: () => Promise<any>,
+	deps: any[] = [],
 ): UseEffectAsyncResult {
-    const isMounted = useRef(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<unknown>(undefined);
-    const [result, setResult] = useState<any>();
+	const isMounted = useRef(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<unknown>(undefined);
+	const [result, setResult] = useState<any>();
 
-    useEffect(() => {
-        isMounted.current = true;
-        return () => {
-            isMounted.current = false;
-        };
-    }, []);
+	useEffect(() => {
+		isMounted.current = true;
+		return () => {
+			isMounted.current = false;
+		};
+	}, []);
 
-    useEffect(() => {
-        let ignore = false;
-        let mountSucceeded = false;
+	useEffect(() => {
+		let ignore = false;
+		let mountSucceeded = false;
 
-        (async () => {
-            await Promise.resolve(); // wait for the initial cleanup in Strict mode - avoids double mutation
-            if (!isMounted.current || ignore) {
-                return;
-            }
-            setIsLoading(true);
-            try {
-                const result = await mountCallback();
-                mountSucceeded = true;
-                if (isMounted.current && !ignore) {
-                    setError(undefined);
-                    setResult(result);
-                    setIsLoading(false);
-                } else {
-                    // Component was unmounted before the mount callback returned, cancel it
-                    unmountCallback();
-                }
-            } catch (error) {
-                if (!isMounted.current) return;
-                setError(error);
-                setIsLoading(false);
-            }
-        })();
+		(async () => {
+			await Promise.resolve(); // wait for the initial cleanup in Strict mode - avoids double mutation
+			if (!isMounted.current || ignore) {
+				return;
+			}
+			setIsLoading(true);
+			try {
+				const result = await mountCallback();
+				mountSucceeded = true;
+				if (isMounted.current && !ignore) {
+					setError(undefined);
+					setResult(result);
+					setIsLoading(false);
+				} else {
+					// Component was unmounted before the mount callback returned, cancel it
+					unmountCallback();
+				}
+			} catch (error) {
+				if (!isMounted.current) return;
+				setError(error);
+				setIsLoading(false);
+			}
+		})();
 
-        return () => {
-            ignore = true;
-            if (mountSucceeded) {
-                unmountCallback()
-                    .then(() => {
-                        if (!isMounted.current) return;
-                        setResult(undefined);
-                    })
-                    .catch((error: unknown) => {
-                        if (!isMounted.current) return;
-                        setError(error);
-                    });
-            }
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, deps);
+		return () => {
+			ignore = true;
+			if (mountSucceeded) {
+				unmountCallback()
+					.then(() => {
+						if (!isMounted.current) return;
+						setResult(undefined);
+					})
+					.catch((error: unknown) => {
+						if (!isMounted.current) return;
+						setError(error);
+					});
+			}
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, deps);
 
-    return useMemo(
-        () => ({ result, error, isLoading }),
-        [result, error, isLoading],
-    );
+	return useMemo(
+		() => ({ result, error, isLoading }),
+		[result, error, isLoading],
+	);
 }
 
 /**
@@ -306,15 +306,15 @@ export function useEffectAsync(
  * @returns {void}
  */
 export function useMount(
-    effect: React.EffectCallback,
-    deps: React.DependencyList,
+	effect: React.EffectCallback,
+	deps: React.DependencyList,
 ): void {
-    // QUEST: unsure why passing in a callback from a function parameter
-    // to be used would count as a dependency, as I assume that would be
-    // cyclic, but perhaps I'm wrong?
+	// QUEST: unsure why passing in a callback from a function parameter
+	// to be used would count as a dependency, as I assume that would be
+	// cyclic, but perhaps I'm wrong?
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    return useEffect(effect, [...deps]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	return useEffect(effect, [...deps]);
 }
 
 /**
@@ -329,13 +329,13 @@ export function useMount(
  * @returns {void}
  */
 export function useUnmount(
-    cleanup: VoidFunction,
-    deps: React.DependencyList,
+	cleanup: VoidFunction,
+	deps: React.DependencyList,
 ): void {
-    return useEffect(() => {
-        return cleanup;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cleanup, ...deps]);
+	return useEffect(() => {
+		return cleanup;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [cleanup, ...deps]);
 }
 
 /**
@@ -349,14 +349,14 @@ export function useUnmount(
  * @returns {void}
  */
 export function useEffectWithUnmount(
-    effect: React.EffectCallback,
-    cleanup: VoidFunction,
-    deps: React.DependencyList,
+	effect: React.EffectCallback,
+	cleanup: VoidFunction,
+	deps: React.DependencyList,
 ): void {
-    return useEffect(() => {
-        effect();
+	return useEffect(() => {
+		effect();
 
-        return cleanup;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [effect, cleanup, ...deps]);
+		return cleanup;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [effect, cleanup, ...deps]);
 }
