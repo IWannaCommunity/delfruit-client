@@ -1,11 +1,16 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState, useCallback } from "react";
-import { useInfiniteScroll } from "@/utils/infiniteScroll";
+import { useCallback, useEffect, useState } from "react";
+import {
+	type Column,
+	DataTable,
+	type SortConfig,
+} from "@/components/helpers/dataTable";
+import { API } from "@/utils/api";
 import { dedupeArray } from "@/utils/dedupeArray";
 import { formatDate } from "@/utils/formatDate";
-import { API } from "@/utils/api";
-import Link from "next/link";
-import { DataTable, Column, SortConfig } from "@/components/helpers/dataTable";
+import { useSessionContext } from "@/utils/hooks";
+import { useInfiniteScroll } from "@/utils/infiniteScroll";
 
 // #region Types
 type Game = {
@@ -57,12 +62,15 @@ export default function Search(): JSX.Element {
 	const [initialized, setInitialized] = useState(false);
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
+	const [session] = useSessionContext();
+
 	const router = useRouter();
 
 	const searchQuery = (router.query.q as string) ?? "";
 	const activeLetter = router.isReady
 		? ((router.query.l as string) ?? "")
 		: undefined;
+	const searchName = (router.query.name as string) ?? "";
 	const searchAuthor = (router.query.author as string) ?? "";
 	const searchHasDownload = (router.query.hasDownload as string) ?? "";
 	const searchCreatedFrom = (router.query.createdFrom as string) ?? "";
@@ -72,19 +80,26 @@ export default function Search(): JSX.Element {
 	const searchDifficultyFrom = (router.query.difficultyFrom as string) ?? "";
 	const searchDifficultyTo = (router.query.difficultyTo as string) ?? "";
 	const searchTags = (router.query.tags as string) ?? "";
+	const searchCleared = (router.query.cleared as string) ?? "";
+	const searchReviewed = (router.query.reviewed as string) ?? "";
 
 	const handleLetterNavigation = (letter: string) => {
 		const query: Record<string, string> = {};
 		if (searchQuery.trim()) query.q = searchQuery.trim();
+		if (searchName.trim()) query.name = searchName.trim();
 		if (searchAuthor.trim()) query.author = searchAuthor.trim();
 		if (searchHasDownload.trim()) query.hasDownload = searchHasDownload.trim();
 		if (searchCreatedFrom.trim()) query.createdFrom = searchCreatedFrom.trim();
 		if (searchCreatedTo.trim()) query.createdTo = searchCreatedTo.trim();
 		if (searchRatingFrom.trim()) query.ratingFrom = searchRatingFrom.trim();
 		if (searchRatingTo.trim()) query.ratingTo = searchRatingTo.trim();
-		if (searchDifficultyFrom.trim()) query.difficultyFrom = searchDifficultyFrom.trim();
-		if (searchDifficultyTo.trim()) query.difficultyTo = searchDifficultyTo.trim();
+		if (searchDifficultyFrom.trim())
+			query.difficultyFrom = searchDifficultyFrom.trim();
+		if (searchDifficultyTo.trim())
+			query.difficultyTo = searchDifficultyTo.trim();
 		if (searchTags.trim()) query.tags = searchTags.trim();
+		if (searchCleared.trim()) query.cleared = searchCleared.trim();
+		if (searchReviewed.trim()) query.reviewed = searchReviewed.trim();
 
 		query.l = letter === "ALL" ? "ALL" : letter;
 		router.push({ pathname: "/search", query });
@@ -105,7 +120,7 @@ export default function Search(): JSX.Element {
 					searchQuery === "" ? undefined : searchQuery, // query
 					undefined, // id
 					undefined, // removed
-					undefined, // name
+					searchName === "" ? undefined : searchName, // name
 					activeLetter === "ALL" || !activeLetter ? undefined : activeLetter, // nameStartsWith,
 					undefined, // nameExp
 					searchTags === "" ? undefined : searchTags, // tags
@@ -114,11 +129,27 @@ export default function Search(): JSX.Element {
 					searchHasDownload === "" ? undefined : Boolean(searchHasDownload), // hasDownload
 					searchCreatedFrom === "" ? undefined : new Date(searchCreatedFrom), // createdFrom
 					searchCreatedTo === "" ? undefined : new Date(searchCreatedTo), // createdTo
-					undefined, // clearedByUserID
-					undefined, // reviewedByUserID
+					(() => {
+						if (searchCleared) {
+							if (session.active) {
+								return session.user_id;
+							}
+						}
+						return undefined;
+					})(), // clearedByUserID
+					(() => {
+						if (searchReviewed) {
+							if (session.active) {
+								return session.user_id;
+							}
+						}
+						return undefined;
+					})(), // reviewedByUserID
 					searchRatingFrom === "" ? undefined : Number(searchRatingFrom), // ratingFrom
 					searchRatingTo === "" ? undefined : Number(searchRatingTo), // ratingTo
-					searchDifficultyFrom === "" ? undefined : Number(searchDifficultyFrom), // difficultyFrom
+					searchDifficultyFrom === ""
+						? undefined
+						: Number(searchDifficultyFrom), // difficultyFrom
 					searchDifficultyTo === "" ? undefined : Number(searchDifficultyTo), // difficultyTo
 					requestedPage, // page number
 					50, // limit
@@ -126,7 +157,7 @@ export default function Search(): JSX.Element {
 					sort?.direction, // orderDir
 				);
 
-				let newData: Game[] = (res.data ?? []).map((g: any) => ({
+				const newData: Game[] = (res.data ?? []).map((g: any) => ({
 					id: Number(g.id),
 					name: g.name,
 					sortname: g.sortname,
@@ -139,11 +170,13 @@ export default function Search(): JSX.Element {
 
 				return newData;
 			} catch (error) {
+				console.log(error);
 				return [];
 			}
 		},
 		[
 			searchQuery,
+			searchName,
 			activeLetter,
 			searchAuthor,
 			searchHasDownload,
@@ -153,7 +186,10 @@ export default function Search(): JSX.Element {
 			searchRatingTo,
 			searchDifficultyFrom,
 			searchDifficultyTo,
-			searchTags
+			searchTags,
+			searchCleared,
+			searchReviewed,
+			session,
 		],
 	);
 
@@ -162,6 +198,7 @@ export default function Search(): JSX.Element {
 
 		const hasFilters = [
 			searchQuery,
+			searchName,
 			activeLetter,
 			searchAuthor,
 			searchTags,
@@ -172,6 +209,8 @@ export default function Search(): JSX.Element {
 			searchRatingTo,
 			searchDifficultyFrom,
 			searchDifficultyTo,
+			searchCleared,
+			searchReviewed,
 		].some((value) => value.trim() !== "");
 
 		if (!hasFilters) {
@@ -199,21 +238,24 @@ export default function Search(): JSX.Element {
 			isCancelled = true; // cleanup useEffect
 		};
 	}, [
-			searchQuery,
-			activeLetter,
-			searchAuthor,
-			searchTags,
-			searchHasDownload,
-			searchCreatedFrom,
-			searchCreatedTo,
-			searchRatingFrom,
-			searchRatingTo,
-			searchDifficultyFrom,
-			searchDifficultyTo,
-			sortConfig,
-			router.isReady,
-			fetchGames
-		]);
+		searchQuery,
+		searchName,
+		activeLetter,
+		searchAuthor,
+		searchTags,
+		searchHasDownload,
+		searchCreatedFrom,
+		searchCreatedTo,
+		searchRatingFrom,
+		searchRatingTo,
+		searchDifficultyFrom,
+		searchDifficultyTo,
+		searchCleared,
+		searchReviewed,
+		sortConfig,
+		router.isReady,
+		fetchGames,
+	]);
 
 	const loadMore = async () => {
 		if (isLoadingMore) return;
@@ -234,8 +276,10 @@ export default function Search(): JSX.Element {
 	};
 
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(
-		() => { if (hasMore) loadMore(); },
-		{ enabled: initialized }
+		() => {
+			if (hasMore) loadMore();
+		},
+		{ enabled: initialized },
 	);
 
 	return (
@@ -280,73 +324,86 @@ export default function Search(): JSX.Element {
 
 			<p className="!font-bold mb-2">
 				Showing results...
-				<br/>
+				<br />
 				{activeLetter && (
 					<>
-						<span className="ml-[1em]">
-							Starting with: "{activeLetter}"
-						</span>
-						<br/>
+						<span className="ml-[1em]">Starting with: "{activeLetter}"</span>
+						<br />
 					</>
 				)}
 				{searchQuery && (
 					<>
-						<span className="ml-[1em]">
-							Containing: "{searchQuery}"
-						</span>
-						<br/>
+						<span className="ml-[1em]">Containing: "{searchQuery}"</span>
+						<br />
+					</>
+				)}
+				{searchName && (
+					<>
+						<span className="ml-[1em]">With Title: "{searchName}"</span>
+						<br />
 					</>
 				)}
 				{searchAuthor && (
 					<>
-						<span className="ml-[1em]">
-							By: "{searchAuthor}"
-						</span>
-						<br/>
+						<span className="ml-[1em]">By: "{searchAuthor}"</span>
+						<br />
 					</>
 				)}
 				{(searchCreatedFrom || searchCreatedTo) && (
 					<>
 						<span className="ml-[1em]">
-							Created between: {searchCreatedFrom === "" ? "any" : searchCreatedFrom}
+							Created between:{" "}
+							{searchCreatedFrom === "" ? "any" : searchCreatedFrom}
 						</span>
 						<span> - </span>
 						<span className="ml-1">
 							{searchCreatedTo === "" ? "any" : searchCreatedTo}
 						</span>
-						<br/>
+						<br />
 					</>
 				)}
 				{(searchRatingFrom || searchRatingTo) && (
 					<>
 						<span className="ml-[1em]">
-							Rating: [{searchRatingFrom === "" ? "any" : Number(searchRatingFrom)/10}
+							Rating: [
+							{searchRatingFrom === "" ? "any" : Number(searchRatingFrom) / 10}
 						</span>
 						<span> - </span>
 						<span className="ml-1">
-							{searchRatingTo === "" ? "any" : Number(searchRatingTo)/10}]
+							{searchRatingTo === "" ? "any" : Number(searchRatingTo) / 10}]
 						</span>
-						<br/>
+						<br />
 					</>
 				)}
 				{(searchDifficultyFrom || searchDifficultyTo) && (
 					<>
 						<span className="ml-[1em]">
-							Difficulty: [{searchDifficultyFrom === "" ? "any" : searchDifficultyFrom}
+							Difficulty: [
+							{searchDifficultyFrom === "" ? "any" : searchDifficultyFrom}
 						</span>
 						<span> - </span>
 						<span className="ml-1">
 							{searchDifficultyTo === "" ? "any" : searchDifficultyTo}]
 						</span>
-						<br/>
+						<br />
 					</>
 				)}
 				{searchTags && (
 					<>
-						<span className="ml-[1em]">
-							Tagged as: "{searchTags}"
-						</span>
-						<br/>
+						<span className="ml-[1em]">Tagged as: "{searchTags}"</span>
+						<br />
+					</>
+				)}
+				{searchCleared === true && (
+					<>
+						<span className="ml-[1em]">Cleared by YOU</span>
+						<br />
+					</>
+				)}
+				{searchReviewed === true && (
+					<>
+						<span className="ml-[1em]">Reviewed by YOU</span>
+						<br />
 					</>
 				)}
 				<span className="ml-[1em]">
@@ -363,13 +420,19 @@ export default function Search(): JSX.Element {
 				/>
 				{/* Infinite scroll trigger */}
 				{hasMore ? (
-					<div ref={loaderRef} className="flex justify-center items-center h-16">
+					<div
+						ref={loaderRef}
+						className="flex justify-center items-center h-16"
+					>
 						{isLoadingMore && (
 							<div className="animate-pulse text-blue-500">Loading...</div>
 						)}
 					</div>
 				) : (
-					<div ref={loaderRef} className="flex justify-center items-center h-16">
+					<div
+						ref={loaderRef}
+						className="flex justify-center items-center h-16"
+					>
 						<span>No more results.</span>
 					</div>
 				)}
@@ -378,3 +441,4 @@ export default function Search(): JSX.Element {
 	);
 }
 // #endregion
+

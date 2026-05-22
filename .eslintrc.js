@@ -129,6 +129,9 @@ module.exports = {
 		"no-confusing-arrow": "warn",
 		"react/jsx-boolean-value": "warn",
 		"spaced-comment": "warn",
+		"no-else-return": "warn",
+		"nonblock-statement-body-position": "warn",
+		"curly": "warn",
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };

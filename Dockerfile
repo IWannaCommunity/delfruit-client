@@ -5,6 +5,8 @@ FROM node:18.17.0-alpine3.17 as builder
 
 COPY package.json package-lock.json ./
 
+COPY patches ./patches
+
 ## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
 
 RUN npm ci && mkdir /nextjs-app && mv ./node_modules ./nextjs-app

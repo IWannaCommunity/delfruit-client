@@ -6,6 +6,7 @@
     "node": ">=18"
   },
   "scripts": {
+    "postinstall": "patch-package",
     "dev": "next dev",
     "build": "next build --no-lint --no-mangling",
     "build:prod": "next build",
@@ -22,7 +23,7 @@
     "@marsidev/react-turnstile": "1.4.2",
     "axios": "1.2.6",
     "clsx": "2.0.0",
-    "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#69f962f551e098087c2f531ef64dca9956ea8244",
+    "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#2657a61b917bccd547b5f847837ca2b6d36ebf59",
     "emoji-mart": "5.5.2",
     "isomorphic-dompurify": "1.4.0",
     "jquery": "3.6.4",
@@ -68,6 +69,7 @@
     "eslint-plugin-react": "7.33.0",
     "eslint-plugin-react-hooks": "4.6.2",
     "expose-loader": "4.1.0",
+    "patch-package": "8.0.1",
     "postcss": "8.4.21",
     "raw-loader": "4.0.2",
     "swagger-typescript-api": "12.0.4",

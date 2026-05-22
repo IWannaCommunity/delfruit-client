@@ -1,17 +1,102 @@
 import Cookies from "js-cookie";
-import { ReactNode, SetStateAction, createContext, useContext } from "react";
-import { useEffect, useState, useMemo, useRef } from "react";
-import { Dispatch } from "react";
 import jwt from "jsonwebtoken";
+import {
+	createContext,
+	type Dispatch,
+	type ReactNode,
+	type SetStateAction,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { API } from "@/utils/api";
 
-export interface Session {
+interface TimerOptions {
+	initialTime?: number;
+	interval?: number;
+	autostart?: boolean;
+	endTime?: number;
+	countdown?: boolean;
+	autoreset?: boolean;
+	onEnd?: () => void;
+}
+
+export function useTimer({
+	initialTime = 0,
+	interval = 1000,
+	autostart = false,
+	endTime,
+	countdown = false,
+	autoreset = false,
+	onEnd,
+}: TimerOptions = {}) {
+	const [time, setTime] = useState(initialTime);
+	const [isRunning, setIsRunning] = useState(autostart);
+
+	const start = useCallback(() => setIsRunning(true), []);
+	const pause = useCallback(() => setIsRunning(false), []);
+	const reset = useCallback(() => {
+		setIsRunning(false);
+		setTime(initialTime);
+	}, [initialTime]);
+
+	const toggle = useCallback(() => {
+		setIsRunning((prev) => !prev);
+	}, []);
+
+	useEffect(() => {
+		if (!isRunning) return;
+
+		const intervalId = setInterval(() => {
+			setTime((currentTime) => {
+				const newTime = countdown
+					? currentTime - interval
+					: currentTime + interval;
+
+				if (endTime !== undefined) {
+					if (
+						(countdown && newTime <= endTime) ||
+						(!countdown && newTime >= endTime)
+					) {
+						if (autoreset === true) {
+							setIsRunning(true);
+							setTime(initialTime);
+						} else {
+							setIsRunning(false);
+						}
+						onEnd?.();
+						return endTime;
+					}
+				}
+
+				return newTime;
+			});
+		}, interval);
+
+		return () => clearInterval(intervalId);
+	}, [isRunning, interval, endTime, countdown, onEnd]);
+
+	return {
+		time,
+		isRunning,
+		start,
+		pause,
+		reset,
+		toggle,
+	} as const;
+}
+
+export type Session = {
 	active: boolean;
 	username: string;
 	user_id: number | null;
 	admin: boolean;
 	token: string;
-}
+	expiresOn: number;
+};
 
 function useSession(): [
 	Session,
@@ -29,20 +114,58 @@ function useSession(): [
 		user_id: null,
 		admin: false,
 		token: "",
+		expiresOn: 0,
 	});
-	useEffect(() => {
+
+	const [token, setToken] = useState<string>("");
+
+	const refreshAuth = useCallback(async () => {
+		const renewMargin = Number(session.expiresOn - 60 * 10);
+		if (!(renewMargin <= Math.floor(Date.now() / 1000))) {
+			return;
+		}
+
+		try {
+			const newToken = await API.authentication().postRefresh(token);
+			setToken(newToken.data.token);
+			Cookies.set("session", newToken.data.token);
+		} catch (e) {
+			console.error("Couldn't refresh token.");
+			console.error(e);
+		}
+	}, [token, session]);
+
+	const refreshTimer = useTimer({
+		initialTime: 30,
+		countdown: true,
+		autostart: false,
+		autoreset: true,
+		onEnd: refreshAuth,
+	});
+
+	useEffectAsync(async () => {
 		console.log("session effect running");
 		const sessionCookie = Cookies.get("session");
 		if (sessionCookie === undefined) {
 			return;
 		}
 
+		refreshTimer.start();
+
+		setToken(sessionCookie);
 		const sessionToken = jwt.decode(sessionCookie);
+
+		const renewMargin = Number(sessionToken["useExp"] - 60 * 10);
+		// renew now
+		if (renewMargin <= Math.floor(Date.now() / 1000)) {
+			await refreshAuth();
+		}
+
 		const username = sessionToken["username"];
 		const admin = Boolean(sessionToken["isAdmin"]);
 		const userId = Number(sessionToken["sub"]); // If your IDE says this is deprecated, it is literally stupid (thanks vscode)
 
-		API.setToken(sessionCookie)
+		API.setToken(sessionCookie);
 
 		setSession({
 			active: true,
@@ -50,10 +173,11 @@ function useSession(): [
 			user_id: userId,
 			admin,
 			token: sessionCookie,
+			expiresOn: Number(sessionToken["useExp"]),
 		});
 
 		return;
-	}, []);
+	}, async () => {}, []);
 	return [session, setSession];
 }
 
@@ -61,12 +185,14 @@ const SessionContext = createContext<
 	[Session, React.Dispatch<SetStateAction<Session>>] | undefined
 >(void 0);
 
-export function SessionContextProvider(props: { children: ReactNode }): JSX.Element {
+export function SessionContextProvider(props: {
+	children: ReactNode;
+}): JSX.Element {
 	const [session, setSession] = useSession();
 
 	const SessionContextStore = useMemo(
 		() => [session, setSession] as const,
-		[session, setSession]
+		[session, setSession],
 	);
 
 	return (
