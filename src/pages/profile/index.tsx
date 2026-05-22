@@ -8,23 +8,27 @@ import ProfileMain from "@/components/profile/profileMain";
 import ProfileActions from "@/components/profile/profileActions";
 import ProfileRatings from "@/components/profile/profileRatings";
 import ProfileReviews from "@/components/profile/profileReviews";
+import ProfileClears from "@/components/profile/profileClears";
+import ProfileFavorites from "@/components/profile/profileFavorites";
+import ProfileAdminActions from "@/components/profile/profileAdminActions";
 import { API } from "@/utils/api";
 import { UserExt } from "delfruit-swagger-cg-sdk";
 import { formatDate } from "@/utils/formatDate";
 import { useSessionContext } from "@/utils/hooks";
 
 export type ProfileTabValue =
-  | "profile"
-  | "ratings"
-  | "reviews"
-  | "games"
-  | "favorites"
-  | "clearList";
+	| "profile"
+	| "ratings"
+	| "reviews"
+	| "games"
+	| "favorites"
+	| "clearList"
+	| "admin";
 
 export default function Profile(): AnyElem {
 	const [activeTab, setActiveTab] = useState<ProfileTabValue>("profile");
 	const [user, setUser] = useState<UserExt>();
-	const [error, setError] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [session] = useSessionContext();
 
@@ -42,12 +46,15 @@ export default function Profile(): AnyElem {
 
 		(async () => {
 			try {
-				const resp = await API.users().getUserCompositeAll(session.user_id);
+				const token = session?.token ? `Bearer ${session.token}` : undefined;
+				const resp = await API.users().getUserCompositeAll(session.user_id, token);
 				const user = resp.data;
 				const newData: UserExt = {
 					id: user.id,
 					name: user.name,
-					dateCreated: user.dateCreated ? formatDate(new Date(user.dateCreated)) : null,
+					dateCreated: user.dateCreated
+						? formatDate(new Date(user.dateCreated))
+						: null,
 					twitchLink: user.twitchLink,
 					youtubeLink: user.youtubeLink,
 					twitterLink: user.twitterLink,
@@ -55,22 +62,25 @@ export default function Profile(): AnyElem {
 					token: user.token,
 					reviewCount: user.reviewCount,
 					ratingsCount: user.ratingsCount,
-					screenshotCount: user.screenshotCount
+					screenshotCount: user.screenshotCount,
+					isFollowing: user.isFollowing,
 				};
 				setUser(newData);
 			} catch (err: any) {
-        if (err.response?.status === 404) {
-          setError(true);
-        }
+				if (err.response?.status === 404) {
+					setError("Invalid page");
+				} else {
+					setError("Something went wrong");
+				}
 			} finally {
-        setLoading(false);
-      }
+				setLoading(false);
+			}
 		})();
-	}, [session?.user_id]);
+	}, [session.token]);
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
-		if (error) return <span className="text-red-600">Invalid Page</span>;
+		if (error) return <span className="text-red-600">{error}</span>;
 
 		return (
 			<>
@@ -78,23 +88,48 @@ export default function Profile(): AnyElem {
 				<ProfileActions user={user} />
 				<div className="border border-solid border-gray-400 rounded-md bg-white text-[1.1em] font-verdana">
 					<div className="border border-gray-400 rounded-md p-[0.25em]">
-
 						{/* Tabs */}
-						<TabBar<ProfileTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-
+						<TabBar<ProfileTabValue>
+							tabs={tabs}
+							activeTab={activeTab}
+							onTabChange={setActiveTab}
+						/>
 						{/* Profile */}
-						{activeTab === "profile" && user && <ProfileMain user={user}/>}
+						<div hidden={activeTab !== "profile"}>
+							{user && <ProfileMain user={user} />}
+						</div>
 
 						{/* Ratings */}
-						{activeTab === "ratings" && user && <ProfileRatings user={user}/>}
+						<div hidden={activeTab !== "ratings"}>
+							{user && <ProfileRatings user={user} />}
+						</div>
 
 						{/* Reviews */}
-						{activeTab === "reviews" && user && <ProfileReviews user={user}/>}
+						<div hidden={activeTab !== "reviews"}>
+							{user && <ProfileReviews user={user} />}
+						</div>
+
+						{/* Favorites */}
+						<div hidden={activeTab !== "favorites"}>
+							{user && <ProfileFavorites user={user} />}
+						</div>
+
+						{/* Clears */}
+						<div hidden={activeTab !== "clearList"}>
+							{user && <ProfileClears user={user} />}
+						</div>
+
+						
+						{/* Admin */}
+						<div hidden={activeTab !== "admin"}>
+							{session.admin && user && <ProfileAdminActions user={user} />}
+						</div>
+
 					</div>
 				</div>
 			</>
-		)
-	}
+		);
+	};
 
 	return (
 		<div>
