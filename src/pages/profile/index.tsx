@@ -10,6 +10,7 @@ import ProfileRatings from "@/components/profile/profileRatings";
 import ProfileReviews from "@/components/profile/profileReviews";
 import ProfileClears from "@/components/profile/profileClears";
 import ProfileFavorites from "@/components/profile/profileFavorites";
+import ProfileGames from "@/components/profile/profileGames";
 import ProfileAdminActions from "@/components/profile/profileAdminActions";
 import { API } from "@/utils/api";
 import { UserExt } from "delfruit-swagger-cg-sdk";
@@ -109,6 +110,11 @@ export default function Profile(): AnyElem {
 							{user && <ProfileReviews user={user} />}
 						</div>
 
+						{/* User Games */}
+						<div hidden={activeTab !== "games"}>
+							{user && <ProfileGames user={user} />}
+						</div>
+
 						{/* Favorites */}
 						<div hidden={activeTab !== "favorites"}>
 							{user && <ProfileFavorites user={user} />}
@@ -118,7 +124,6 @@ export default function Profile(): AnyElem {
 						<div hidden={activeTab !== "clearList"}>
 							{user && <ProfileClears user={user} />}
 						</div>
-
 						
 						{/* Admin */}
 						<div hidden={activeTab !== "admin"}>
