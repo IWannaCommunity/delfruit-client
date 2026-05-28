@@ -70,9 +70,29 @@ export default function Thanks(): AnyElem {
 							name="GaspacoZanis"
 							avatarSrc="/images/avatars/gaspacozanis.webp"
 						/>
+					</div>
+					<h2>Alumni</h2>
+					<div className="flex flex-wrap">
 						<ContribPortrait
 							name="Patrick"
 							avatarSrc="/images/avatars/patrick.webp"
+						/>
+						<ContribPortrait
+							name="RandomErik"
+							avatarSrc="/images/avatars/randomerik.jpg"
+						/>
+						<ContribPortrait
+							name="ElZorgo"
+							avatarSrc="/images/avatars/el_zorgo.png"
+						/>
+						<ContribPortrait name="Lss" avatarSrc="/images/avatars/lss40.png" />
+						<ContribPortrait
+							name="Artardss"
+							avatarSrc="/images/avatars/artardss.jpg"
+						/>
+						<ContribPortrait
+							name="Sudnep"
+							avatarSrc="/images/avatars/sudnep.png"
 						/>
 					</div>
 					<h2>Original Designers</h2>
