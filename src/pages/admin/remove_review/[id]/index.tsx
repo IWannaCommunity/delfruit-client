@@ -1,14 +1,15 @@
+import type { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Captcha from "@/components/captcha";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import Review from "@/components/review";
-import type { AnyElem } from "@/utils/element";
-import { useSessionContext } from "@/utils/hooks";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { API } from "@/utils/api";
-import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
+import type { AnyElem } from "@/utils/element";
 import { formatDate } from "@/utils/formatDate";
+import { useSessionContext } from "@/utils/hooks";
 
 function buildRemovalMessage(gameName: string, adminComment: string): string {
 	const comment =
@@ -17,8 +18,12 @@ function buildRemovalMessage(gameName: string, adminComment: string): string {
 			: "No additional comment provided.";
 
 	return (
-		"Your review for " + gameName + " was removed by an admin!\n\n" +
-		"Message: " + comment + "\n\n" +
+		"Your review for " +
+		gameName +
+		" was removed by an admin!\n\n" +
+		"Message: " +
+		comment +
+		"\n\n" +
 		"We saved your review on the game page; you can edit and resubmit it if you would like.\n\n" +
 		"Thanks!"
 	);
@@ -28,6 +33,7 @@ export default function RemoveReview(): AnyElem {
 	const [session] = useSessionContext();
 	const [review, setReview] = useState<ReviewT | null>(null);
 	const [comment, setComment] = useState("");
+	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -49,18 +55,24 @@ export default function RemoveReview(): AnyElem {
 			removed: true,
 			tags: review.tags?.map((tag: any) => tag.id) ?? [],
 		};
-		
+
+		const captToken = (() => {
+			const frmData = new FormData(
+				document.getElementById("captchaContainer") as HTMLFormElement,
+			);
+			const proof = frmData.get("cf-turnstile-response");
+			return proof.toString();
+		})();
+
 		try {
 			await API.reviews().patchReview(
 				patchedReview,
 				`Bearer ${session.token}`,
 				review.id,
 			);
+			console.log("review marked as removed");
 
-			const messageBody = buildRemovalMessage(
-				review.game_name,
-				comment
-			);
+			const messageBody = buildRemovalMessage(review.game_name, comment);
 
 			await API.messages().postMessage(
 				{
@@ -69,7 +81,9 @@ export default function RemoveReview(): AnyElem {
 					body: messageBody,
 				},
 				`Bearer ${session.token}`,
+				captToken,
 			);
+			console.log("message posted");
 
 			setSuccess(true);
 
@@ -135,9 +149,7 @@ export default function RemoveReview(): AnyElem {
 		if (loading) return <span>Loading...</span>;
 		if (success) {
 			return (
-				<span className="font-semibold">
-					Review successfully removed.
-				</span>
+				<span className="font-semibold">Review successfully removed.</span>
 			);
 		}
 		if (!review) return null;
@@ -168,7 +180,7 @@ export default function RemoveReview(): AnyElem {
 					/>
 				)}
 
-				<form className="mt-4" onSubmit={handleSubmit}>
+				<form id="captchaContainer" className="mt-4" onSubmit={handleSubmit}>
 					<label className="group">
 						<span className="group-focus-within:font-bold">
 							Leave a comment for the user:
@@ -185,12 +197,16 @@ export default function RemoveReview(): AnyElem {
 						/>
 					</label>
 					<br />
+					<Captcha onSuccess={setCaptchaToken} />
+					<br />
 					<input
 						type="submit"
 						value="Remove"
 						className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded"
 					/>
-					{error && !success && <span className="text-red-600 ml-2">{error}</span>}
+					{error && !success && (
+						<span className="text-red-600 ml-2">{error}</span>
+					)}
 				</form>
 			</>
 		);
@@ -203,9 +219,7 @@ export default function RemoveReview(): AnyElem {
 			</Head>
 			<div id="container">
 				<Header />
-				<div id="content">
-					{renderContent()}
-				</div>
+				<div id="content">{renderContent()}</div>
 				<Footer />
 			</div>
 		</div>
