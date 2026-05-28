@@ -77,7 +77,7 @@ export function useTimer({
 		}, interval);
 
 		return () => clearInterval(intervalId);
-	}, [isRunning, interval, endTime, countdown, onEnd]);
+	}, [isRunning, interval, endTime, countdown, onEnd, autoreset, initialTime]);
 
 	return {
 		time,
