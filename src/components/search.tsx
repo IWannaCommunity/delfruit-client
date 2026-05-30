@@ -123,7 +123,7 @@ export default function Search(): JSX.Element {
 					searchName === "" ? undefined : searchName, // name
 					activeLetter === "ALL" || !activeLetter ? undefined : activeLetter, // nameStartsWith,
 					undefined, // nameExp
-					searchTags === "" ? undefined : searchTags, // tags
+					searchTags === "" ? undefined : searchTags.replaceAll(" ", ","), // tags
 					searchAuthor === "" ? undefined : searchAuthor, // author
 					undefined, // ownerUserID
 					searchHasDownload === "" ? undefined : Boolean(searchHasDownload), // hasDownload
