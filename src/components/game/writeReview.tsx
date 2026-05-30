@@ -2,7 +2,7 @@ import type { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Captcha from "@/components/captcha";
 import { API } from "@/utils/api";
 import { useSessionContext } from "@/utils/hooks";
@@ -39,7 +39,7 @@ export default function WriteReview({
 		return rating < 0 && difficulty < 0 && comment.trim() === "" && tags === "";
 	}
 
-	async function handleSubmit() {
+	const handleSubmit = useCallback(async (): Promise<void> => {
 		setLoading(true);
 		setError(null);
 
@@ -52,10 +52,22 @@ export default function WriteReview({
 				return;
 			}
 
+			const tagIds: Array<number> = await Promise.all(
+				tags.split(" ").map(async (v): Promise<number> => {
+					try {
+						return (await API.tags().getTags(v)).data[0].id;
+					} catch (e) {
+						console.error(`No tag found for ${v}`);
+						console.error(e);
+					}
+				}),
+			);
+
 			const body: ReviewT = {
 				rating: rating >= 0 ? rating : undefined,
 				difficulty: difficulty >= 0 ? difficulty : undefined,
 				comment,
+				tags: tagIds,
 			};
 
 			const token = session.token;
@@ -78,7 +90,16 @@ export default function WriteReview({
 		} finally {
 			setLoading(false);
 		}
-	}
+	}, [
+		comment,
+		difficulty,
+		gameId,
+		isReviewEmpty,
+		onReviewUpdated,
+		rating,
+		session,
+		tags,
+	]);
 
 	useEffect(() => {
 		if (existingReview) {
@@ -87,6 +108,10 @@ export default function WriteReview({
 			setComment(existingReview.comment ?? "");
 		}
 	}, [existingReview]);
+
+	useEffect(() => {
+		console.log(tags.split(" "));
+	}, [tags]);
 
 	return (
 		<>
@@ -225,4 +250,3 @@ export default function WriteReview({
 		</>
 	);
 }
-
