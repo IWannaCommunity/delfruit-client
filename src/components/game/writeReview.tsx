@@ -52,7 +52,7 @@ export default function WriteReview({
 				return;
 			}
 
-			const tagIds: Array<number> = await Promise.all(
+			/*const tagIds: Array<number> = await Promise.all(
 				tags.split(" ").map(async (v): Promise<number> => {
 					try {
 						return (await API.tags().getTags(v)).data[0].id;
@@ -61,13 +61,13 @@ export default function WriteReview({
 						console.error(e);
 					}
 				}),
-			);
+			);*/
 
 			const body: ReviewT = {
 				rating: rating >= 0 ? rating : undefined,
 				difficulty: difficulty >= 0 ? difficulty : undefined,
 				comment,
-				tags: tagIds,
+				tags: tags.replaceAll(" ", ","),
 			};
 
 			const token = session.token;
