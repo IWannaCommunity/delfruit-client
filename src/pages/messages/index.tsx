@@ -1,13 +1,12 @@
 import Head from "next/head";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
-import MessageTable from "@/components/messages/messageTable";
-import { AnyElem } from "@/utils/element";
 import Link from "next/link";
+import Footer from "@/components/footer";
+import Header from "@/components/header";
+import MessageTable from "@/components/messages/messageTable";
+import type { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
 
 export default function MessagePage(): AnyElem {
-
 	const [session] = useSessionContext();
 
 	return (
@@ -21,8 +20,15 @@ export default function MessagePage(): AnyElem {
 					{session.active ? (
 						<>
 							<h2>My Private Messages</h2>
-							<Link className="standalone" href="/messages/compose">Send a message...</Link>
-							<MessageTable/>
+							<h3>
+								NOTE: Messages older than June 1st will not show up here, as
+								messages now have a new incompatible format. We are working on a
+								way to display messages from the old format.
+							</h3>
+							<Link className="standalone" href="/messages/compose">
+								Send a message...
+							</Link>
+							<MessageTable />
 						</>
 					) : (
 						<span>Page not available. Please login first.</span>
@@ -33,3 +39,4 @@ export default function MessagePage(): AnyElem {
 		</div>
 	);
 }
+
