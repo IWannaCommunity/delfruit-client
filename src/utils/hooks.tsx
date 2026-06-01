@@ -126,7 +126,9 @@ function useSession(): [
 		}
 
 		try {
-			const newToken = await API.authentication().postRefresh(token);
+			const newToken = await API.authentication().postRefresh(
+				"Bearer " + session.token,
+			);
 			setToken(newToken.data.token);
 			Cookies.set("session", newToken.data.token);
 		} catch (e) {
