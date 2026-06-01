@@ -3,6 +3,9 @@
 # We label our stage as ‘builder’
 FROM node:18.17.0-alpine3.17 as builder
 
+ENV CI=1 \
+	NODE_ENV=production
+
 COPY package.json package-lock.json ./
 
 COPY patches ./patches
