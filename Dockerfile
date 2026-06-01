@@ -12,7 +12,7 @@ COPY patches ./patches
 
 ## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
 
-RUN npm ci && mkdir /nextjs-app && mv ./node_modules ./nextjs-app
+RUN npm install patch-package@8.0.1 --save-exact --save-dev && npm ci && mkdir /nextjs-app && mv ./node_modules ./nextjs-app
 
 WORKDIR /nextjs-app
 
