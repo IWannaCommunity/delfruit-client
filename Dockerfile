@@ -3,8 +3,8 @@
 # We label our stage as ‘builder’
 FROM node:18.17.0-alpine3.17 as builder
 
-ENV CI=1 \
-	NODE_ENV=production
+#ENV CI=1 \
+#	NODE_ENV=production
 
 COPY package.json package-lock.json ./
 
@@ -12,7 +12,7 @@ COPY patches ./patches
 
 ## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
 
-RUN npm install patch-package@8.0.1 --save-exact --save-dev && npm ci && mkdir /nextjs-app && mv ./node_modules ./nextjs-app
+RUN npm ci && mkdir /nextjs-app && mv ./node_modules ./nextjs-app
 
 WORKDIR /nextjs-app
 
