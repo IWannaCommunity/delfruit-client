@@ -13,9 +13,11 @@ import { useDebouncedCallback } from "use-debounce";
 import Header from "@/components/header";
 import Whitespace from "@/components/whitespace";
 import type { AnyElem } from "@/utils/element";
+import { useSessionContext } from "@/utils/hooks";
 
 export default function AdvancedSearch(): AnyElem {
 	const router = useRouter();
+	const [session, _] = useSessionContext();
 
 	const [title, setTitle] = useState<string>("");
 	const [author, setAuthor] = useState<string>("");
@@ -290,90 +292,96 @@ export default function AdvancedSearch(): AnyElem {
 								<div id="tags-list" className="py-0 px-[5px] hidden" />
 
 								{/* #region Session Based */}
-								{/* Clear */}
-								<div>
-									Cleared by me?
-									<br />
-									<label htmlFor="clear-any">
-										<input
-											id="clear-any"
-											type="radio"
-											name="clear"
-											value=""
-											onClick={async (
-												_: MouseEvent<HTMLInputElement, MouseEvent>,
-											): Promise<void> => {
-												setHasCleared(void 0);
-											}}
-										/>{" "}
-										Any
-									</label>
-									<label htmlFor="clear-uncleared">
-										<input
-											id="clear-uncleared"
-											type="radio"
-											name="clear"
-											value="0"
-											onClick={async (_): Promise<void> => {
-												setHasCleared(false);
-											}}
-										/>{" "}
-										Not Cleared
-									</label>
-									<label htmlFor="clear-cleared">
-										<input
-											id="clear-cleared"
-											type="radio"
-											name="clear"
-											value="1"
-											onClick={async (_): Promise<void> => {
-												setHasCleared(true);
-											}}
-										/>{" "}
-										Cleared
-									</label>
-								</div>
-								{/* Reviewed */}
-								<div>
-									Reviewed by me?
-									<br />
-									<label htmlFor="review-any">
-										<input
-											id="review-any"
-											type="radio"
-											name="ireviewed"
-											value=""
-											onClick={async (_): Promise<void> => {
-												setHasReviewed(void 0);
-											}}
-										/>{" "}
-										Any
-									</label>
-									<label htmlFor="review-no">
-										<input
-											id="review-no"
-											type="radio"
-											name="ireviewed"
-											value="0"
-											onClick={async (_): Promise<void> => {
-												setHasReviewed(false);
-											}}
-										/>{" "}
-										Not Reviewed
-									</label>
-									<label htmlFor="review-yes">
-										<input
-											id="review-yes"
-											type="radio"
-											name="ireviewed"
-											value="1"
-											onClick={async (_): Promise<void> => {
-												setHasReviewed(true);
-											}}
-										/>{" "}
-										Reviewed
-									</label>
-								</div>
+								{!session.active ? (
+									<></>
+								) : (
+									<>
+										{/* Clear */}
+										<div>
+											Cleared by me?
+											<br />
+											<label htmlFor="clear-any">
+												<input
+													id="clear-any"
+													type="radio"
+													name="clear"
+													value=""
+													onClick={async (
+														_: React.MouseEvent<HTMLInputElement, MouseEvent>,
+													): Promise<void> => {
+														setHasCleared(void 0);
+													}}
+												/>{" "}
+												Any
+											</label>
+											<label htmlFor="clear-uncleared">
+												<input
+													id="clear-uncleared"
+													type="radio"
+													name="clear"
+													value="0"
+													onClick={async (_): Promise<void> => {
+														setHasCleared(false);
+													}}
+												/>{" "}
+												Not Cleared
+											</label>
+											<label htmlFor="clear-cleared">
+												<input
+													id="clear-cleared"
+													type="radio"
+													name="clear"
+													value="1"
+													onClick={async (_): Promise<void> => {
+														setHasCleared(true);
+													}}
+												/>{" "}
+												Cleared
+											</label>
+										</div>
+										{/* Reviewed */}
+										<div>
+											Reviewed by me?
+											<br />
+											<label htmlFor="review-any">
+												<input
+													id="review-any"
+													type="radio"
+													name="ireviewed"
+													value=""
+													onClick={async (_): Promise<void> => {
+														setHasReviewed(void 0);
+													}}
+												/>{" "}
+												Any
+											</label>
+											<label htmlFor="review-no">
+												<input
+													id="review-no"
+													type="radio"
+													name="ireviewed"
+													value="0"
+													onClick={async (_): Promise<void> => {
+														setHasReviewed(false);
+													}}
+												/>{" "}
+												Not Reviewed
+											</label>
+											<label htmlFor="review-yes">
+												<input
+													id="review-yes"
+													type="radio"
+													name="ireviewed"
+													value="1"
+													onClick={async (_): Promise<void> => {
+														setHasReviewed(true);
+													}}
+												/>{" "}
+												Reviewed
+											</label>
+										</div>
+									</>
+								)}
 								{/* #endregion */}
 
 								{/* #region Download */}
