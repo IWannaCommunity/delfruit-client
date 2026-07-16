@@ -1,19 +1,30 @@
-import React, { useState } from "react";
+import type { Game, GameExt } from "delfruit-swagger-cg-sdk";
 import Image from "next/image";
 import Link from "next/link";
-import { API } from "@/utils/api";
-import { Game, GameExt } from "delfruit-swagger-cg-sdk";
-import { useSessionContext } from "@/utils/hooks";
 import { useRouter } from "next/router";
+import React, { useReducer, useState } from "react";
+import { useThrottledCallback } from "use-debounce";
 import AverageBox, { getColor } from "@/components/game/averageBox";
-import { getRatingDescription, getDifficultyDescription } from "@/utils/ratingHelpers";
 import Tag from "@/components/game/tag";
-import { AnyElem } from "@/utils/element";
+import { API } from "@/utils/api";
+import type { AnyElem } from "@/utils/element";
+import { useSessionContext } from "@/utils/hooks";
+import {
+	getDifficultyDescription,
+	getRatingDescription,
+} from "@/utils/ratingHelpers";
 
-type GameInfoProps = {
-	game: GameExt;
-	onGameUpdated: () => void;
+type UserState = {
+	favorited: boolean;
+	cleared: boolean;
+	bookmarked: boolean;
 };
+
+interface GameInfoProps {
+	readonly game: GameExt;
+	initialUserState: UserState;
+	onGameUpdated: VoidFunction;
+}
 
 function sanitizeGameForPatch(game: GameExt): Game {
 	return {
@@ -35,7 +46,11 @@ function sanitizeGameForPatch(game: GameExt): Game {
 	};
 }
 
-export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyElem {
+export default function GameInfo({
+	game,
+	initialUserState,
+	onGameUpdated,
+}: GameInfoProps): AnyElem {
 	const [session] = useSessionContext();
 	const router = useRouter();
 
@@ -53,12 +68,62 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 	const [adminDLUrlText, setAdminDLUrlText] = useState("");
 	const [adminOwnerText, setAdminOwnerText] = useState("");
 
-	// Checkboxes
-	const [isFavourite, setIsFavourite] = useState(false);
-	const [isCleared, setIsCleared] = useState(false);
-	const [isBookmarked, setIsBookmarked] = useState(false);
-
 	// Handlers
+	const userStateReducer = useThrottledCallback((state, action) => {
+		// DANGER: generally I think reducers should be pure, however I do need to modify outsite state,
+		// and it is a bit too complicated to do yet another dispatch here, or make it synchronous. so
+		// i've taken the approach to take advantage of the fact that promises are eagarly evaluated,
+		// and don't await any of the functions. god help us if any of these fail, but they shouldn't
+		// as long as you are logged in.
+		switch (action.type) {
+			case "favoriting":
+				API.lists().putFavoriteGame(`Bearer ${session.token}`, game.id);
+				return {
+					favorited: true,
+					cleared: state.cleared,
+					bookmarked: state.bookmarked,
+				};
+			case "unfavorite":
+				API.lists().deleteFavoritedGame(`Bearer ${session.token}`, game.id);
+				return {
+					favorited: false,
+					cleared: state.cleared,
+					bookmarked: state.bookmarked,
+				};
+			case "clearing":
+				API.lists().putClearGame(`Bearer ${session.token}`, game.id);
+				return {
+					favorited: state.favorited,
+					cleared: true,
+					bookmarked: state.bookmarked,
+				};
+			case "unclear":
+				API.lists().deleteClearedGame(`Bearer ${session.token}`, game.id);
+				return {
+					favorite: state.favorited,
+					cleared: false,
+					bookmarked: state.bookmarked,
+				};
+			case "bookmarking":
+				API.lists().putBookmarkGame(`Bearer ${session.token}`, game.id);
+				return {
+					favorite: state.favorited,
+					cleared: state.cleared,
+					bookmarked: true,
+				};
+			case "unbookmark":
+				API.lists().deleteBookmarkedGame(`Bearer ${session.token}`, game.id);
+				return {
+					favorite: state.favorited,
+					cleared: state.cleared,
+					bookmarked: false,
+				};
+			default:
+				console.warn(`user state reducer received an invalid type ${action}`);
+				console.log(action);
+		}
+	}, 1000);
+
 	async function actionAdminChangeGameCreators() {
 		try {
 			const authors = [creatorInput.trim()];
@@ -111,14 +176,18 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 		}
 	}
 
+	// Checkboxes
+	const [userstate, mutateUserState] = useReducer(
+		userStateReducer,
+		initialUserState,
+	);
+
 	return (
 		<div className="w-[50%] float-left">
 			<h1 className="break-words">{game.name}</h1>
 
 			<h2 id="creator-label" className="mb-[13px]">
-				<span>
-					{game.author.length === 1 ? "Creator: " : "Creators: "}
-				</span>
+				<span>{game.author.length === 1 ? "Creator: " : "Creators: "}</span>
 				{game.author.length > 0 &&
 					game.author.map((author, i, arr) => {
 						const trimmed = author.trim();
@@ -173,7 +242,9 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 					>
 						Cancel
 					</button>
-					<span className="game_creator_update_alert ml-1">{adminCreatorAlertText}</span>
+					<span className="game_creator_update_alert ml-1">
+						{adminCreatorAlertText}
+					</span>
 				</>
 			)}
 
@@ -260,7 +331,9 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 					>
 						Cancel
 					</button>
-					<span className="game_creator_update_alert ml-1">{adminDLUrlText}</span>
+					<span className="game_creator_update_alert ml-1">
+						{adminDLUrlText}
+					</span>
 				</>
 			)}
 			<br />
@@ -310,31 +383,49 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 					<input
 						type="checkbox"
 						id="chk_favourite"
-						checked={isFavourite}
-						onChange={() => setIsFavourite(!isFavourite)}
+						checked={userstate.favorited}
+						onChange={() =>
+							userstate.favorited
+								? mutateUserState({ type: "unfavorite" })
+								: mutateUserState({ type: "favoriting" })
+						}
 					/>
 					<span> Favourite </span>
-					<span className="favourite_alert">{isFavourite ? "Updated!" : ""}</span>
+					<span className="favourite_alert">
+						{userstate.favorited ? "Updated!" : ""}
+					</span>
 					<br />
 
 					<input
 						type="checkbox"
 						id="chk_clear"
-						checked={isCleared}
-						onChange={() => setIsCleared(!isCleared)}
+						checked={userstate.cleared}
+						onChange={() =>
+							userstate.cleared
+								? mutateUserState({ type: "unclear" })
+								: mutateUserState({ type: "clearing" })
+						}
 					/>
 					<span> Cleared </span>
-					<span className="clear_alert">{isCleared ? "Updated!" : ""}</span>
+					<span className="clear_alert">
+						{userstate.cleared ? "Updated!" : ""}
+					</span>
 					<br />
 
 					<input
 						type="checkbox"
 						id="chk_bookmark"
-						checked={isBookmarked}
-						onChange={() => setIsBookmarked(!isBookmarked)}
+						checked={userstate.bookmarked}
+						onChange={() =>
+							userstate.bookmarked
+								? mutateUserState({ type: "unbookmark" })
+								: mutateUserState({ type: "bookmarking" })
+						}
 					/>
 					<span> Bookmark </span>
-					<span className="bookmark_alert">{isBookmarked ? "Updated!" : ""}</span>
+					<span className="bookmark_alert">
+						{userstate.bookmarked ? "Updated!" : ""}
+					</span>
 					<br />
 				</>
 			)}
@@ -383,7 +474,7 @@ export default function GameInfo({ game, onGameUpdated }: GameInfoProps): AnyEle
 					<Tag key={tag.id} id={tag.id} name={tag.name} count={tag.count} />
 				))}
 			</div>
-
 		</div>
 	);
 }
+

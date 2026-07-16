@@ -12,10 +12,17 @@ import Review from "@/components/review";
 import { API } from "@/utils/api";
 import type { AnyElem } from "@/utils/element";
 import { formatDate } from "@/utils/formatDate";
+import { useSessionContext } from "@/utils/hooks";
 import { makeScrnshotURL } from "@/utils/url";
 
 export default function Game(): AnyElem {
+	const [session] = useSessionContext();
 	const [details, setDetails] = useState<GameExt | null>(null);
+	const [userstate, setUserState] = useState<any>({
+		favorited: false,
+		cleared: false,
+		bookmarked: false,
+	});
 	const [images, setImages] = useState<
 		Array<{ id: number; src: string; alt: string; user_name: string }>
 	>([]);
@@ -25,7 +32,8 @@ export default function Game(): AnyElem {
 	const router = useRouter();
 	const lucky = router.query.random === "1";
 	const gameId =
-		typeof router.query.id === "string" && !Number.isNaN(Number(router.query.id))
+		typeof router.query.id === "string" &&
+		!Number.isNaN(Number(router.query.id))
 			? Number(router.query.id)
 			: -1;
 
@@ -56,9 +64,13 @@ export default function Game(): AnyElem {
 					? formatDate(new Date(game.dateCreated))
 					: null,
 				rating:
-					game.ratings.rating === -1 ? null : Number(game.ratings.rating / 10).toFixed(1),
+					game.ratings.rating === -1
+						? null
+						: Number(game.ratings.rating / 10).toFixed(1),
 				difficulty:
-					game.ratings.difficulty === -1 ? null : Number(game.ratings.difficulty).toFixed(1),
+					game.ratings.difficulty === -1
+						? null
+						: Number(game.ratings.difficulty).toFixed(1),
 				urlSpdrn: game.urlSpdrn,
 				ownerBio: game.ownerBio,
 				tags: game.tags,
@@ -83,6 +95,57 @@ export default function Game(): AnyElem {
 						tags: review.tags,
 					})) || [],
 			};
+
+			const favorited = await (async () => {
+				try {
+					return Boolean(
+						(
+							await API.lists().getIsGameFavorited(
+								`Bearer ${session.token}`,
+								gameId,
+							)
+						).data,
+					);
+				} catch (e) {
+					console.error(e);
+					return false;
+				}
+			})();
+			const cleared = await (async () => {
+				try {
+					return Boolean(
+						(
+							await API.lists().getIsGameCleared(
+								`Bearer ${session.token}`,
+								gameId,
+							)
+						).data,
+					);
+				} catch (e) {
+					console.error(e);
+					return false;
+				}
+			})();
+			const bookmarked = await (async () => {
+				try {
+					return Boolean(
+						(
+							await API.lists().getIsGameBookmarked(
+								`Bearer ${session.token}`,
+								gameId,
+							)
+						).data,
+					);
+				} catch (e) {
+					console.error(e);
+					return false;
+				}
+			})();
+			setUserState({
+				favorited,
+				cleared,
+				bookmarked,
+			});
 
 			const carouselProps =
 				game.screenshots?.map((scrnShot) => ({
@@ -124,14 +187,18 @@ export default function Game(): AnyElem {
 			return (
 				<>
 					<h2>404 Page Not Found!</h2>
-					<p>The page you accessed doesnt exist! How about a random fangame since you're lost?</p>
+					<p>
+						The page you accessed doesnt exist! How about a random fangame since
+						you're lost?
+					</p>
 					<p>
 						<a
 							href="#"
 							onClick={async (e) => {
 								e.preventDefault();
 								try {
-									const resp = await API.composite().getGameCompositeAll("random");
+									const resp =
+										await API.composite().getGameCompositeAll("random");
 									const randomGame = resp.data;
 
 									if (randomGame?.id) {
@@ -149,9 +216,9 @@ export default function Game(): AnyElem {
 						<Link href="/">Return home</Link>
 					</p>
 				</>
-			)
+			);
 		}
-		
+
 		return (
 			<>
 				{lucky && (
@@ -162,7 +229,8 @@ export default function Game(): AnyElem {
 							onClick={async (e) => {
 								e.preventDefault();
 								try {
-									const resp = await API.composite().getGameCompositeAll("random");
+									const resp =
+										await API.composite().getGameCompositeAll("random");
 									const randomGame = resp.data;
 
 									if (randomGame?.id) {
@@ -178,7 +246,11 @@ export default function Game(): AnyElem {
 					</h2>
 				)}
 				<div className="!w-full">
-					<GameInfo game={details} onGameUpdated={fetchDetails} />
+					<GameInfo
+						game={details}
+						initialUserState={userstate}
+						onGameUpdated={fetchDetails}
+					/>
 					<Carousel images={images} />
 				</div>
 				{details.ownerBio && !details.ownerBio.removed && (
@@ -188,8 +260,16 @@ export default function Game(): AnyElem {
 							id={details.ownerBio.id}
 							user_id={details.ownerBio.user_id}
 							game_id={details.ownerBio.game_id}
-							rating={details.ownerBio.rating === null ? null : Number(details.ownerBio.rating / 10).toFixed(1)}
-							difficulty={details.ownerBio.difficulty === null ? null : Number(details.ownerBio.difficulty)}
+							rating={
+								details.ownerBio.rating === null
+									? null
+									: Number(details.ownerBio.rating / 10).toFixed(1)
+							}
+							difficulty={
+								details.ownerBio.difficulty === null
+									? null
+									: Number(details.ownerBio.difficulty)
+							}
 							comment={details.ownerBio.comment}
 							date_created={formatDate(new Date(details.ownerBio.date_created))}
 							removed={details.ownerBio.removed}
@@ -209,7 +289,11 @@ export default function Game(): AnyElem {
 	return (
 		<div>
 			<Head>
-				<title>{details?.name ? `${details.name} - Delicious Fruit` : "Delicious Fruit"}</title>
+				<title>
+					{details?.name
+						? `${details.name} - Delicious Fruit`
+						: "Delicious Fruit"}
+				</title>
 			</Head>
 			<div id="container">
 				<Header />
