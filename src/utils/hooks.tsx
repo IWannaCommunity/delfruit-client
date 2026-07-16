@@ -113,11 +113,11 @@ function useSession(): [
 		username: "Guest",
 		user_id: null,
 		admin: false,
-		token: "",
+		token: Cookies.get("session") ?? "",
 		expiresOn: 0,
 	});
 
-	const [token, setToken] = useState<string>("");
+	const [token, setToken] = useState<string>(Cookies.get("session") ?? "");
 
 	const refreshAuth = useCallback(async () => {
 		const renewMargin = Number(session.expiresOn - 60 * 10);
