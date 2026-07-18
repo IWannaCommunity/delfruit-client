@@ -94,6 +94,18 @@ export default function Thanks(): AnyElem {
 							name="Sudnep"
 							avatarSrc="/images/avatars/sudnep.png"
 						/>
+						<ContribPortrait
+							name="Dappermink"
+							avatarSrc="/images/avatars/quentinjanuel.png"
+						/>
+						<ContribPortrait
+							name="Nader"
+							avatarSrc="/images/avatars/nader.png"
+						/>
+						<ContribPortrait
+							name="Normal"
+							avatarSrc="/images/avatars/normal.png"
+						/>
 					</div>
 					<h2>Original Designers</h2>
 					<div className="flex">
