@@ -17,6 +17,7 @@ const REPORT_TYPES: [ReportTypeEnum | "all", string][] = [
 	[ReportTypeEnum.ReviewRemoved, "Review Removed"],
 	[ReportTypeEnum.ReviewRestore, "Review Restored"],
 	[ReportTypeEnum.Game, "Game"],
+	[ReportTypeEnum.GameReported, "Game Reported"],
 	[ReportTypeEnum.GameAdd, "Game Added"],
 	[ReportTypeEnum.GameRemove, "Game Removed"],
 	[ReportTypeEnum.GameRestored, "Game Restored"],
@@ -34,6 +35,7 @@ const REPORT_TYPES: [ReportTypeEnum | "all", string][] = [
 	[ReportTypeEnum.UserRegister, "User Registered"],
 	[ReportTypeEnum.UserPasswordChange, "User Password Change"],
 ];
+
 const ANSWERED_OPTIONS: [string, string][] = [
 	["null", "All"],
 	["true", "Yes"],
