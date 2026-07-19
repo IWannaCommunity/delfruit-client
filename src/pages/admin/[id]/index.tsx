@@ -13,21 +13,27 @@ import { Filters } from "@/utils/types";
 const REPORT_TYPES: [ReportTypeEnum | "all", string][] = [
 	["all", "All"],
 	[ReportTypeEnum.Review, "Review"],
+	[ReportTypeEnum.ReviewReported, "Review Reported"],
+	[ReportTypeEnum.ReviewRemoved, "Review Removed"],
 	[ReportTypeEnum.ReviewRestore, "Review Restored"],
 	[ReportTypeEnum.Game, "Game"],
 	[ReportTypeEnum.GameAdd, "Game Added"],
 	[ReportTypeEnum.GameRemove, "Game Removed"],
+	[ReportTypeEnum.GameRestored, "Game Restored"],
 	[ReportTypeEnum.GameUpdateUrl, "Game Update Url"],
 	[ReportTypeEnum.GameUpdateOwner, "Game Update Owner"],
 	[ReportTypeEnum.GameUpdateCreator, "Game Update Creator"],
 	[ReportTypeEnum.GameUpdate, "Game Updated"],
 	[ReportTypeEnum.Screenshot, "Screenshot"],
+	[ReportTypeEnum.ScreenshotReported, "Screenshot Reported"],
+	[ReportTypeEnum.ScreenshotAdded, "Screenshot Added"],
 	[ReportTypeEnum.ScreenshotRemove, "Screenshot Removed"],
+	[ReportTypeEnum.ScreenshotApproved, "Screenshot Approved"],
+	[ReportTypeEnum.ScreenshotDenied, "Screenshot Denied"],
 	[ReportTypeEnum.User, "User"],
 	[ReportTypeEnum.UserRegister, "User Registered"],
 	[ReportTypeEnum.UserPasswordChange, "User Password Change"],
 ];
-
 const ANSWERED_OPTIONS: [string, string][] = [
 	["null", "All"],
 	["true", "Yes"],
