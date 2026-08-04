@@ -78,8 +78,16 @@ export default function Thanks(): AnyElem {
 							avatarSrc="/images/avatars/patrick.webp"
 						/>
 						<ContribPortrait
+							name="Nader"
+							avatarSrc="/images/avatars/nader.png"
+						/>
+						<ContribPortrait
 							name="RandomErik"
 							avatarSrc="/images/avatars/randomerik.jpg"
+						/>
+						<ContribPortrait
+							name="Onynekyu"
+							avatarSrc="/images/avatars/onynekyu.jpg"
 						/>
 						<ContribPortrait
 							name="ElZorgo"
@@ -87,24 +95,24 @@ export default function Thanks(): AnyElem {
 						/>
 						<ContribPortrait name="Lss" avatarSrc="/images/avatars/lss40.png" />
 						<ContribPortrait
-							name="Artardss"
-							avatarSrc="/images/avatars/artardss.jpg"
-						/>
-						<ContribPortrait
-							name="Sudnep"
-							avatarSrc="/images/avatars/sudnep.png"
-						/>
-						<ContribPortrait
 							name="Dappermink"
 							avatarSrc="/images/avatars/quentinjanuel.png"
 						/>
 						<ContribPortrait
-							name="Nader"
-							avatarSrc="/images/avatars/nader.png"
+							name="Artardss"
+							avatarSrc="/images/avatars/artardss.jpg"
 						/>
 						<ContribPortrait
 							name="Normal"
 							avatarSrc="/images/avatars/normal.png"
+						/>
+						<ContribPortrait
+							name="Shinobu"
+							avatarSrc="/images/avatars/shinobu.png"
+						/>
+						<ContribPortrait
+							name="Sudnep"
+							avatarSrc="/images/avatars/sudnep.png"
 						/>
 					</div>
 					<h2>Original Designers</h2>
