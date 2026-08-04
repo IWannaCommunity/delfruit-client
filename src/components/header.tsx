@@ -118,6 +118,14 @@ export default function Header(): AnyElem {
 						)}
 					</select>
 					<input className="ml-1" type="submit" value="Submit" />
+					{session.admin && (
+						<Link
+							href="/admin"
+							className="inline-flex items-center justify-center ml-2 bg-red-600 hover:bg-red-700 hover:text-white text-white visited:text-white font-semibold text-sm px-2 py-1 rounded select-none no-underline focus:outline-none"
+						>
+							ADMIN
+						</Link>
+					)}
 				</form>
 			</div>
 		</div>
