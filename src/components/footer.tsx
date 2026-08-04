@@ -6,7 +6,7 @@ export default function Footer(): AnyElem {
 		<div id="footer">
 			<p>
 				<span>
-					Delicious-Fruit - Site Design © Klazen 2015-2019, IWC Labs 2020-2026{" "}
+					Delicious-Fruit - Site Design © Klazen 2015-2021, IWC Labs 2020-2026{" "}
 				</span>
 				<Link href="/contactus">Contact Us</Link> |{" "}
 				<Link href="/guidelines">Guidelines</Link>
