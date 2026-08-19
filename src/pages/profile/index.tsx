@@ -1,19 +1,21 @@
+import type { UserExt } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
-import Header from "@/components/header";
+import { useEffect, useState } from "react";
 import Footer from "@/components/footer";
-import { AnyElem } from "@/utils/element";
-import { useState, useEffect } from "react";
+import Header from "@/components/header";
 import TabBar from "@/components/helpers/tabBar";
-import ProfileMain from "@/components/profile/profileMain";
 import ProfileActions from "@/components/profile/profileActions";
-import ProfileRatings from "@/components/profile/profileRatings";
-import ProfileReviews from "@/components/profile/profileReviews";
+import ProfileAdminActions from "@/components/profile/profileAdminActions";
+import ProfileBookmarks from "@/components/profile/profileBookmarks";
 import ProfileClears from "@/components/profile/profileClears";
 import ProfileFavorites from "@/components/profile/profileFavorites";
+import ProfileFollowing from "@/components/profile/profileFollowing";
 import ProfileGames from "@/components/profile/profileGames";
-import ProfileAdminActions from "@/components/profile/profileAdminActions";
+import ProfileMain from "@/components/profile/profileMain";
+import ProfileRatings from "@/components/profile/profileRatings";
+import ProfileReviews from "@/components/profile/profileReviews";
 import { API } from "@/utils/api";
-import { UserExt } from "delfruit-swagger-cg-sdk";
+import type { AnyElem } from "@/utils/element";
 import { formatDate } from "@/utils/formatDate";
 import { useSessionContext } from "@/utils/hooks";
 
@@ -24,6 +26,8 @@ export type ProfileTabValue =
 	| "games"
 	| "favorites"
 	| "clearList"
+	| "bookmarks"
+	| "following"
 	| "admin";
 
 export default function Profile(): AnyElem {
@@ -34,13 +38,15 @@ export default function Profile(): AnyElem {
 	const [session] = useSessionContext();
 
 	const tabs = [
-    { label: "User Profile", value: "profile" },
-    { label: "Ratings", value: "ratings" },
+		{ label: "User Profile", value: "profile" },
+		{ label: "Ratings", value: "ratings" },
 		{ label: "Reviews", value: "reviews" },
 		{ label: "Games", value: "games" },
 		{ label: "Favorites List", value: "favorites" },
 		{ label: "Clear List", value: "clearList" },
-  ] as const;
+		{ label: "Bookmarks", value: "bookmarks" },
+		{ label: "Following", value: "following" },
+	] as const;
 
 	useEffect(() => {
 		if (!session?.user_id) return;
@@ -48,7 +54,10 @@ export default function Profile(): AnyElem {
 		(async () => {
 			try {
 				const token = session?.token ? `Bearer ${session.token}` : undefined;
-				const resp = await API.users().getUserCompositeAll(session.user_id, token);
+				const resp = await API.users().getUserCompositeAll(
+					session.user_id,
+					token,
+				);
 				const user = resp.data;
 				const newData: UserExt = {
 					id: user.id,
@@ -124,12 +133,21 @@ export default function Profile(): AnyElem {
 						<div hidden={activeTab !== "clearList"}>
 							{user && <ProfileClears user={user} />}
 						</div>
-						
+
+						{/* Bookmarks */}
+						<div hidden={activeTab !== "bookmarks"}>
+							{user && <ProfileBookmarks user={user} />}
+						</div>
+
+						{/* Following */}
+						<div hidden={activeTab !== "following"}>
+							{user && <ProfileFollowing user={user} />}
+						</div>
+
 						{/* Admin */}
 						<div hidden={activeTab !== "admin"}>
 							{session.admin && user && <ProfileAdminActions user={user} />}
 						</div>
-
 					</div>
 				</div>
 			</>
@@ -144,8 +162,9 @@ export default function Profile(): AnyElem {
 			<div id="container">
 				<Header />
 				<div id="content">
-					{session.active ? (renderContent())
-					: (
+					{session.active ? (
+						renderContent()
+					) : (
 						<span>You must login to view this page</span>
 					)}
 				</div>
