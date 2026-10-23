@@ -64,11 +64,11 @@ export default function Game(): AnyElem {
 					? formatDate(new Date(game.dateCreated))
 					: null,
 				rating:
-					game.ratings.rating === -1
+					game.ratings.rating === -1 || game.ratings.rating === null
 						? null
 						: Number(game.ratings.rating / 10).toFixed(1),
 				difficulty:
-					game.ratings.difficulty === -1
+					game.ratings.difficulty === -1 || game.ratings.difficulty === null
 						? null
 						: Number(game.ratings.difficulty).toFixed(1),
 				urlSpdrn: game.urlSpdrn,
