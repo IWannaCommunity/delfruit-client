@@ -76,12 +76,20 @@ export default function WriteReview({
 				document.getElementById("captchaContainer") as HTMLFormElement,
 			);
 			const proof = frmData.get("cf-turnstile-response");
-			await API.reviews().putGameReview(
-				body,
-				proof.toString(),
-				`Bearer ${token}`,
-				gameId,
-			);
+			if (existingReview === undefined) {
+				await API.reviews().putGameReview(
+					body,
+					proof.toString(),
+					`Bearer ${token}`,
+					gameId,
+				);
+			} else {
+				await API.reviews().patchReview(
+					body,
+					`Bearer ${token}`,
+					existingReview.id,
+				);
+			}
 
 			onReviewUpdated();
 			setShowWrite(false);
