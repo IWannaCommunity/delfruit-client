@@ -82,11 +82,11 @@ export default function Header(): AnyElem {
 				</p>
 			</div>
 			<div className="!clear-both">
-				<Link className="navbutton2 mr-1" href="/news">
-					News
-				</Link>
 				<Link className="navbutton2 mr-1" href="/">
 					Fangames
+				</Link>
+				<Link className="navbutton2 mr-1" href="/news">
+					News
 				</Link>
 				<a className="navbutton2 mr-1" href="https://www.iwannawiki.com">
 					Wiki
