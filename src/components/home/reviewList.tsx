@@ -20,7 +20,10 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 			undefined, // userID
 			undefined, // ID
 			props.page, // page
-			props.limit // limit
+			props.limit, // limit
+			true, // textReviewsFirst
+			true, // includeOwnerReview
+			false, // removed
 		);
 		return resp.data;
 	}, [props.limit, props.page]);
