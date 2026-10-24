@@ -93,8 +93,8 @@ export default function WriteReview({
 
 			let tagIds: number[];
 
-			if (tagNames.length === 0 && existingReview) {
-				tagIds = existingReview.tags ?? [];
+			if (tagNames.length === 0) {
+				tagIds = existingReview?.tags ?? [];
 			} else {
 				tagIds = await Promise.all(
 					tagNames.map((tag) => getOrCreateTagId(tag))
@@ -152,18 +152,70 @@ export default function WriteReview({
 	]);
 
 	useEffect(() => {
-		if (existingReview) {
+		let cancelled = false;
+
+		async function loadReview(): Promise<void> {
+			setError(null);
+
+			if (!existingReview) {
+				setRating(-0.1);
+				setDifficulty(-1);
+				setComment("");
+				setTags("");
+				return;
+			}
+
 			setRating(existingReview.rating ?? -0.1);
 			setDifficulty(existingReview.difficulty ?? -1);
 			setComment(existingReview.comment ?? "");
-		}
-	}, [existingReview]);
+			setTags("");
 
-	/*
-	useEffect(() => {
-		console.log(tags.split(" "));
-	}, [tags]);
-	*/
+			const tagIds = existingReview.tags ?? [];
+
+			if (tagIds.length === 0) {
+				setTags("");
+				return;
+			}
+
+			try {
+				const tagNames = await Promise.all(
+					tagIds.map(async (tagId) => {
+						const response = await API.tags().getTags(
+							undefined,
+							undefined,
+							undefined,
+							tagId
+						);
+
+						const tag = response.data.find(
+							(item: { id?: number; name?: string }) =>
+								item.id === tagId
+						);
+
+						if (!tag?.name) {
+							throw new Error(`Failed to load tag: ${tagId}`);
+						}
+
+						return tag.name;
+					}),
+				);
+
+				if (!cancelled) {
+					setTags(tagNames.join(" "));
+				}
+			} catch (err) {
+				if (!cancelled) {
+					setError("Failed to load review tags.");
+				}
+			}
+		}
+
+		void loadReview();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [existingReview]);
 
 	return (
 		<>
