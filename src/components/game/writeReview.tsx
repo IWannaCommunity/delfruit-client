@@ -36,7 +36,34 @@ export default function WriteReview({
 	const gameId = Number(router.query.id);
 
 	function isReviewEmpty() {
-		return rating < 0 && difficulty < 0 && comment.trim() === "" && tags === "";
+		return rating < 0 && difficulty < 0 && comment.trim() === "" && tags.trim() === "";
+	}
+	
+	async function getOrCreateTagId(tag: string): Promise<number> {
+		const response = await API.tags().getTags(tag);
+		const existingTag = response.data.find(
+			(item: {name?: string }) =>
+				item.name?.toLowerCase() === tag.toLowerCase()
+		);
+
+		if (existingTag) {
+			return existingTag.id;
+		}
+
+		const tagResponse = await API.tags().postTag({
+			name: tag
+		});
+
+		const createdTag = tagResponse.data as {
+			id?: number;
+			name?: string;
+		};
+
+		if (typeof createdTag?.id !== "number") {
+			throw new Error(`Failed to create tag: ${tag}`)
+		}
+
+		return createdTag.id;
 	}
 
 	const handleSubmit = useCallback(async (): Promise<void> => {
@@ -52,17 +79,28 @@ export default function WriteReview({
 				return;
 			}
 
-			const tagIds: Array<number> = await Promise.all(
-				tags.split(" ").map(async (v): Promise<number> => {
-					try {
-						return (await API.tags().getTags(v)).data[0].id;
-					} catch (e) {
-						console.error(`No tag found for ${v}`);
-						console.error(e);
-					}
-				}),
-			);
+			const tagNames = [...new Set(tags.trim().split(/\s+).filter(Boolean))];
 
+			if (tagNames.length > 10) {
+				setError("You can only add a maximum of 10 tags.");
+				return;
+			}
+
+			if (tagNames.some((tag) => tag.length > 30)) {
+				setError("Each tag must be 30 characters or less.")
+				return;
+			}
+
+			let tagIds: number[];
+
+			if (tagNames.length === 0 && existingReview) {
+				tagIds = existingReview.tags ?? [];
+			} else {
+				tagIds = await Promise.all(
+					tagNames.map((tag) => getOrCreateTagId(tag))
+				);
+			}
+			
 			const body: ReviewT = {
 				rating: rating >= 0 ? rating : undefined,
 				difficulty: difficulty >= 0 ? difficulty : undefined,
@@ -76,7 +114,11 @@ export default function WriteReview({
 				document.getElementById("captchaContainer") as HTMLFormElement,
 			);
 			const proof = frmData.get("cf-turnstile-response");
-			if (existingReview === undefined) {
+			if (existingReview === undefined || existingReview === null) {
+				if (!captchaToken) {
+					setError("Please complete the CAPTCHA.");
+					return;
+				}
 				await API.reviews().putGameReview(
 					body,
 					proof.toString(),
@@ -117,9 +159,11 @@ export default function WriteReview({
 		}
 	}, [existingReview]);
 
+	/*
 	useEffect(() => {
 		console.log(tags.split(" "));
 	}, [tags]);
+	*/
 
 	return (
 		<>
@@ -192,7 +236,7 @@ export default function WriteReview({
 						min={-0.1}
 						max={10}
 						step={0.1}
-						defaultValue={-0.1}
+						value={rating}
 						onChange={(e) => setRating(parseFloat(e.target.value))}
 						id="rating"
 						className="review-slider ui-slider-horizontal"
@@ -211,7 +255,7 @@ export default function WriteReview({
 						min={-1}
 						max={100}
 						step={1}
-						defaultValue={-1}
+						value={difficulty}
 						onChange={(e) => setDifficulty(parseInt(e.target.value))}
 						id="difficulty"
 						className="review-slider ui-slider-horizontal mb-10"
