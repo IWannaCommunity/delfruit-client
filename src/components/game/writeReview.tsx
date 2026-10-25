@@ -233,7 +233,7 @@ export default function WriteReview({
 						height={24}
 						alt="Write Review"
 					/>
-					<span className="leading-[26px]">Write a Review</span>
+					<span className="leading-[26px]">{existingReview ? "Edit Review" : "Write a Review"}</span>
 				</div>
 			)}
 
