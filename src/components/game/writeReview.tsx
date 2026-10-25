@@ -94,7 +94,9 @@ export default function WriteReview({
 			let tagIds: number[];
 
 			if (tagNames.length === 0) {
-				tagIds = existingReview?.tags ?? [];
+				tagIds = (existingReview?.tags ?? []).map((tag) =>
+        	typeof tag === "number" ? tag : tag.id
+    		);
 			} else {
 				tagIds = await Promise.all(
 					tagNames.map((tag) => getOrCreateTagId(tag))
@@ -170,7 +172,10 @@ export default function WriteReview({
 			setComment(existingReview.comment ?? "");
 			setTags("");
 
-			const tagIds = existingReview.tags ?? [];
+			const tagIds = (existingReview.tags ?? []).map(
+				(tag: number | { id: number }) =>
+					typeof tag === "number" ? tag : tag.id
+			);
 
 			if (tagIds.length === 0) {
 				setTags("");
