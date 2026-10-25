@@ -153,6 +153,37 @@ export default function WriteReview({
 		tags,
 	]);
 
+	const handleRemove = useCallback(async (): Promise<void> => {
+		if (!existingReview) {
+			return;
+		}
+
+		setLoading(true);
+		setError(null);
+
+		try {
+			const body: ReviewT = {
+				...existingReview,
+				removed: true,
+			};
+
+			const token = session.token;
+
+			await API.reviews().patchReview(
+				body,
+				`Bearer ${token}`,
+				existingReview.id,
+			);
+
+			onReviewUpdated();
+			setShowWrite(false);
+		} catch (err: any) {
+			setError("Failed to remove review. Please try again.");
+		} finally {
+			setLoading(false);
+		}
+	}, [existingReview, session.token, onReviewUpdated]);
+
 	useEffect(() => {
 		let cancelled = false;
 
@@ -346,13 +377,24 @@ export default function WriteReview({
 					<form id="captchaContainer">
 						<Captcha onSuccess={setCaptchaToken} />
 					</form>
-					<input
-						type="button"
-						id="update_button"
-						value={existingReview ? "Update Review" : "Submit Review"}
-						disabled={loading || isReviewEmpty()}
-						onClick={handleSubmit}
-					/>
+					{/* Submit/Remove Buttons */}
+					<div className="flex items-center justify-between mt-4">
+						<input
+							type="button"
+							id="update_button"
+							value={existingReview ? "Update Review" : "Submit Review"}
+							disabled={loading || isReviewEmpty()}
+							onClick={handleSubmit}
+						/>
+						{existingReview && (
+							<input
+								type="button"
+								id="remove_button"
+								value="Remove Review"
+								onClick={handleRemove}
+							/>
+						)}
+					</div>
 					{error && <span className="text-red-600"> {error}</span>}
 				</div>
 			)}
