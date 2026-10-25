@@ -79,7 +79,7 @@ export default function WriteReview({
 				return;
 			}
 
-			const tagNames = [...new Set(tags.trim().split(/\s+).filter(Boolean))];
+			const tagNames = [...new Set(tags.trim().split(" ").filter(Boolean))];
 
 			if (tagNames.length > 10) {
 				setError("You can only add a maximum of 10 tags.");
