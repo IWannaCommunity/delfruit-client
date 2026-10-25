@@ -104,7 +104,7 @@ export default function WriteReview({
 			}
 			
 			const body: ReviewT = {
-				rating: rating >= 0 ? rating : undefined,
+				rating: rating >= 0 ? rating * 10 : undefined,
 				difficulty: difficulty >= 0 ? difficulty : undefined,
 				comment,
 				tags: tagIds,
