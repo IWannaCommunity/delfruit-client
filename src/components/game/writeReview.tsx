@@ -163,18 +163,7 @@ export default function WriteReview({
 
 		try {
 			const body: ReviewT = {
-				id: existingReview.id,
-				user_id: existingReview.user_id,
-				game_dd: gameId,
-				rating: rating >= 0
-					? Math.round(Number(existingReview.rating) * 10)
-					: undefined,
-				difficulty: difficulty >= 0 ? difficulty : undefined,
-				comment: existingReview.comment,
-				removed: true,
-				tags: (existingReview.tags ?? []).map((tag) =>
-					typeof tag === "number" ? tag : tag.id
-				),
+				removed: true
 			};
 
 			const token = session.token;
@@ -401,6 +390,7 @@ export default function WriteReview({
 								type="button"
 								id="remove_button"
 								value="Remove Review"
+								className="text-sm text-red-600 hover:text-red-800"
 								onClick={handleRemove}
 							/>
 						)}
