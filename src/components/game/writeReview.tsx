@@ -163,7 +163,17 @@ export default function WriteReview({
 
 		try {
 			const body: ReviewT = {
+				id: existingReview.id,
+				user_id: existingReview.user_id,
+				game_id: gameId,
+				rating: existingReview.rating,
+				difficulty: existingReview.difficulty,
+				comment: existingReview.comment,
+				date_created: existingReview.date_created,
 				removed: true,
+				tags: (existingReview.tags ?? []).map((tag) =>
+					typeof tag === "number" ? tag : tag.id
+				),
 			};
 
 			const token = session.token;
