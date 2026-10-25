@@ -132,6 +132,7 @@ module.exports = {
 		"no-else-return": "warn",
 		"nonblock-statement-body-position": "warn",
 		"curly": "warn",
+		"no-mixed-spaces-and-tabs": "warn"
 		//"prettier/prettier": ["warn", { endOfLine: "crlf" }],
 	},
 };
