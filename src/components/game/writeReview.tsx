@@ -163,10 +163,13 @@ export default function WriteReview({
 
 		try {
 			const body: ReviewT = {
-				rating: existingReview.rating != null
+				id: existingReview.id,
+				user_id: existingReview.user_id,
+				game_dd: gameId,
+				rating: existingReview.rating != null || existingReview.rating != undefined
 					? Math.round(Number(existingReview.rating) * 10)
-					: existingReview.rating,
-				difficulty: existingReview.difficulty,
+					: undefined,
+				difficulty: existingReview.difficulty : undefined,
 				comment: existingReview.comment,
 				removed: true,
 				tags: (existingReview.tags ?? []).map((tag) =>
