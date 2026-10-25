@@ -166,10 +166,10 @@ export default function WriteReview({
 				id: existingReview.id,
 				user_id: existingReview.user_id,
 				game_dd: gameId,
-				rating: existingReview.rating != null || existingReview.rating != undefined
+				rating: rating >= 0
 					? Math.round(Number(existingReview.rating) * 10)
 					: undefined,
-				difficulty: existingReview.difficulty : undefined,
+				difficulty: difficulty >= 0 ? difficulty : undefined,
 				comment: existingReview.comment,
 				removed: true,
 				tags: (existingReview.tags ?? []).map((tag) =>
