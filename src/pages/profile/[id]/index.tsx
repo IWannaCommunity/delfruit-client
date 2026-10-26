@@ -1,166 +1,21 @@
-import type { UserExt } from "delfruit-swagger-cg-sdk";
-import Head from "next/head";
+
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import Footer from "@/components/footer";
-import Header from "@/components/header";
-import TabBar from "@/components/helpers/tabBar";
-import ProfileActions from "@/components/profile/profileActions";
-import ProfileAdminActions from "@/components/profile/profileAdminActions";
-import ProfileClears from "@/components/profile/profileClears";
-import ProfileFavorites from "@/components/profile/profileFavorites";
-import ProfileGames from "@/components/profile/profileGames";
-import ProfileMain from "@/components/profile/profileMain";
-import ProfileRatings from "@/components/profile/profileRatings";
-import ProfileReviews from "@/components/profile/profileReviews";
-import { API } from "@/utils/api";
+import ProfilePage from "@/components/profile/profilePage";
 import type { AnyElem } from "@/utils/element";
-import { formatDate } from "@/utils/formatDate";
-import { useSessionContext } from "@/utils/hooks";
 
-export type ProfileTabValue =
-	| "profile"
-	| "ratings"
-	| "reviews"
-	| "games"
-	| "favorites"
-	| "clearList"
-	| "admin";
-
-export default function Profile(): AnyElem {
-	const [activeTab, setActiveTab] = useState<ProfileTabValue>("profile");
-	const [user, setUser] = useState<UserExt>();
-	const [error, setError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [session] = useSessionContext();
-
+export default function ProfileById(): AnyElem {
 	const router = useRouter();
 
-	const baseTabs = [
-		{ label: "User Profile", value: "profile" },
-		{ label: "Ratings", value: "ratings" },
-		{ label: "Reviews", value: "reviews" },
-		{ label: "Games", value: "games" },
-		{ label: "Favorites List", value: "favorites" },
-		{ label: "Clear List", value: "clearList" },
-	] as const;
+	if (!router.isReady) {
+		return <span>Loading...</span>;
+	}
 
-	const tabs = session.admin
-		? ([...baseTabs, { label: "Admin", value: "admin" }] as const)
-		: baseTabs;
+	const rawId = router.query.id;
+	const id = typeof rawId === "string" ? Number(rawId) : NaN;
 
-	useEffect(() => {
-		if (!router.isReady) return;
+	if (!Number.isSafeInteger(id) || id <= 0) {
+		return <ProfilePage profileId={-1} />;
+	}
 
-		const id = Number(router.query.id);
-
-		// Anti-trolling measures
-		if (isNaN(id) || id < 0 || !id) {
-			setError("Invalid page");
-			setLoading(false);
-			return;
-		}
-
-		(async () => {
-			try {
-				const token = session?.token ? `Bearer ${session.token}` : undefined;
-				const resp = await API.users().getUserCompositeAll(id, token);
-				const user = resp.data;
-				const newData: UserExt = {
-					id: user.id,
-					name: user.name,
-					dateCreated: user.dateCreated
-						? formatDate(new Date(user.dateCreated))
-						: null,
-					twitchLink: user.twitchLink,
-					youtubeLink: user.youtubeLink,
-					twitterLink: user.twitterLink,
-					bio: user.bio,
-					token: user.token,
-					reviewCount: user.reviewCount,
-					ratingsCount: user.ratingsCount,
-					screenshotCount: user.screenshotCount,
-					isFollowing: user.isFollowing,
-				};
-				setUser(newData);
-			} catch (err: any) {
-				if (err.response?.status === 404) {
-					setError("Invalid page");
-				} else {
-					setError("Something went wrong");
-				}
-			} finally {
-				setLoading(false);
-			}
-		})();
-	}, [router, router.isReady, router.query.id, session.token]);
-
-	const renderContent = () => {
-		if (loading) return <span>Loading...</span>;
-		if (error) return <span className="text-red-600">{error}</span>;
-
-		return (
-			<>
-				<h2>{`${user.name}'s Profile`}</h2>
-				<ProfileActions user={user} />
-				<div className="border border-solid border-gray-400 rounded-md bg-[#363636] text-[1.1em] font-verdana">
-					<div className="border border-gray-400 rounded-md p-[0.25em]">
-						{/* Tabs */}
-						<TabBar<ProfileTabValue>
-							tabs={tabs}
-							activeTab={activeTab}
-							onTabChange={setActiveTab}
-						/>
-						{/* Profile */}
-						<div hidden={activeTab !== "profile"}>
-							{user && <ProfileMain user={user} />}
-						</div>
-
-						{/* Ratings */}
-						<div hidden={activeTab !== "ratings"}>
-							{user && <ProfileRatings user={user} />}
-						</div>
-
-						{/* Reviews */}
-						<div hidden={activeTab !== "reviews"}>
-							{user && <ProfileReviews user={user} />}
-						</div>
-
-						{/* User Games */}
-						<div hidden={activeTab !== "games"}>
-							{user && <ProfileGames user={user} />}
-						</div>
-
-						{/* Favorites */}
-						<div hidden={activeTab !== "favorites"}>
-							{user && <ProfileFavorites user={user} />}
-						</div>
-
-						{/* Clears */}
-						<div hidden={activeTab !== "clearList"}>
-							{user && <ProfileClears user={user} />}
-						</div>
-
-						{/* Admin */}
-						<div hidden={activeTab !== "admin"}>
-							{session.admin && user && <ProfileAdminActions user={user} />}
-						</div>
-					</div>
-				</div>
-			</>
-		);
-	};
-
-	return (
-		<div>
-			<Head>
-				<title>{`${user?.name}'s profile - Delicious Fruit`}</title>
-			</Head>
-			<div id="container">
-				<Header />
-				<div id="content">{renderContent()}</div>
-				<Footer />
-			</div>
-		</div>
-	);
+	return <ProfilePage profileId={id} />;
 }
