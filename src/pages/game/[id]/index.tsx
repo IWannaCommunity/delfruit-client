@@ -63,6 +63,7 @@ export default function Game(): AnyElem {
 				dateCreated: game.dateCreated
 					? formatDate(new Date(game.dateCreated))
 					: null,
+				favorited: game.favorited,
 				rating:
 					game.ratings.rating === -1 || game.ratings.rating === null
 						? null
