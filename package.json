@@ -23,7 +23,7 @@
     "@marsidev/react-turnstile": "1.4.2",
     "axios": "1.2.6",
     "clsx": "2.0.0",
-    "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#b4cbe40f19e9286",
+    "delfruit-swagger-cg-sdk": "github:IWannaCommunity/delfruit-swagger-cg-sdk-node#e02e663a7e9081f59422072",
     "emoji-mart": "5.5.2",
     "isomorphic-dompurify": "2.17.0",
     "jquery": "3.6.4",

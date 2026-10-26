@@ -430,7 +430,7 @@ export default function GameInfo({
 				</>
 			)}
 			<br />
-			<span className="leading-[1.5] mt-5">0 people favourited this game!</span>
+			<span className="leading-[1.5] mt-5">{game.favorited} people favourited this game!</span>
 			<br />
 			<span className="leading-[1.5]">Date Submitted: {game.dateCreated}</span>
 			<br />
