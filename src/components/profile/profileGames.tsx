@@ -146,7 +146,7 @@ export default function ProfileGames({ user }: UserInfoProps): AnyElem {
 
 	return (
 		<div className="px-[1.5em]">
-			<p className="text-[#222222]">{games.length} Games</p>
+			<p className="text-[#fff]">{games.length} Games</p>
 			<div className="overflow-x-auto">
 				<DataTable
 					data={games}
