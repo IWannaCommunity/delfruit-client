@@ -24,7 +24,7 @@ export default function HomeNews(): AnyElem {
 	}, []);
 
 	return (
-		<div className="!relative !p-[0.5em] !bg-[#e8e8e8]">
+		<div className="!relative !p-[0.5em] !bg-[#383838]">
 			<h2>DelFruit News</h2>
 			<h3>{latestNews?.title ?? "Retrieving the latest news entry"}</h3>
 			<p>

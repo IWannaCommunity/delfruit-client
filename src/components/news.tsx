@@ -18,7 +18,7 @@ export default function News(props: NewsT): JSX.Element {
 			: props.news.slice(0, maxLength) + "...";
 
 	return (
-		<div className="!relative !p-[0.5em] !bg-[#e8e8e8]">
+		<div className="!relative !p-[0.5em] !bg-[#383838]">
 			<h3>
 				<Link href={`/news/${props.id}`}>
 					{props.title}

@@ -27,8 +27,8 @@ export default function Header(): AnyElem {
 						<Image
 							src="/images/cherry.gif"
 							alt="Delicious Fruit"
-							width={21}
-							height={24}
+							width={22}
+							height={20}
 						/>
 						<span className="ml-2">Delicious Fruit</span>
 					</h1>
