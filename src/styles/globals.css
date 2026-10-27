@@ -95,7 +95,7 @@ h3 {
 }
 
 a:visited {
-	color: #00008B;
+	color: #276CF5;
 }
 
 a:hover {
@@ -219,40 +219,6 @@ div.rating span.description {
 	font-style: italic;
 	font-weight: normal;
 	color: #444;
-}
-
-div.review {
-	border: 1px solid black;
-	background: #363636;
-	line-height: 1.5;
-	margin: 0 0 1em;
-	position: relative;
-
-	padding: 0.5em;
-
-	font-family: arial, sans-serif;
-	font-size: small;
-}
-
-div.review.owner-review {
-	background: #e3f0e3;
-}
-
-div.review div {
-	padding: 0;
-}
-
-div#myreviewtoggle {
-	border: 1px solid black;
-	border-radius: 3px;
-	height: 26px;
-	width: 130px;
-	margin-bottom: 10px;
-	cursor: pointer;
-}
-
-div#myreviewtoggle:hover {
-	background: #f0f0f0;
 }
 
 .styled-button-1 {
@@ -497,10 +463,41 @@ textarea {
 	text-align: center;
 	margin: 0;
 	height: 40px;
-	color: #000;
 
 	/* "transparent" only works here because == rgba(0,0,0,0) */
 	background-image: linear-gradient(to bottom, transparent, #e3f0e3, #e3f0e3);
+}
+
+div.review {
+	border: 1px solid black;
+	background: #363636;
+	line-height: 1.5;
+	margin: 0 0 1em;
+	position: relative;
+	padding: 0.5em;
+	font-family: arial, sans-serif;
+	font-size: small;
+}
+
+div.review.owner-review {
+	background: #3B245C;
+}
+
+div.review div {
+	padding: 0;
+}
+
+div#myreviewtoggle {
+	border: 1px solid black;
+	border-radius: 3px;
+	height: 26px;
+	width: 130px;
+	margin-bottom: 10px;
+	cursor: pointer;
+}
+
+div#myreviewtoggle:hover {
+	background: #f0f0f0;
 }
 
 .read-more a {
