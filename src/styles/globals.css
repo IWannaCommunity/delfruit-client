@@ -470,6 +470,11 @@ textarea {
 	line-height: 1.7;
 }
 
+.review .creator-review-text {
+	color: #000;
+	line-height: 1.7;
+}
+
 .review .review-text2 {
 	max-height: 120px;
 	position: relative;

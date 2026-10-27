@@ -126,9 +126,10 @@ export default function Review({
 			{props.comment !== "" && props.comment !== null && (
 				<div
 					ref={reviewTextRef}
-					className={`review-text break-words whitespace-pre-wrap ${
-						shouldTruncate && !expanded ? "review-text2" : ""
-					}`}
+					className={`${props.owner_review ? "creator-review-text" : "review-text"} 
+						break-words whitespace-pre-wrap 
+						${shouldTruncate && !expanded ? "review-text2" : ""}
+					`}
 				>
 					<BBCode
 						plugins={[preset()]}
