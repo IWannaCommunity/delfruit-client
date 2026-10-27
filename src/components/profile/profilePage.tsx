@@ -54,13 +54,13 @@ export default function ProfilePage({
       { label: "Games", value: "games" },
       { label: "Favorites List", value: "favorites" },
       { label: "Clear List", value: "clearList" },
-			(isOwnProfile
+			...(isOwnProfile
         ? [
             { label: "Bookmarks", value: "bookmarks" },
             { label: "Following", value: "following" },
           ]
         : []),
-      (session.admin
+      ...(session.admin
         ? [{ label: "Admin", value: "admin" }]
         : []),
 		] satisfies { label: string; value: ProfileTabValue }[];
