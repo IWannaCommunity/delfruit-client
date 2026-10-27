@@ -470,11 +470,6 @@ textarea {
 	line-height: 1.7;
 }
 
-.review .creator-review-text {
-	color: #000;
-	line-height: 1.7;
-}
-
 .review .review-text2 {
 	max-height: 120px;
 	position: relative;
@@ -502,6 +497,7 @@ textarea {
 	text-align: center;
 	margin: 0;
 	height: 40px;
+	color: #000;
 
 	/* "transparent" only works here because == rgba(0,0,0,0) */
 	background-image: linear-gradient(to bottom, transparent, #e3f0e3, #e3f0e3);
