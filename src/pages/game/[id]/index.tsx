@@ -295,17 +295,6 @@ export default function Game(): AnyElem {
 						? `${details.name} - Delicious Fruit`
 						: "Delicious Fruit"}
 				</title>
-				<meta property="og:site_name" content="delicious-fruit.com" />
-				<meta property="og:title" content="Fangame Title Here" />
-				<meta
-					property="og:description"
-					content="Fangame description here."
-				/>
-				<meta property="og:type" content="website" />
-				<meta
-					property="og:image"
-					content="https://df2.testing.iwannacommunity.com/images/cherry.gif"
-				/>
 			</Head>
 			<div id="container">
 				<Header />
