@@ -17,7 +17,7 @@ export default function TabBar<T extends string>({
   onTabChange,
 }: TabBarProps<T>) {
 	return (
-		<div className="flex space-x-1 px-2 pt-2 border border-solid border-b-0 rounded-md border-gray-400 bg-gray-300">
+		<div className="flex flex-wrap gap-1 px-2 pt-2 border border-solid border-b-0 rounded-md border-gray-400 bg-gray-300">
 			{tabs.map((tab) => (
 				<button
 					type="button"
