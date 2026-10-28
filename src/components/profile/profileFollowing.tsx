@@ -114,7 +114,7 @@ export default function ProfileFollowing({ user }: UserInfoProps): JSX.Element {
 
 	return (
 		<div className="px-[1.5em]">
-			<p className="text-[#222222]">{userProfiles.length} Users</p>
+			<p className="text-[#fff]">{userProfiles.length} Users</p>
 			<div className="overflow-x-auto">
 				<DataTable
 					data={userProfiles}

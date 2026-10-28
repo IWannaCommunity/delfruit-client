@@ -126,7 +126,7 @@ export default function ProfileBookmarks({ user }: UserInfoProps): JSX.Element {
 
 	return (
 		<div className="px-[1.5em]">
-			<p className="text-[#222222]">{ratings.length} Games</p>
+			<p className="text-[#fff]">{ratings.length} Games</p>
 			<div className="overflow-x-auto">
 				<DataTable
 					data={ratings}
