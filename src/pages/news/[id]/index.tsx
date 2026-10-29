@@ -12,8 +12,12 @@ import { useRouter } from "next/router";
 import { useSessionContext } from "@/utils/hooks";
 import { formatDate } from "@/utils/formatDate";
 
+type NewsWithPoster = NewsT & {
+    posterName: string;
+};
+
 export default function NewsPage(): AnyElem {
-	const [news, setNews] = useState<NewsT>(null);
+	const [news, setNews] = useState<NewsWithPoster | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [session] = useSessionContext();
@@ -59,16 +63,29 @@ export default function NewsPage(): AnyElem {
 					return;
 				}
 
-				const newsProps: NewsT = {
-					id: Number(news.id),
-					posterId: Number(news.posterId),
-					title: news.title,
-					news: news.news,
-					dateCreated: formatDate(new Date(news.dateCreated)),
-					removed: news.removed
-				}
+			const posterId = Number(news.posterId);
 
-				setNews(newsProps);
+			let posterName = "User";
+
+			try {
+				const user = await API.users().getUser(posterId);
+				posterName = user.data.name ?? "User";
+			} catch {
+				setError("Failed to fetch user.");
+			}
+
+			const newsProps: NewsWithPoster = {
+				id: Number(news.id),
+				posterId,
+				posterName,
+				title: news.title,
+				news: news.news,
+				dateCreated: formatDate(new Date(news.dateCreated)),
+				removed: news.removed,
+			};
+			
+			setNews(newsProps);
+
 			} catch (err: any) {
 				if (err.response?.status === 404) {
 					setError("Invalid page");
@@ -109,6 +126,7 @@ export default function NewsPage(): AnyElem {
 						key={news.id}
 						id={news.id}
 						posterId={news.posterId}
+						posterName={news.posterName}
 						title={news.title}
 						news={news.news}
 						dateCreated={news.dateCreated}

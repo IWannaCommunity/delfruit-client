@@ -21,7 +21,6 @@ export default function NewsListPage(): AnyElem {
 
 	const fetchNews = useCallback(
     async (requestedPage: number): Promise<NewsT[]> => {
-			setLoading(true);
 			setError(null);
 
 			try {
