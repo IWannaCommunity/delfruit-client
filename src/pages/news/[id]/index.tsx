@@ -61,10 +61,10 @@ export default function NewsPage(): AnyElem {
 
 				const newsProps: NewsT = {
 					id: Number(news.id),
-					poster_id: Number(news.poster_id),
+					posterId: Number(news.posterId),
 					title: news.title,
 					news: news.news,
-					date_created: formatDate(new Date(news.date_created)),
+					dateCreated: formatDate(new Date(news.dateCreated)),
 					removed: news.removed
 				}
 
@@ -108,10 +108,10 @@ export default function NewsPage(): AnyElem {
 					<News
 						key={news.id}
 						id={news.id}
-						poster_id={news.poster_id}
+						posterId={news.posterId}
 						title={news.title}
 						news={news.news}
-						date_created={news.date_created}
+						dateCreated={news.dateCreated}
 						removed={news.removed}
 					/>
 				</div>

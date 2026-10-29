@@ -4,7 +4,11 @@ import { useState } from "react";
 import BBCode from "@bbob/react/lib";
 import { preset } from "@/utils/bbobPreset";
 
-export default function News(props: NewsT): JSX.Element {
+type NewsProps = NewsT & {
+    posterName: string;
+};
+
+export default function News(props: NewsProps): JSX.Element {
 
 	const [expanded, setExpanded] = useState(false);
 
@@ -62,7 +66,7 @@ export default function News(props: NewsT): JSX.Element {
 			)}
 
 			<div className="!absolute !right-[0px] !top-[0px] !p-[0.5em] !text-right">
-				-User on {props.date_created}
+				-{props.posterName} on {props.dateCreated}
 			</div>
 		</div>
 	);

@@ -20,30 +20,47 @@ export default function NewsListPage(): AnyElem {
 	const [initialized, setInitialized] = useState(false);
 
 	const fetchNews = useCallback(
-		async (requestedPage: number): Promise<NewsT[]> => {
-		const resp = await API.news().getAllNews(
-			requestedPage, // page
-			5, // limit
-		);
+    async (requestedPage: number): Promise<NewsT[]> => {
+			setLoading(true);
+			setError(null);
 
-		try {
-			const newData: NewsT[] = (resp.data ?? []).map((n: any) => ({
-				id: Number(n.id),
-				poster_id: Number(n.poster_id),
-				title: n.title,
-				news: n.news,
-				date_created: formatDate(new Date(n.date_created)),
-				removed: n.removed
-			}));
+			try {
+				const resp = await API.news().getAllNews(
+					requestedPage,
+					5 // limit
+				);
 
-			return newData;
-		} catch (err: any) {
+				const newsData: NewsT[] = await Promise.all(
+					(resp.data ?? []).map(async (n: any) => {
+						let posterName = "User";
+
+					try {
+						const user = await API.users().getUser(Number(n.posterId));
+						posterName = user.data.name ?? "User";
+					} catch {
+						setError("Failed to retrieve user.");
+					}
+
+					return {
+						id: Number(n.id),
+						posterId: Number(n.posterId),
+						posterName,
+						title: n.title,
+						news: n.news,
+						dateCreated: formatDate(new Date(n.dateCreated)),
+						removed: n.removed
+					};
+				})
+			);
+
+			return newsData;
+		} catch (err) {
 			setError("Failed to load news.");
 			return [];
 		} finally {
 			setLoading(false);
 		}
-	}, []);
+	},[]);
 
 	useEffect(() => {
 		setInitialized(false);
@@ -90,10 +107,11 @@ export default function NewsListPage(): AnyElem {
 						<News
 							key={n.id}
 							id={n.id}
-							poster_id={n.poster_id}
+							posterId={n.posterId}
+							posterName={n.posterName}
 							title={n.title}
 							news={n.news}
-							date_created={n.date_created}
+							dateCreated={n.dateCreated}
 							removed={n.removed}
 						/>
 					);
