@@ -28,17 +28,6 @@ export default function LostAndFound(): AnyElem {
 		<>
 			<Head>
 				<title>Delicious Fruit</title>
-				<meta property="og:site_name" content="delicious-fruit.com" />
-				<meta property="og:title" content="Fangame Title Here" />
-				<meta
-					property="og:description"
-					content="Fangame description here."
-				/>
-				<meta property="og:type" content="website" />
-				<meta
-    			property="og:url"
-    			content="https://df2.testing.iwannacommunity.com"
-  			/>
 			</Head>
 			<div id="container">
 				<Header />
