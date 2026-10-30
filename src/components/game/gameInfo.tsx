@@ -95,6 +95,7 @@ export default function GameInfo({
 
 	// Alerts
 	const [adminCreatorAlertText, setAdminCreatorAlertText] = useState("");
+	const [adminDLUrlText, setAdminDLUrlText] = useState("");
 	const [adminOwnerText, setAdminOwnerText] = useState("");
 
 	const [userstate, mutateUserState] = useReducer(userStateReducer,initialUserState);
@@ -176,7 +177,7 @@ export default function GameInfo({
 			setAdminOwnerText("Error: Rejected, changes were not accepted.");
 		}
 	}
-	
+
 	return (
 		<div className="w-[50%] float-left">
 			<h1 className="break-words">{game.name}</h1>
