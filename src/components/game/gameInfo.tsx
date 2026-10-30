@@ -14,11 +14,13 @@ import {
 	getRatingDescription,
 } from "@/utils/ratingHelpers";
 
-type UserState = {
-	favorited: boolean;
-	cleared: boolean;
-	bookmarked: boolean;
-};
+type UserAction =
+	| { type: "favoriting" }
+	| { type: "unfavorite" }
+	| { type: "clearing" }
+	| { type: "unclear" }
+	| { type: "bookmarking" }
+	| { type: "unbookmark" };
 
 interface GameInfoProps {
 	readonly game: GameExt;
@@ -46,6 +48,34 @@ function sanitizeGameForPatch(game: GameExt): Game {
 	};
 }
 
+function userStateReducer(
+	state: UserState,
+	action: UserAction,
+): UserState {
+	switch (action.type) {
+		case "favoriting":
+			return { ...state, favorited: true };
+
+		case "unfavorite":
+			return { ...state, favorited: false };
+
+		case "clearing":
+			return { ...state, cleared: true };
+
+		case "unclear":
+			return { ...state, cleared: false };
+
+		case "bookmarking":
+			return { ...state, bookmarked: true };
+
+		case "unbookmark":
+			return { ...state, bookmarked: false };
+
+		default:
+			return state;
+	}
+}
+
 export default function GameInfo({
 	game,
 	initialUserState,
@@ -65,64 +95,35 @@ export default function GameInfo({
 
 	// Alerts
 	const [adminCreatorAlertText, setAdminCreatorAlertText] = useState("");
-	const [adminDLUrlText, setAdminDLUrlText] = useState("");
 	const [adminOwnerText, setAdminOwnerText] = useState("");
 
-	// Handlers
-	const userStateReducer = useThrottledCallback((state, action) => {
-		// DANGER: generally I think reducers should be pure, however I do need to modify outsite state,
-		// and it is a bit too complicated to do yet another dispatch here, or make it synchronous. so
-		// i've taken the approach to take advantage of the fact that promises are eagarly evaluated,
-		// and don't await any of the functions. god help us if any of these fail, but they shouldn't
-		// as long as you are logged in.
-		switch (action.type) {
-			case "favoriting":
-				API.lists().putFavoriteGame(`Bearer ${session.token}`, game.id);
-				return {
-					favorited: true,
-					cleared: state.cleared,
-					bookmarked: state.bookmarked,
-				};
-			case "unfavorite":
-				API.lists().deleteFavoritedGame(`Bearer ${session.token}`, game.id);
-				return {
-					favorited: false,
-					cleared: state.cleared,
-					bookmarked: state.bookmarked,
-				};
-			case "clearing":
-				API.lists().putClearGame(`Bearer ${session.token}`, game.id);
-				return {
-					favorited: state.favorited,
-					cleared: true,
-					bookmarked: state.bookmarked,
-				};
-			case "unclear":
-				API.lists().deleteClearedGame(`Bearer ${session.token}`, game.id);
-				return {
-					favorite: state.favorited,
-					cleared: false,
-					bookmarked: state.bookmarked,
-				};
-			case "bookmarking":
-				API.lists().putBookmarkGame(`Bearer ${session.token}`, game.id);
-				return {
-					favorite: state.favorited,
-					cleared: state.cleared,
-					bookmarked: true,
-				};
-			case "unbookmark":
-				API.lists().deleteBookmarkedGame(`Bearer ${session.token}`, game.id);
-				return {
-					favorite: state.favorited,
-					cleared: state.cleared,
-					bookmarked: false,
-				};
-			default:
-				console.warn(`user state reducer received an invalid type ${action}`);
-				console.log(action);
+	const [userstate, mutateUserState] = useReducer(userStateReducer,initialUserState);
+
+	async function handleCheckboxes(
+    type: UserAction["type"],
+	) {
+		const actions = {
+			favoriting: () =>
+				API.lists().putFavoriteGame(`Bearer ${session.token}`, game.id),
+			unfavorite: () =>
+				API.lists().deleteFavoritedGame(`Bearer ${session.token}`, game.id),
+			clearing: () =>
+				API.lists().putClearGame(`Bearer ${session.token}`, game.id),
+			unclear: () =>
+				API.lists().deleteClearedGame(`Bearer ${session.token}`, game.id),
+			bookmarking: () =>
+				API.lists().putBookmarkGame(`Bearer ${session.token}`, game.id),
+			unbookmark: () =>
+				API.lists().deleteBookmarkedGame(`Bearer ${session.token}`, game.id),
+		};
+
+		try {
+			await actions[type]();
+			mutateUserState({ type });
+		} catch (error) {
+			console.error("Failed to update state:", error);
 		}
-	}, 1000);
+	}
 
 	async function actionAdminChangeGameCreators() {
 		try {
@@ -175,13 +176,7 @@ export default function GameInfo({
 			setAdminOwnerText("Error: Rejected, changes were not accepted.");
 		}
 	}
-
-	// Checkboxes
-	const [userstate, mutateUserState] = useReducer(
-		userStateReducer,
-		initialUserState,
-	);
-
+	
 	return (
 		<div className="w-[50%] float-left">
 			<h1 className="break-words">{game.name}</h1>
@@ -382,17 +377,17 @@ export default function GameInfo({
 					{/* Checkboxes */}
 					<input
 						type="checkbox"
-						id="chk_favourite"
+						id="chk_favorite"
 						checked={userstate.favorited}
-						onChange={() =>
-							userstate.favorited
-								? mutateUserState({ type: "unfavorite" })
-								: mutateUserState({ type: "favoriting" })
+						onChange={(e) =>
+							handleCheckboxes(
+								e.target.checked ? "favoriting" : "unfavorite"
+							)
 						}
 					/>
-					<span> Favourite </span>
-					<span className="favourite_alert">
-						{userstate.favorited ? "Updated!" : ""}
+					<span> Favorite </span>
+					<span className="favorite_alert">
+						{userstate.favorited ? "Favorited!" : ""}
 					</span>
 					<br />
 
@@ -400,15 +395,15 @@ export default function GameInfo({
 						type="checkbox"
 						id="chk_clear"
 						checked={userstate.cleared}
-						onChange={() =>
-							userstate.cleared
-								? mutateUserState({ type: "unclear" })
-								: mutateUserState({ type: "clearing" })
+						onChange={(e) =>
+							handleCheckboxes(
+								e.target.checked ? "clearing" : "unclear"
+							)
 						}
 					/>
 					<span> Cleared </span>
 					<span className="clear_alert">
-						{userstate.cleared ? "Updated!" : ""}
+						{userstate.cleared ? "Cleared!" : ""}
 					</span>
 					<br />
 
@@ -416,21 +411,21 @@ export default function GameInfo({
 						type="checkbox"
 						id="chk_bookmark"
 						checked={userstate.bookmarked}
-						onChange={() =>
-							userstate.bookmarked
-								? mutateUserState({ type: "unbookmark" })
-								: mutateUserState({ type: "bookmarking" })
+						onChange={(e) =>
+							handleCheckboxes(
+								e.target.checked ? "bookmarking" : "unbookmark"
+							)
 						}
 					/>
 					<span> Bookmark </span>
 					<span className="bookmark_alert">
-						{userstate.bookmarked ? "Updated!" : ""}
+						{userstate.bookmarked ? "Bookmarked!" : ""}
 					</span>
 					<br />
 				</>
 			)}
 			<br />
-			<span className="leading-[1.5] mt-5">{game.favorited} people favourited this game!</span>
+			<span className="leading-[1.5] mt-5">{game.favorited} people favorited this game!</span>
 			<br />
 			<span className="leading-[1.5]">Date Submitted: {game.dateCreated}</span>
 			<br />
