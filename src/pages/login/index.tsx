@@ -28,7 +28,7 @@ export default function Login(): AnyElem {
 			Cookies.remove("loggedInSuccessfully");
 			setTimeout(() => {
 				router.push("/");
-			}, 5000);
+			}, 1500);
 		}
 		setIdempotency(true);
 	}, [router]);
