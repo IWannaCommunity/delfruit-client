@@ -1,5 +1,6 @@
 @import "~purecss/pure-min";
 @import "../../node_modules/jquery-ui/themes/base/all.css";
+@import "./themes.css";
 
 @tailwind components;
 @tailwind utilities;
@@ -60,7 +61,7 @@ body {
 
 	font-family: arial, sans-serif;
 	font-size: small;
-	color: #fff;
+	color: var(--color-text-secondary);
 
 	background: url('/images/bg.avif');
 }
@@ -95,7 +96,7 @@ h3 {
 }
 
 a:visited {
-	color: #276CF5;
+	color: var(--color-text-visited);
 }
 
 a:hover {
@@ -105,7 +106,7 @@ a:hover {
 h1,
 h2,
 a {
-	color: #EC894E;
+	color: var(--color-text);
 }
 
 
@@ -133,7 +134,7 @@ div#container {
 	margin: 0 auto;
 	/* center, not in IE5 */
 	width: 800px;
-	background: #292929;
+	background: var(--color-background);
 	height: auto !important;
 	height: 100%;
 	min-height: 100vh;
@@ -262,7 +263,7 @@ table.gamelist th {
 }
 
 table tr:nth-child(even) {
-	background: #383838;
+	background: var(--color-background-secondary);
 }
 
 table td.rating {
@@ -432,7 +433,7 @@ textarea {
 }
 
 .review .review-text {
-	color: #fff;
+	color: var(--color-text-review);
 	line-height: 1.7;
 }
 
@@ -452,7 +453,7 @@ textarea {
 	height: 40px;
 
 	/* "transparent" only works here because == rgba(0,0,0,0) */
-	background-image: linear-gradient(to bottom, transparent, #363636, #363636);
+	background-image: linear-gradient(to bottom, transparent, var(--color-container), var(--color-container));
 }
 
 .owner-review .review-text .read-more {
@@ -470,7 +471,7 @@ textarea {
 
 div.review {
 	border: 1px solid black;
-	background: #363636;
+	background: var(--color-container);
 	line-height: 1.5;
 	margin: 0 0 1em;
 	position: relative;
@@ -480,7 +481,7 @@ div.review {
 }
 
 div.review.owner-review {
-	background: #3B245C;
+	background: var(--color-owner);
 }
 
 div.review div {
@@ -546,7 +547,7 @@ button#admin-change-creator {
 
 /* tables */
 table.tablesorter {
-	background-color: #3D3D3D;
+	background-color: var(--color-table);
 	margin: 10px 0pt 15px;
 	width: 100%;
 	text-align: left;
