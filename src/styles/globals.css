@@ -126,7 +126,7 @@ div#content p.notes {
 p {
 	line-height: 1.5;
 	margin: 0 0 1em;
-	color: var(--color-text-main);
+	color: var(--color-text-secondary);
 }
 
 div#container {
@@ -269,7 +269,7 @@ table tr:nth-child(even) {
 table td.rating {
 	text-align: right;
 	white-space: nowrap;
-	color: var(--color-text-main);
+	color: var(--color-text-secondary);
 }
 
 table.reportlist td {
