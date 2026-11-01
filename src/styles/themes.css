@@ -4,12 +4,13 @@
   --color-text: #483D8B;
   --color-text-secondary: #666666;
   --color-text-tertiary: #222222;
-  --color-text-review: #000000;
+  --color-text-main: #000000;
   --color-text-visited: #00008B;
   --color-footer: #DDDDDD;
   --color-container: #e6e6e6;
   --color-table: #CDCDCD;
   --color-owner: #e3f0e3;
+  --color-profile-background: #FFFFFF;
 }
 
 [data-theme="halloween"] {
@@ -18,10 +19,11 @@
   --color-text: #EC894E;
   --color-text-secondary: #FFFFFF;
   --color-text-tertiary: #FFFFFF;
-  --color-text-review: #FFFFFF;
+  --color-text-main: #FFFFFF;
   --color-text-visited: #276CF5;
   --color-footer: #333333;
   --color-container: #363636;
   --color-table: #3D3D3D;
   --color-owner: #3B245C;
+  --color-profile-background: #363636;
 }

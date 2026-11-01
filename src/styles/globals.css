@@ -126,7 +126,7 @@ div#content p.notes {
 p {
 	line-height: 1.5;
 	margin: 0 0 1em;
-	color: #fff;
+	color: var(--color-text-main);
 }
 
 div#container {
@@ -174,7 +174,7 @@ div#footer {
 	position: absolute;
 	width: 100%;
 	bottom: 0;
-	background: #333;
+	background: var(--color-footer);
 	border-top: 6px double gray;
 }
 
@@ -433,7 +433,7 @@ textarea {
 }
 
 .review .review-text {
-	color: var(--color-text-review);
+	color: var(--color-text-main);
 	line-height: 1.7;
 }
 
