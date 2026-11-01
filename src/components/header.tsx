@@ -4,7 +4,14 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import type { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
-import { useTheme } from "@/utils/themeContext";
+import { useTheme, themes } from "@/utils/themeContext";
+
+const images = {
+	cherry: {
+		default: { src: "/images/cherry.gif", width: 21, height: 24 },
+		halloween: { src: "/images/pumpkin.gif", width: 22, height: 20 }
+	},
+};
 
 export default function Header(): AnyElem {
 	const [session] = useSessionContext();
@@ -12,6 +19,7 @@ export default function Header(): AnyElem {
 	const [search, setSearch] = useState("");
 
 	const { theme, setTheme } = useTheme();
+	const image = images.cherry[theme];
 
 	const handleSearch = () => {
 		router.push({
@@ -28,10 +36,10 @@ export default function Header(): AnyElem {
 				<Link className="!no-underline" href="/">
 					<h1>
 						<Image
-							src="/images/cherry.gif"
+							src={image.src}
 							alt="Delicious Fruit"
-							width={22}
-							height={20}
+							width={image.width}
+							height={image.height}
 						/>
 						<span className="ml-2">Delicious Fruit</span>
 					</h1>
@@ -123,10 +131,13 @@ export default function Header(): AnyElem {
 					<select
 						id="theme-selector"
 						value={theme}
-						onChange={(e) => setTheme(e.target.value as "default" | "halloween")}
+						onChange={(e) => setTheme(e.target.value as keyof typeof themes)}
 					>
-						<option value="default">Default</option>
-						<option value="halloween">Halloween</option>
+						{Object.entries(themes).map(([value, label]) => (
+							<option key={value} value={value}>
+								{label}
+							</option>
+						))}
 					</select>
 					{session.admin && (
 						<Link
