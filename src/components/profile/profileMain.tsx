@@ -11,7 +11,7 @@ export default function ProfileMain({ user }: UserInfoProps): JSX.Element {
 	const [session] = useSessionContext();
 
 	return(
-		<div className="px-[1.5em] text-black">
+		<div className="profile-container px-[1.5em]">
 			<p>Joined on {user.dateCreated}</p>
 			{user.bio && (
 				<>

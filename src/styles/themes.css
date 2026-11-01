@@ -1,16 +1,16 @@
 :root {
-  --color-background: #f0f0f0;
-  --color-background-secondary: #e8e8e8;
-  --color-text: #483D8B;
-  --color-text-secondary: #666666;
-  --color-text-tertiary: #222222;
-  --color-text-main: #000000;
-  --color-text-visited: #00008B;
-  --color-footer: #DDDDDD;
-  --color-container: #e6e6e6;
-  --color-table: #CDCDCD;
-  --color-owner: #e3f0e3;
-  --color-profile-background: #FFFFFF;
+  --color-background: #f0f0f0; /*Background color for main container and alternating table rows*/
+  --color-background-secondary: #e8e8e8; /*Background color news container and alternating table rows*/
+  --color-text: #483D8B; /*Text color for non-visited links (eg. game names on home page)*/
+  --color-text-secondary: #666666; /*Text color for news, table rows besides game name, etc.*/
+  --color-text-tertiary: #222222; /*Text color for certain sub-headers (eg. clear list count on profile)*/
+  --color-text-main: #000000; /*Text color for reviews and profile bio*/
+  --color-text-visited: #00008B; /*Text color for visited links*/
+  --color-footer: #DDDDDD; /*Background color for footer*/
+  --color-container: #e6e6e6; /*Background color for some containers (eg. reviews)*/
+  --color-table: #CDCDCD; /*Background color for tables*/
+  --color-owner: #e3f0e3; /*Background color for owner reviews*/
+  --color-profile-background: #FFFFFF; /*Background color for profile containers*/
 }
 
 [data-theme="halloween"] {

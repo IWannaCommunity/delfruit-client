@@ -130,6 +130,7 @@ export default function Header(): AnyElem {
 					</select>
 					<select
 						id="theme-selector"
+						className="ml-1"
 						value={theme}
 						onChange={(e) => setTheme(e.target.value as keyof typeof themes)}
 					>

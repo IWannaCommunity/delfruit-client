@@ -563,3 +563,7 @@ table.tablesorter tbody td {
 	padding: 4px;
 	vertical-align: top;
 }
+
+.profile-container p {
+  color: var(--color-text-main);
+}

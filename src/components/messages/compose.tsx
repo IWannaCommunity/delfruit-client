@@ -173,7 +173,7 @@ export default function Compose(): AnyElem {
 					{searchResults.length > 0 && (
 						<ul
 							className="absolute z-10 mt-1 w-[50em] rounded-md border border-gray-200
-							bg-white shadow-lg list-none px-5 mx-[4em]"
+							bg-white shadow-lg list-none px-5 mx-[4em] text-black"
 						>
 							{searchResults.map((user) => (
 								<li
