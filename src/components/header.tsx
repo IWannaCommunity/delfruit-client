@@ -4,11 +4,14 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import type { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
+import { useTheme } from "@/utils/themeContext";
 
 export default function Header(): AnyElem {
 	const [session] = useSessionContext();
 	const router = useRouter();
 	const [search, setSearch] = useState("");
+
+	const { theme, setTheme } = useTheme();
 
 	const handleSearch = () => {
 		router.push({
@@ -117,7 +120,14 @@ export default function Header(): AnyElem {
 							</>
 						)}
 					</select>
-					<input className="ml-1" type="submit" value="Submit" />
+					<select
+						id="theme-selector"
+						value={theme}
+						onChange={(e) => setTheme(e.target.value as "default" | "halloween")}
+					>
+						<option value="default">Default</option>
+						<option value="halloween">Halloween</option>
+					</select>
 					{session.admin && (
 						<Link
 							href="/admin"

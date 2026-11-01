@@ -269,7 +269,7 @@ table tr:nth-child(even) {
 table td.rating {
 	text-align: right;
 	white-space: nowrap;
-	color: #fff;
+	color: var(--color-text-main);
 }
 
 table.reportlist td {
