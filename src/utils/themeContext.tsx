@@ -18,7 +18,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(
 );
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("halloween");
+  const [theme, setTheme] = useState<Theme>("default");
 
 	useEffect(() => {
 		if (theme === "default") {

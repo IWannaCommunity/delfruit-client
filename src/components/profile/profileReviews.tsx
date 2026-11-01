@@ -87,7 +87,7 @@ export default function ProfileReviews({ user }: UserInfoProps): JSX.Element {
 
 	return(
 		<div className="px-[1.5em]">
-			<p className="text-[#fff]">{reviews.length} Reviews</p>
+			<p className="text-[var(--color-background-tertiary)]">{reviews.length} Reviews</p>
 			{reviews.map((review) => {
 				return (
 					<Review

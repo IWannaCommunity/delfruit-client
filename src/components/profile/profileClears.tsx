@@ -123,7 +123,7 @@ export default function ProfileClears({ user }: UserInfoProps): JSX.Element {
 
 	return (
 		<div className="px-[1.5em]">
-			<p className="text-[#fff]">{ratings.length} Games</p>
+			<p className="text-[var(--color-background-tertiary)]">{ratings.length} Games</p>
 			<div className="overflow-x-auto">
 				<DataTable
 					data={ratings}
