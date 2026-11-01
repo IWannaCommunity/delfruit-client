@@ -8,7 +8,7 @@ import { useTheme, themes } from "@/utils/themeContext";
 
 const images = {
 	cherry: {
-		default: { src: "/images/cherry.gif", width: 21, height: 24 },
+		default: { src: "/images/cherry.gif?v=2", width: 21, height: 24 },
 		halloween: { src: "/images/pumpkin.gif", width: 22, height: 20 }
 	},
 };
