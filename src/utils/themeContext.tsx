@@ -3,12 +3,13 @@ import {
   useContext,
   useEffect,
   useState,
+	useMemo,
   ReactNode,
 } from "react";
 
 export const themes = {
   default: "Default",
-  halloween: "Halloween"
+  halloween: "Halloween",
 } as const;
 
 export type Theme = keyof typeof themes;
@@ -23,31 +24,39 @@ const ThemeContext = createContext<ThemeContextType | undefined>(
 );
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("default");
-
-  useEffect(() => {
-    if (theme === "default") {
-      document.documentElement.removeAttribute("data-theme");
-    } else {
-      document.documentElement.setAttribute("data-theme", theme);
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") {
+      return "default";
     }
 
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
 
     if (savedTheme && savedTheme in themes) {
-      setTheme(savedTheme as Theme);
+      return savedTheme as Theme;
     }
-  }, []);
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+    return "default";
+  });
+	
+	useEffect(() => {
+		if (theme === "default") {
+			document.documentElement.removeAttribute("data-theme");
+    } else {
+			document.documentElement.setAttribute("data-theme", theme);
+    }
+		localStorage.setItem("theme", theme);
+	}, [theme]);
+
+	const contextValue = useMemo(
+		() => ({ theme, setTheme }),
+		[theme]
+	);
+
+	return (
+		<ThemeContext.Provider value={contextValue}>
+			{children}
+		</ThemeContext.Provider>
+	);
 }
 
 export function useTheme() {
