@@ -2,7 +2,7 @@ import Head from "next/head";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { useSessionContext } from "@/utils/hooks";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { API } from "@/utils/api";
 import type { PostGameParams } from "delfruit-swagger-cg-sdk";
 import Captcha from "@/components/captcha";
@@ -39,8 +39,8 @@ export default function SubmitGame(): AnyElem {
 
 		const authors = creators
 			.split(",")
-			.map(author => author.trim())
-			.filter(author => author.length > 0);
+			.map((author) => author.trim())
+			.filter((author) => author.length > 0);
 
 		const body: PostGameParams = {
 			name: name.trim(),
@@ -164,22 +164,25 @@ export default function SubmitGame(): AnyElem {
 						{success && !error && <span className="text-green-600 ml-1">Game Submitted!</span>}
 					</div>
 				</form>
+				<form id="captchaContainer">
+					<Captcha onSuccess={setCaptchaToken} />
+				</form>
 			</>
 		);
 	};
-		
-  return (
-    <div>
-      <Head>
-        <title>
-          Submit Game - Delicious Fruit
-        </title>
-      </Head>
-      <div id="container">
-        <Header />
-        <div id="content">{renderContent()}</div>
-        <Footer />
-      </div>
-    </div>
+	
+	return (
+		<div>
+			<Head>
+				<title>
+					Submit Game - Delicious Fruit
+				</title>
+			</Head>
+			<div id="container">
+				<Header />
+				<div id="content">{renderContent()}</div>
+				<Footer />
+			</div>
+		</div>
 	);
 }
