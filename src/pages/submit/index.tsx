@@ -71,7 +71,7 @@ export default function SubmitGame(): AnyElem {
 			setSuccess(true);
 
 			setName("");
-			setCreator("");
+			setCreators("");
 			setDlUrl("");
 			setDate("");
 			setCaptchaToken("");
@@ -121,7 +121,7 @@ export default function SubmitGame(): AnyElem {
 								className="flex-1 w-[500px]"
 								value={creators}
 								onChange={(e) => {
-									setCreator(e.target.value)
+									setCreators(e.target.value)
 									setSuccess(false);
 									setError(null);
 								}}
