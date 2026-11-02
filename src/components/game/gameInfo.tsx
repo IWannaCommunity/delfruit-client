@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useReducer, useState } from "react";
-import { useThrottledCallback } from "use-debounce";
 import AverageBox, { getColor } from "@/components/game/averageBox";
 import Tag from "@/components/game/tag";
 import { API } from "@/utils/api";
@@ -87,15 +86,22 @@ export default function GameInfo({
 	// Controlled input states
 	const [creatorInput, setCreatorInput] = useState(game.author.join(", "));
 	const [dlUrlInput, setDlUrlInput] = useState(game.url ?? "");
+	const [dateInput, setDateInput] = useState(
+		game.dateCreated
+			? new Date(game.dateCreated).toISOString().slice(0, 10)
+			: ""
+	);
 	const [ownerInput, setOwnerInput] = useState("");
 
 	// Visibility toggles
 	const [hideAdminCreatorInput, setHideAdminCreatorInput] = useState(true);
 	const [hideAdminDLUrlInput, setHideAdminDLUrlInput] = useState(true);
+	const [hideAdminDateInput, setHideAdminDateInput] = useState(true);
 
 	// Alerts
 	const [adminCreatorAlertText, setAdminCreatorAlertText] = useState("");
 	const [adminDLUrlText, setAdminDLUrlText] = useState("");
+	const [adminDateText, setAdminDateText] = useState("");
 	const [adminOwnerText, setAdminOwnerText] = useState("");
 
 	const [userstate, mutateUserState] = useReducer(userStateReducer,initialUserState);
@@ -160,6 +166,23 @@ export default function GameInfo({
 			if (onGameUpdated) onGameUpdated();
 		} catch {
 			setAdminDLUrlText("Error: Rejected, download is not a valid URL.");
+		}
+	}
+
+	async function actionAdminChangeDate() {
+		try {
+			const g = sanitizeGameForPatch({
+				...game,
+				dateCreated: dateInput,
+			} as GameExt);
+
+			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
+			setHideAdminDateInput(true);
+			setAdminDateText("Changes Saved.");
+
+			if (onGameUpdated) onGameUpdated();
+		} catch {
+			setAdminDateText("Error: Rejected, date is invalid.");
 		}
 	}
 
@@ -426,9 +449,64 @@ export default function GameInfo({
 				</>
 			)}
 			<br />
+
 			<span className="leading-[1.5] mt-5">{game.favorited} people favorited this game!</span>
 			<br />
+
+			{/* Date */}
 			<span className="leading-[1.5]">Date Submitted: {game.dateCreated}</span>
+			{session.admin && (
+				<>
+					<input
+						id="admin-date-input"
+						type="date"
+						className="w-[95%]"
+						value={dateInput}
+						onChange={(e) => setDlUrlInput(e.target.value)}
+						hidden={hideAdminDateInput}
+					/>
+					<button
+						id="admin-change-date"
+						type="button"
+						hidden={!hideAdminDateInput}
+						className="ml-1"
+						onClick={() => setHideAdminDateInput(false)}
+					>
+						Change Date
+					</button>
+					<button
+						id="admin-save-change-date"
+						type="submit"
+						hidden={hideAdminDateInput}
+						className="mr-1"
+						onClick={async (evt) => {
+							evt.preventDefault();
+							await actionAdminChangeDate();
+						}}
+					>
+						Change
+					</button>
+					<button
+						id="admin-discard-change-date"
+						type="reset"
+						hidden={hideAdminDateInput}
+						onClick={(evt) => {
+							evt.preventDefault();
+							setDateInput(
+								game.dateCreated
+									? new Date(game.dateCreated).toISOString().slice(0, 10)
+									: ""
+							);
+							setHideAdminDateInput(true);
+						}}
+					>
+						Cancel
+					</button>
+					<span className="game_date_update_alert ml-1">
+						{adminDateText}
+					</span>
+				</>
+			)}
 			<br />
 
 			{/* Admin Tools */}
