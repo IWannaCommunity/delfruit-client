@@ -462,7 +462,7 @@ export default function GameInfo({
 						type="date"
 						className="w-[95%]"
 						value={dateInput}
-						onChange={(e) => setDlUrlInput(e.target.value)}
+						onChange={(e) => setDateInput(e.target.value)}
 						hidden={hideAdminDateInput}
 					/>
 					<button
