@@ -60,6 +60,7 @@ export default function Screenshot(): AnyElem {
 				`Bearer ${session.token}`, 
 				id
 			);
+			setScreenshotApproval(true);
 			setAdminRemoveScreenshotText("Screenshot approved.");
 		} catch (e) {
 			setAdminRemoveScreenshotText("Error: Rejected, request did not finish.");
