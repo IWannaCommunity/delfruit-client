@@ -16,12 +16,16 @@ function getReportTargetHref(
 
 	switch (type) {
 		case ReportTypeEnum.Review:
+		case ReportTypeEnum.ReviewReported:
+		case ReportTypeEnum.ReviewRemoved:
 		case ReportTypeEnum.ReviewRestore:
 			return `/review/${targetId}`;
 
 		case ReportTypeEnum.Game:
+		case ReportTypeEnum.GameReported:
 		case ReportTypeEnum.GameAdd:
 		case ReportTypeEnum.GameRemove:
+		case ReportTypeEnum.GameRestored:
 		case ReportTypeEnum.GameUpdate:
 		case ReportTypeEnum.GameUpdateUrl:
 		case ReportTypeEnum.GameUpdateOwner:
@@ -29,9 +33,13 @@ function getReportTargetHref(
 			return `/game/${targetId}`;
 
 		case ReportTypeEnum.Screenshot:
+		case ReportTypeEnum.ScreenshotReported:
+		case ReportTypeEnum.ScreenshotAdded:
 		case ReportTypeEnum.ScreenshotRemove:
+		case ReportTypeEnum.ScreenshotApproved:
+		case ReportTypeEnum.ScreenshotDenied:
 			return `/screenshot/${targetId}`;
-
+			
 		case ReportTypeEnum.User:
 		case ReportTypeEnum.UserRegister:
 		case ReportTypeEnum.UserPasswordChange:
