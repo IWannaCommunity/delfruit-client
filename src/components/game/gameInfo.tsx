@@ -128,7 +128,7 @@ export default function GameInfo({
 			await actions[type]();
 			mutateUserState({ type });
 		} catch (error) {
-			console.error("Failed to update state:", error);
+			throw new Error("Failed to update state.");
 		}
 	}
 

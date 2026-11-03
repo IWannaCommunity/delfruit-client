@@ -31,7 +31,6 @@ export default function PasswordReset(): AnyElem {
 				password: pwd.toString(),
 			});
 		} catch (e) {
-			console.error(e);
 			return setError("Provided token was invalid.");
 		}
 

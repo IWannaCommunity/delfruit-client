@@ -145,7 +145,6 @@ export default function Compose(): AnyElem {
 			setSuccess(true);
 			setError(null);
 		} catch (error) {
-			console.log(error);
 			setError("Failed to send message. Please try again.");
 			setSuccess(false);
 		}

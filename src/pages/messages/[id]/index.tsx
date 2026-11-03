@@ -306,6 +306,7 @@ export default function MessagePage(): AnyElem {
 							/>
 
 							<button
+								type="submit"
 								onClick={handleSend}
 								disabled={cooldown > 0 || !captchaToken}
 								className="styled-button-1 w-20"

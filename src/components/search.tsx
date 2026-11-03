@@ -93,10 +93,12 @@ export default function Search(): JSX.Element {
 		if (searchCreatedTo.trim()) query.createdTo = searchCreatedTo.trim();
 		if (searchRatingFrom.trim()) query.ratingFrom = searchRatingFrom.trim();
 		if (searchRatingTo.trim()) query.ratingTo = searchRatingTo.trim();
-		if (searchDifficultyFrom.trim())
+		if (searchDifficultyFrom.trim()) {
 			query.difficultyFrom = searchDifficultyFrom.trim();
-		if (searchDifficultyTo.trim())
+		}
+		if (searchDifficultyTo.trim()) {
 			query.difficultyTo = searchDifficultyTo.trim();
+		}
 		if (searchTags.trim()) query.tags = searchTags.trim();
 		if (searchCleared.trim()) query.cleared = searchCleared.trim();
 		if (searchReviewed.trim()) query.reviewed = searchReviewed.trim();
@@ -170,7 +172,6 @@ export default function Search(): JSX.Element {
 
 				return newData;
 			} catch (error) {
-				console.log(error);
 				return [];
 			}
 		},

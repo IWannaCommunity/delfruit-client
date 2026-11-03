@@ -135,7 +135,7 @@ export default function ProfilePage({
 			cancelled = true;
 		};
 
-	}, [targetId, session?.token, isOwnProfile]);
+	}, [targetId, session?.token, isOwnProfile, session?.user_id]);
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
@@ -188,7 +188,7 @@ export default function ProfilePage({
 						{isOwnProfile && (
 							<>
 								<div hidden={activeTab !== "bookmarks"}>
-									<ProfileBookmarks user={user} />
+									<ProfileBookmarks />
 								</div>
 
 								<div hidden={activeTab !== "following"}>
@@ -220,11 +220,13 @@ export default function ProfilePage({
 
 			<div id="container">
 				<Header />
-					<div id="content">
-						{isOwnProfile && !session.active
+				<div id="content">
+					{
+						isOwnProfile && !session.active
 							? <span>You must login to view this page</span>
-							: renderContent()}
-					</div>
+							: renderContent()
+					}
+				</div>
 				<Footer />
 			</div>
 		</div>

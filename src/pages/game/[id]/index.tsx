@@ -108,7 +108,6 @@ export default function Game(): AnyElem {
 						).data,
 					);
 				} catch (e) {
-					console.error(e);
 					return false;
 				}
 			})();
@@ -123,7 +122,6 @@ export default function Game(): AnyElem {
 						).data,
 					);
 				} catch (e) {
-					console.error(e);
 					return false;
 				}
 			})();
@@ -138,7 +136,6 @@ export default function Game(): AnyElem {
 						).data,
 					);
 				} catch (e) {
-					console.error(e);
 					return false;
 				}
 			})();
@@ -166,7 +163,7 @@ export default function Game(): AnyElem {
 		} finally {
 			setLoading(false);
 		}
-	}, [gameId]);
+	}, [gameId, session.token]);
 
 	useEffect(() => {
 		if (!router.isReady) return;

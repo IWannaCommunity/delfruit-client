@@ -73,7 +73,6 @@ export default function Login(): AnyElem {
 				setError("Incorrect credentials");
 			} else {
 				console.error(`error: ${err}`);
-				console.error(err);
 				setError("Something went wrong");
 			}
 		}

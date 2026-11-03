@@ -138,7 +138,7 @@ export default function GameList(): JSX.Element {
 											router.push(`/game/${randomGame.id}?random=1`);
 										}
 									} catch (err) {
-										console.error(err);
+										throw new Error("Failed to load game list.");
 									}
 								}}
 							>

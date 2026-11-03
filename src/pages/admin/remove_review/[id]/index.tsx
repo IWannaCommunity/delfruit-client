@@ -48,6 +48,12 @@ export default function RemoveReview(): AnyElem {
 			return;
 		}
 
+		if (!captchaToken) {
+			setError("Please complete the CAPTCHA.");
+			setSuccess(false);
+			return;
+		}
+
 		const patchedReview: ReviewT = {
 			id: review.id,
 			user_id: review.user_id,
@@ -70,7 +76,6 @@ export default function RemoveReview(): AnyElem {
 				`Bearer ${session.token}`,
 				review.id,
 			);
-			console.log("review marked as removed");
 
 			const messageBody = buildRemovalMessage(review.game_name, comment);
 
@@ -83,8 +88,7 @@ export default function RemoveReview(): AnyElem {
 				`Bearer ${session.token}`,
 				captToken,
 			);
-			console.log("message posted");
-
+			
 			setSuccess(true);
 
 			setTimeout(() => {

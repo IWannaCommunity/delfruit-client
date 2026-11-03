@@ -35,9 +35,14 @@ export default function WriteReview({
 	const router = useRouter();
 	const gameId = Number(router.query.id);
 
-	function isReviewEmpty() {
-		return rating < 0 && difficulty < 0 && comment.trim() === "" && tags.trim() === "";
-	}
+	const isReviewEmpty = useCallback((): boolean => {
+		return (
+			rating < 0 &&
+			difficulty < 0 &&
+			comment.trim() === "" &&
+			tags.trim() === ""
+		);
+	}, [rating, difficulty, comment, tags]);
 	
 	async function getOrCreateTagId(tag: string): Promise<number> {
 		const response = await API.tags().getTags(tag);
@@ -94,9 +99,9 @@ export default function WriteReview({
 			let tagIds: number[];
 
 			if (tagNames.length === 0) {
-				tagIds = (existingReview?.tags ?? []).map((tag) =>
-        	typeof tag === "number" ? tag : tag.id
-    		);
+				tagIds = (existingReview?.tags ?? []).map((tag) => {
+					return typeof tag === "number" ? tag : tag.id;
+				});
 			} else {
 				tagIds = await Promise.all(
 					tagNames.map((tag) => getOrCreateTagId(tag))
@@ -151,6 +156,8 @@ export default function WriteReview({
 		rating,
 		session,
 		tags,
+		captchaToken,
+		existingReview
 	]);
 
 	const handleRemove = useCallback(async (): Promise<void> => {
@@ -203,8 +210,9 @@ export default function WriteReview({
 			setTags("");
 
 			const tagIds = (existingReview.tags ?? []).map(
-				(tag: number | { id: number }) =>
-					typeof tag === "number" ? tag : tag.id
+				(tag: number | { id: number }) => {
+					return typeof tag === "number" ? tag : tag.id;
+				}
 			);
 
 			if (tagIds.length === 0) {

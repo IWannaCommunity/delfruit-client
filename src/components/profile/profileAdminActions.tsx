@@ -25,7 +25,7 @@ export default function ProfileAdminActions({ user }: UserInfoProps) {
 				setError("Failed to load user permissions");
 			}
 		})();
-	}, [session.active, session.admin, user?.id]);
+	}, [session.active, session.admin, user, user?.id]);
 
 	const togglePermission = async (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -41,9 +41,9 @@ export default function ProfileAdminActions({ user }: UserInfoProps) {
 				user.id
 			);
 
-			setCan((prev) =>
-				prev ? { ...prev, [key]: checked } : prev
-			);
+			setCan((prev) => {
+				return prev ? { ...prev, [key]: checked } : prev;
+			});
 
 			setError(null);
 		} catch {

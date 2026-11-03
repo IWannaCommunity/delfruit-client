@@ -1,4 +1,3 @@
-import type { UserExt } from "delfruit-swagger-cg-sdk";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -10,10 +9,6 @@ import { API } from "@/utils/api";
 import { dedupeArray } from "@/utils/dedupeArray";
 import { useSessionContext } from "@/utils/hooks";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
-
-type UserInfoProps = {
-	user: UserExt;
-};
 
 type Rating = {
 	id: number;
@@ -45,7 +40,7 @@ const ratingColumns: Column<Rating>[] = [
 	},
 ];
 
-export default function ProfileBookmarks({ user }: UserInfoProps): JSX.Element {
+export default function ProfileBookmarks(): JSX.Element {
 	const [ratings, setRatings] = useState<Rating[]>([]);
 	const [sortConfig, setSortConfig] = useState<SortConfig<Rating> | null>(null);
 	const [page, setPage] = useState(0);
@@ -75,7 +70,7 @@ export default function ProfileBookmarks({ user }: UserInfoProps): JSX.Element {
 
 			return newData;
 		},
-		[user.id],
+		[session.token],
 	);
 
 	useEffect(() => {

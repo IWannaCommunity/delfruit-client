@@ -57,11 +57,10 @@ export default function ProfileFollowing({ user }: UserInfoProps): JSX.Element {
 				userId: Number(r.userId),
 				name: r.name,
 			}));
-			console.log(newData);
 
 			return newData;
 		},
-		[user.id],
+		[session.token],
 	);
 
 	useEffect(() => {
