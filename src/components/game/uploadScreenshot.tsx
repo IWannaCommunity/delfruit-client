@@ -40,6 +40,12 @@ export default function UploadScreenshot({
 				setError("Please select a file.");
 				return;
 			}
+			
+			if (!captchaToken) {
+				setError("Please complete the CAPTCHA.");
+				setSuccess(false);
+				return;
+			}
 
 			const token = session.token;
 
@@ -59,6 +65,9 @@ export default function UploadScreenshot({
 			setFile(null);
 			setDescription("");
 		} catch (err: any) {
+			if (err.response?.status === 403) {
+				setError("You do not have permission to upload screenshots.");
+			}
 			setError("Failed to upload screenshot. Please try again.");
 		} finally {
 			setLoading(false);
