@@ -46,6 +46,7 @@ export default function Screenshot(): AnyElem {
 			await API.screenshots().deleteScreenshot(id);
 			setAdminRemoveScreenshotText("Screenshot removed.");
 		} catch (e) {
+			console.error("Full error:", e);
 			setAdminRemoveScreenshotText("Error: Rejected, request did not finish.");
 		}
 	}
