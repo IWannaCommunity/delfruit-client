@@ -35,7 +35,7 @@ export default function Screenshot(): AnyElem {
 			setScreenshotURL(makeScrnshotURL(resp.data.gameId, resp.data.id));
 			setScreenshotDescription(resp.data.description);
 			setScreenshotApproval(resp.data.approved);
-			
+
 			const gameResp = await API.games().getGame(String(resp.data.gameId));
 			setScreenshotGameName(gameResp.data.name);
 		})();
@@ -43,7 +43,7 @@ export default function Screenshot(): AnyElem {
 
 	async function actionAdminRemoveScreenshot() {
 		try {
-			await API.screenshots().deleteScreenshot(`Bearer ${session.token}`, id);
+			await API.screenshots().deleteScreenshot(id);
 			setAdminRemoveScreenshotText("Screenshot removed.");
 		} catch (e) {
 			setAdminRemoveScreenshotText("Error: Rejected, request did not finish.");
@@ -53,7 +53,10 @@ export default function Screenshot(): AnyElem {
 	async function actionAdminApproveScreenshot() {
 		try {
 			await API.screenshots().patchScreenshot(
-				{ approved: true },
+				{ 
+					approved: true,
+					approvedById: session.user_id;
+				},
 				`Bearer ${session.token}`, 
 				id
 			);
