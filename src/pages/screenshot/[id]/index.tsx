@@ -17,6 +17,7 @@ export default function Screenshot(): AnyElem {
 
 	const [screenshotURL, setScreenshotURL] = useState<URL>(undefined);
 	const [screenshotGameName, setScreenshotGameName] = useState<string>("");
+	const [screenshotApproval, setScreenshotApproval] = useState(null);
 	const [screenshotDescription, setScreenshotDescription] =
 		useState<string>("");
 	const [adminRemoveScreenshotText, setAdminRemoveScreenshotText] =
@@ -39,6 +40,7 @@ export default function Screenshot(): AnyElem {
 
 			const resp = await API.games().getGame(String(gameId));
 			setScreenshotGameName(resp.data.name);
+			setScreenshotApproval(resp.data.approved);
 		})();
 	}, [router.isReady, id]);
 
@@ -46,6 +48,19 @@ export default function Screenshot(): AnyElem {
 		try {
 			await API.screenshots().deleteScreenshot(`Bearer ${session.token}`, id);
 			setAdminRemoveScreenshotText("Screenshot removed.");
+		} catch (e) {
+			setAdminRemoveScreenshotText("Error: Rejected, request did not finish.");
+		}
+	}
+
+	async function actionAdminApproveScreenshot() {
+		try {
+			await API.screenshots().patchScreenshot(
+				{ approved: true },
+				`Bearer ${session.token}`, 
+				id
+			);
+			setAdminRemoveScreenshotText("Screenshot approved.");
 		} catch (e) {
 			setAdminRemoveScreenshotText("Error: Rejected, request did not finish.");
 		}
@@ -82,17 +97,29 @@ export default function Screenshot(): AnyElem {
 						<>
 							<h2>Admin Tools</h2>
 							<p id="admin_controls">
-								<button
-									type="submit"
-									onClick={async (
-										evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-									) => {
-										evt.preventDefault();
-										await actionAdminRemoveScreenshot();
-									}}
-								>
-									Remove Screenshot
-								</button>
+								{screenshotApproval ? (
+									<button 
+										type="button"
+										onClick={actionAdminRemoveScreenshot}
+									>
+										Remove Screenshot
+									</button>
+								) : (
+									<>
+										<button
+											type="button"
+											onClick={actionAdminApproveScreenshot}
+										>
+											Approve
+										</button>
+										<button
+											type="button"
+											onClick={actionAdminRemoveScreenshot}
+										>
+											Deny
+										</button>
+									</>
+								)}
 								<p>{adminRemoveScreenshotText}</p>
 							</p>
 						</>
