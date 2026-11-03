@@ -65,7 +65,7 @@ export default function UploadScreenshot({
 			setFile(null);
 			setDescription("");
 		} catch (err: any) {
-			if (err.response?.status === 403) {
+			if (err.response?.status === 401) {
 				setError("You do not have permission to upload screenshots.");
 			}
 			setError("Failed to upload screenshot. Please try again.");
