@@ -55,7 +55,7 @@ export default function Screenshot(): AnyElem {
 			await API.screenshots().patchScreenshot(
 				{ 
 					approved: true,
-					approvedById: session.user_id;
+					approvedById: session.user_id
 				},
 				`Bearer ${session.token}`, 
 				id
