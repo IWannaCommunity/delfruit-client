@@ -17,7 +17,7 @@ export default function Screenshot(): AnyElem {
 
 	const [screenshotURL, setScreenshotURL] = useState<URL>(undefined);
 	const [screenshotGameName, setScreenshotGameName] = useState<string>("");
-	const [screenshotApproval, setScreenshotApproval] = useState(null);
+	const [screenshotApproval, setScreenshotApproval] = useState<boolean | null>(null);
 	const [screenshotDescription, setScreenshotDescription] =
 		useState<string>("");
 	const [adminRemoveScreenshotText, setAdminRemoveScreenshotText] =
@@ -26,21 +26,18 @@ export default function Screenshot(): AnyElem {
 	const id = Number(router.query.id);
 
 	useEffect(() => {
-		if (!router.isReady) {
+		if (!router.isReady || !id) {
 			return;
 		}
-
+		
 		(async () => {
-			const gameId = await (async () => {
-				const resp = await API.screenshots().getScreenshot(id);
-				setScreenshotURL(makeScrnshotURL(resp.data.gameId, resp.data.id));
-				setScreenshotDescription(resp.data.description);
-				return resp.data.gameId;
-			})();
-
-			const resp = await API.games().getGame(String(gameId));
-			setScreenshotGameName(resp.data.name);
+			const resp = await API.screenshots().getScreenshot(id);
+			setScreenshotURL(makeScrnshotURL(resp.data.gameId, resp.data.id));
+			setScreenshotDescription(resp.data.description);
 			setScreenshotApproval(resp.data.approved);
+			
+			const gameResp = await API.games().getGame(String(resp.data.gameId));
+			setScreenshotGameName(gameResp.data.name);
 		})();
 	}, [router.isReady, id]);
 
