@@ -2,7 +2,7 @@ import type { Game, GameExt } from "delfruit-swagger-cg-sdk";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useReducer, useState } from "react";
+import React, { useReducer, useState, useEffect } from "react";
 import AverageBox, { getColor } from "@/components/game/averageBox";
 import Tag from "@/components/game/tag";
 import { API } from "@/utils/api";
