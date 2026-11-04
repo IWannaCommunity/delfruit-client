@@ -80,8 +80,9 @@ export default function Carousel({ images }: CarouselProps): JSX.Element {
 					height={250}
 					priority
 					className={`absolute top-0 left-0 h-full max-w-[350px] 
-									object-contain transition-opacity duration-500 ease-in-out 
-									${current === index ? "opacity-100" : "opacity-0"}`}
+						object-contain transition-opacity duration-500 ease-in-out 
+						${current === index ? "opacity-100" : "opacity-0"}`
+					}
 				/>
 			</Link>
 		));

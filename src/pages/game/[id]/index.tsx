@@ -145,13 +145,33 @@ export default function Game(): AnyElem {
 				bookmarked,
 			});
 
-			const carouselProps =
-				game.screenshots?.map((scrnShot) => ({
-					id: scrnShot.id,
-					src: makeScrnshotURL(scrnShot.gameId, scrnShot.id).toString(),
-					alt: "",
-					user_name: scrnShot.user_name,
-				})) || [];
+			const userCache = new Map<number, boolean>();
+
+			const carouselProps = await Promise.all(
+				(game.screenshots || []).map(async (scrnShot) => {
+					let banned = userCache.get(scrnShot.addedById);
+
+					if (banned === undefined) {
+						try {
+							const user = await API.users().getUser(scrnShot.addedById);
+							banned = user.data.banned;
+						} catch {
+							banned = false;
+						}
+
+						userCache.set(scrnShot.addedById, banned);
+					}
+
+					return {
+						id: scrnShot.id,
+						src: makeScrnshotURL(scrnShot.gameId, scrnShot.id).toString(),
+						alt: "",
+						user_name: banned
+							? "Anonymous"
+							: scrnShot.user_name,
+					};
+				}),
+			);
 
 			setDetails(gameProps);
 			setImages(carouselProps);
