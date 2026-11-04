@@ -225,7 +225,7 @@ export default function GameInfo({
 
 			try {
 				const owner = await API.users().getUser(game.ownerId);
-				setOwnerInput(owner.name);
+				setOwnerInput(owner.data.name);
 			} catch {
 				setOwnerInput("");
 			}
