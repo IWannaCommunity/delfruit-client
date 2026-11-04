@@ -702,7 +702,7 @@ export default function GameInfo({
 					<br />
 					<h2>ADMIN TOOLS</h2>
 					<p>
-						<Link href="/admin/remove_game">Remove Game</Link>
+						<Link href={`/admin/remove_game/${game.id}`}>Remove Game</Link>
 						<br />
 						<span>Owner: </span>
 						<input
