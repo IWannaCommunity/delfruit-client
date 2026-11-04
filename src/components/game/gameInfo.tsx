@@ -85,6 +85,7 @@ export default function GameInfo({
 	// Controlled input states
 	const [creatorInput, setCreatorInput] = useState(game.author.join(", "));
 	const [dlUrlInput, setDlUrlInput] = useState(game.url ?? "");
+	const [speedrunInput, setSpeedrunInput] = useState(game.urlSpdrn ?? "");
 	const [dateInput, setDateInput] = useState(
 		game.dateCreated
 			? new Date(game.dateCreated).toISOString().slice(0, 10)
@@ -95,11 +96,13 @@ export default function GameInfo({
 	// Visibility toggles
 	const [hideAdminCreatorInput, setHideAdminCreatorInput] = useState(true);
 	const [hideAdminDLUrlInput, setHideAdminDLUrlInput] = useState(true);
+	const [hideAdminSpeedrunInput, setHideAdminSpeedrunInput] = useState(true);
 	const [hideAdminDateInput, setHideAdminDateInput] = useState(true);
 
 	// Alerts
 	const [adminCreatorAlertText, setAdminCreatorAlertText] = useState("");
 	const [adminDLUrlText, setAdminDLUrlText] = useState("");
+	const [adminSpeedrunAlertText, setAdminSpeedrunAlertText] = useState("");
 	const [adminDateText, setAdminDateText] = useState("");
 	const [adminOwnerText, setAdminOwnerText] = useState("");
 
@@ -165,6 +168,30 @@ export default function GameInfo({
 			if (onGameUpdated) onGameUpdated();
 		} catch {
 			setAdminDLUrlText("Error: Rejected, download is not a valid URL.");
+		}
+	}
+
+	async function actionAdminChangeSpeedrunUrl() {
+		try {
+			const speedrunUrl = speedrunInput.trim()
+				? new URL(speedrunInput).href
+				: "";
+
+			const g = sanitizeGameForPatch({
+				...game,
+				urlSpdrn: speedrunUrl,
+			} as GameExt);
+
+			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
+
+			setHideAdminSpeedrunInput(true);
+			setAdminSpeedrunAlertText("Changes Saved.");
+
+			if (onGameUpdated) onGameUpdated();
+		} catch {
+			setAdminSpeedrunAlertText(
+				"Error: Rejected, speedrun link is not a valid URL."
+			);
 		}
 	}
 
@@ -402,6 +429,60 @@ export default function GameInfo({
 						/>
 						<span>&nbsp;&nbsp;&nbsp;&nbsp; Speedrun Leaderboards</span>
 					</Link>
+					<br />
+				</>
+			)}
+
+			{session.admin && (
+				<>
+					<input
+						id="admin-speedrun-input"
+						type="text"
+						className="w-[95%]"
+						value={speedrunInput}
+						onChange={(e) => setSpeedrunInput(e.target.value)}
+						hidden={hideAdminSpeedrunInput}
+					/>
+
+					<button
+						id="admin-change-speedrun"
+						type="button"
+						className="ml-1"
+						hidden={!hideAdminSpeedrunInput}
+						onClick={() => setHideAdminSpeedrunInput(false)}
+					>
+						{game.urlSpdrn ? "Change Speedrun Link" : "Add Speedrun Link"}
+					</button>
+
+					<button
+						id="admin-save-change-speedrun"
+						type="submit"
+						hidden={hideAdminSpeedrunInput}
+						className="mr-1"
+						onClick={async (evt) => {
+							evt.preventDefault();
+							await actionAdminChangeSpeedrunUrl();
+						}}
+					>
+						Save
+					</button>
+
+					<button
+						id="admin-discard-change-speedrun"
+						type="reset"
+						hidden={hideAdminSpeedrunInput}
+						onClick={(evt) => {
+							evt.preventDefault();
+							setSpeedrunInput(game.urlSpdrn ?? "");
+							setHideAdminSpeedrunInput(true);
+						}}
+					>
+						Cancel
+					</button>
+
+					<span className="game_creator_update_alert ml-1">
+						{adminSpeedrunAlertText}
+					</span>
 					<br />
 				</>
 			)}
