@@ -12,10 +12,12 @@ import { useSessionContext } from "@/utils/hooks";
 
 type GameReviewsProp = {
 	reviews: ReviewT[];
+	ownerId: number;
 };
 
 export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const [session] = useSessionContext();
+	const [userReview, setUserReview] = useState<ReviewT | null>(null);
 	const [reviews, setReviews] = useState<ReviewT[]>(props.reviews);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(true);
@@ -26,7 +28,50 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const id = Number(router.query.id);
 
 	const userId = session.user_id;
-	const userReview = reviews.find((r) => r.user_id === userId) || null;
+	const isGameOwner = session.user_id === props.ownerId;
+
+	const fetchUserReview = useCallback(async () => {
+		if (!router.isReady || !session.active || !userId || isGameOwner) {
+			setUserReview(null);
+			return;
+		}
+
+    try {
+        const res = await API.games().getGameReviews(
+					id, // id
+					userId, // user id
+					false, // include owner review
+					true, // text reviews first
+					0, // page number
+					1, // limit
+        );
+
+        const r = res.data?.[0];
+
+        if (!r) {
+					setUserReview(null);
+					return;
+        }
+
+        setUserReview({
+					id: Number(r.id),
+					user_id: Number(r.user_id),
+					game_id: null,
+					user_name: r.user_name,
+					game_name: r.game_name,
+					date_created: formatDate(new Date(r.date_created)),
+					removed: r.removed,
+					comment: r.comment,
+					rating: r.rating === null ? null : Number(r.rating / 10).toFixed(1),
+					difficulty: r.difficulty === null ? null : Number(r.difficulty),
+					like_count: Number(r.like_count),
+					owner_review: r.owner_review === 1,
+					tags: r.tags,
+        });
+    } catch {
+      setUserReview(null);
+    }
+	}, [id, router.isReady, session.active, userId, isGameOwner]);
 
 	const fetchReviews = useCallback(
 		async (requestedPage: number): Promise<ReviewT[]> => {
@@ -88,6 +133,14 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 		{ enabled: initialized }
 	);
 
+	const otherReviews = reviews.filter(
+		(review) => review.id !== userReview?.id
+	);
+
+	useEffect(() => {
+    fetchUserReview();
+	}, [fetchUserReview]);
+
 	return (
 		<div>
 			<h2 className="clear-both">
@@ -103,33 +156,53 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 						setPage(0);
 						setHasMore(true);
 						setInitialized(true);
+
+						await fetchUserReview();
 					}}
 				/>
 			)}
 
 			{/* Review List */}
 			<div id="reviews">
-				{reviews.map((review) => {
-					return (
-						<Review
-							key={review.id}
-							id={review.id}
-							user_id={review.user_id}
-							game_id={review.game_id}
-							rating={review.rating}
-							difficulty={review.difficulty}
-							comment={review.comment}
-							date_created={review.date_created}
-							removed={review.removed}
-							user_name={review.user_name}
-							game_name={review.game_name}
-							like_count={review.like_count}
-							owner_review={review.owner_review}
-							tags={review.tags}
-						/>
-					);
-				})}
+				{userReview && (
+					<Review
+						key={userReview.id}
+						id={userReview.id}
+						user_id={userReview.user_id}
+						game_id={userReview.game_id}
+						rating={userReview.rating}
+						difficulty={userReview.difficulty}
+						comment={userReview.comment}
+						date_created={userReview.date_created}
+						removed={userReview.removed}
+						user_name={userReview.user_name}
+						game_name={userReview.game_name}
+						like_count={userReview.like_count}
+						owner_review={userReview.owner_review}
+						tags={userReview.tags}
+					/>
+				)}
+
+				{otherReviews.map((review) => (
+					<Review
+						key={review.id}
+						id={review.id}
+						user_id={review.user_id}
+						game_id={review.game_id}
+						rating={review.rating}
+						difficulty={review.difficulty}
+						comment={review.comment}
+						date_created={review.date_created}
+						removed={review.removed}
+						user_name={review.user_name}
+						game_name={review.game_name}
+						like_count={review.like_count}
+						owner_review={review.owner_review}
+						tags={review.tags}
+					/>
+				))}
 			</div>
+
 			{/* Infinite scroll trigger */}
 			{hasMore ? (
 				<div ref={loaderRef} className="flex justify-center items-center h-16">

@@ -299,7 +299,10 @@ export default function Game(): AnyElem {
 						/>
 					</div>
 				)}
-				<GameReviews reviews={details.reviews} />
+				<GameReviews
+					reviews={details.reviews}
+					ownerId={details.ownerId}
+				/>
 			</>
 		);
 	};
