@@ -27,6 +27,8 @@ export default function WriteReview({
 	);
 	const [comment, setComment] = useState(existingReview?.comment ?? "");
 	const [tags, setTags] = useState("");
+	const [suggestedTags, setSuggestedTags] = useState<{ id: number; name: string }[]>([]);
+	const [searchingTags, setSearchingTags] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const [error, setError] = useState<string | null>(null);
@@ -70,6 +72,15 @@ export default function WriteReview({
 
 		return createdTag.id;
 	}
+
+	const handleSelectTag = (selectedTag: string) => {
+		const currentTags = tags.trimEnd().split(" ");
+
+		currentTags[currentTags.length - 1] = selectedTag;
+
+		setTags(currentTags.join(" ") + " ");
+		setSuggestedTags([]);
+	};
 
 	const handleSubmit = useCallback(async (): Promise<void> => {
 		setLoading(true);
@@ -260,6 +271,54 @@ export default function WriteReview({
 		};
 	}, [existingReview]);
 
+	useEffect(() => {
+		const trimmedTags = tags.trimEnd();
+
+		if (!trimmedTags) {
+			setSuggestedTags([]);
+			return;
+		}
+
+		const currentTag = trimmedTags.split(" ").pop() ?? "";
+
+		if (!currentTag) {
+			setSuggestedTags([]);
+			return;
+		}
+
+		let cancelled = false;
+
+		const timeout = setTimeout(async () => {
+			try {
+				setSearchingTags(true);
+
+				const response = await API.tags().getTags(currentTag);
+
+				if (!cancelled) {
+					setSuggestedTags(
+						response.data.filter(
+							(tag: { id: number; name: string }) =>
+								tag.name.toLowerCase() !== currentTag.toLowerCase(),
+						),
+					);
+				}
+			} catch (err) {
+				if (!cancelled) {
+					setSuggestedTags([]);
+				}
+			} finally {
+				if (!cancelled) {
+					setSearchingTags(false);
+				}
+			}
+		}, 300);
+
+		return () => {
+			cancelled = true;
+			clearTimeout(timeout);
+		};
+	}, [tags]);
+
 	return (
 		<>
 			{/* Write Review Button */}
@@ -367,23 +426,47 @@ export default function WriteReview({
 					<br />
 
 					{/* Tags */}
-					<span>
-						Tags (separate with spaces, 30 characters per tag, max of 10):
-					</span>
+					<div className="relative">
+						<span>
+							Tags (separate with spaces, 30 characters per tag, max of 10):
+						</span>
+
+						<input
+							className="w-full"
+							type="text"
+							name="tags"
+							id="tags"
+							value={tags}
+							onChange={(e) => setTags(e.target.value)}
+							autoComplete="on"
+						/>
+						
+						{suggestedTags.length > 0 && (
+							<ul className="absolute z-10 w-full bg-white border border-gray-300 rounded shadow-md max-h-48 overflow-y-auto">
+								{suggestedTags.map((tag) => (
+									<li
+										key={tag.id}
+										onClick={() => handleSelectTag(tag.name)}
+										className="px-3 py-2 cursor-pointer hover:bg-gray-100"
+									>
+										{tag.name}
+									</li>
+								))}
+							</ul>
+						)}
+
+						{searchingTags && (
+							<span className="text-sm text-gray-500">
+								Searching tags...
+							</span>
+						)}
+					</div>
 					<br />
-					<input
-						className="w-full"
-						type="text"
-						name="tags"
-						id="tags"
-						value={tags}
-						onChange={(e) => setTags(e.target.value)}
-					/>
-					<span className="tags_alert" />
-					<br />
+
 					<form id="captchaContainer">
 						<Captcha onSuccess={setCaptchaToken} />
 					</form>
+
 					{/* Submit/Remove Buttons */}
 					<div className="flex items-center justify-between mt-4">
 						<input
