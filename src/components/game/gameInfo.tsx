@@ -188,42 +188,16 @@ export default function GameInfo({
 
 	async function actionAdminChangeOwner() {
 		try {
-			const trimmedOwner = ownerInput.trim();
-
-			if (!trimmedOwner) {
-				setAdminOwnerText("Error: Please enter a username or user ID.");
-				return;
-			}
-
-			const numericId = Number(trimmedOwner);
-			let ownerId: string;
-
-			if (Number.isInteger(numericId) && numericId >= 0) {
-				ownerId = String(numericId);
-			} else {
-				const user = await API.users().getUser(trimmedOwner);
-
-				if (!user || user.id == null) {
-					setAdminOwnerText("Error: User not found.");
-					return;
-				}
-
-				ownerId = String(user.id);
-			}
-
 			const g = sanitizeGameForPatch({
 				...game,
-				ownerId,
-			} as GameExt);
+				ownerId: ownerInput,
+			} as any);
 
 			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
-
 			setAdminOwnerText("Changes Saved.");
-			setOwnerInput("");
-
 			if (onGameUpdated) onGameUpdated();
 		} catch {
-			setAdminOwnerText("Error: User not found or changes were not accepted.");
+			setAdminOwnerText("Error: Rejected, changes were not accepted.");
 		}
 	}
 
