@@ -220,12 +220,15 @@ export default function GameInfo({
 		async function fetchOwner() {
 			if (!game.ownerId) {
 				setOwnerInput("");
+				console.log("no user")
 				return;
 			}
 
 			try {
 				const owner = await API.users().getUser(game.ownerId);
+				console.log(game.ownerId);
 				setOwnerInput(owner.data.name);
+				console.log(owner.data.name);
 			} catch {
 				setOwnerInput("");
 			}
