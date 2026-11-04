@@ -1,5 +1,5 @@
 import Review from "@/components/review";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import WriteReview from "@/components/game/writeReview";
 import { API } from "@/utils/api";
 import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
