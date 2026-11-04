@@ -216,6 +216,24 @@ export default function GameInfo({
 		}
 	}
 
+	useEffect(() => {
+		async function fetchOwner() {
+			if (!game.ownerId) {
+				setOwnerInput("");
+				return;
+			}
+
+			try {
+				const owner = await API.users().getUser(game.ownerId);
+				setOwnerInput(owner.name);
+			} catch {
+				setOwnerInput("");
+			}
+		}
+
+		fetchOwner();
+	}, [game.ownerId]);
+
 	return (
 		<div className="w-[50%] float-left">
 			<h1 className="break-words">{game.name}</h1>
