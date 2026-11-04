@@ -156,7 +156,7 @@ export default function Game(): AnyElem {
 							const user = await API.users().getUser(scrnShot.addedById);
 							banned = user.data.banned;
 						} catch {
-							banned = false;
+							banned = true;
 						}
 
 						userCache.set(scrnShot.addedById, banned);
