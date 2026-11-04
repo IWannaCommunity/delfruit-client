@@ -2,7 +2,7 @@ import type { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import Captcha from "@/components/captcha";
 import { API } from "@/utils/api";
 import { useSessionContext } from "@/utils/hooks";
@@ -32,6 +32,7 @@ export default function WriteReview({
 	const [loading, setLoading] = useState(false);
 	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const [error, setError] = useState<string | null>(null);
+	const tagsContainerRef = useRef<HTMLDivElement>(null);
 	const [session] = useSessionContext();
 
 	const router = useRouter();
@@ -319,6 +320,23 @@ export default function WriteReview({
 		};
 	}, [tags]);
 
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				tagsContainerRef.current &&
+				!tagsContainerRef.current.contains(event.target as Node)
+			) {
+				setSuggestedTags([]);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, []);
+
 	return (
 		<>
 			{/* Write Review Button */}
@@ -426,7 +444,7 @@ export default function WriteReview({
 					<br />
 
 					{/* Tags */}
-					<div className="relative">
+					<div className="relative" ref={tagsContainerRef}>
 						<span>
 							Tags (separate with spaces, 30 characters per tag, max of 10):
 						</span>
@@ -438,9 +456,14 @@ export default function WriteReview({
 							id="tags"
 							value={tags}
 							onChange={(e) => setTags(e.target.value)}
-							autoComplete="on"
+							autoComplete="off"
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									setSuggestedTags([]);
+								}
+							}}
 						/>
-						
+
 						{suggestedTags.length > 0 && (
 							<div className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-md shadow-md max-h-48 overflow-y-auto">
 								{suggestedTags.map((tag) => (
