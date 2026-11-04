@@ -18,6 +18,8 @@ export default function Screenshot(): AnyElem {
 	const [screenshotURL, setScreenshotURL] = useState<URL>(undefined);
 	const [screenshotGameName, setScreenshotGameName] = useState<string>("");
 	const [screenshotApproval, setScreenshotApproval] = useState<boolean | null>(null);
+	const [screenshotRemoved, setScreenshotRemoved] = useState<boolean | null>(null);
+	const [screenshotExists, setScreenshotExists] = useState<boolean | null>(null);
 	const [screenshotDescription, setScreenshotDescription] =
 		useState<string>("");
 	const [adminRemoveScreenshotText, setAdminRemoveScreenshotText] =
@@ -29,15 +31,22 @@ export default function Screenshot(): AnyElem {
 		if (!router.isReady || !id) {
 			return;
 		}
-		
-		(async () => {
-			const resp = await API.screenshots().getScreenshot(id);
-			setScreenshotURL(makeScrnshotURL(resp.data.gameId, resp.data.id));
-			setScreenshotDescription(resp.data.description);
-			setScreenshotApproval(resp.data.approved);
 
-			const gameResp = await API.games().getGame(String(resp.data.gameId));
-			setScreenshotGameName(gameResp.data.name);
+		(async () => {
+			try {
+				const resp = await API.screenshots().getScreenshot(id);
+
+				setScreenshotExists(true);
+				setScreenshotURL(makeScrnshotURL(resp.data.gameId, resp.data.id));
+				setScreenshotDescription(resp.data.description);
+				setScreenshotApproval(resp.data.approved);
+				setScreenshotRemoved(resp.data.removed);
+
+				const gameResp = await API.games().getGame(String(resp.data.gameId));
+				setScreenshotGameName(gameResp.data.name);
+			} catch (e) {
+				setScreenshotExists(false);
+			}
 		})();
 	}, [router.isReady, id]);
 
@@ -75,54 +84,64 @@ export default function Screenshot(): AnyElem {
 			<div id="container">
 				<Header />
 				<div id="content">
-					<p>Screenshot for</p>
-					<h2>{screenshotGameName}</h2>
-					<Image
-						className="w-full"
-						alt=""
-						src={screenshotURL?.toString()}
-						width={-1}
-						height={-1}
-					/>
-					<p>
-						<span>{screenshotDescription}</span>
-						<br />
-						{session.active && (
-							<Link href={`/report/screenshot/${router.query.id}`}>
-								Report this image
-							</Link>
-						)}
-					</p>
-
-					{session.admin && (
+					{screenshotExists === null ? (
+						<p>Loading screenshot...</p>
+					) : !screenshotExists ? (
+						<p>This screenshot does not exist</p>
+					) : screenshotRemoved ? (
+						<p>This screenshot has been deleted</p>
+					) : (
 						<>
-							<h2>Admin Tools</h2>
-							<p id="admin_controls">
-								{screenshotApproval ? (
-									<button 
-										type="button"
-										onClick={actionAdminRemoveScreenshot}
-									>
-										Remove Screenshot
-									</button>
-								) : (
-									<>
-										<button
-											type="button"
-											onClick={actionAdminApproveScreenshot}
-										>
-											Approve
-										</button>
-										<button
-											type="button"
-											onClick={actionAdminRemoveScreenshot}
-										>
-											Deny
-										</button>
-									</>
+							<p>Screenshot for</p>
+							<h2>{screenshotGameName}</h2>
+							<Image
+								className="w-full"
+								alt=""
+								src={screenshotURL?.toString()}
+								width={-1}
+								height={-1}
+							/>
+							<p>
+								<span>{screenshotDescription}</span>
+								<br />
+								{session.active && (
+									<Link href={`/report/screenshot/${router.query.id}`}>
+										Report this image
+									</Link>
 								)}
-								<p>{adminRemoveScreenshotText}</p>
 							</p>
+
+							{session.admin && (
+								<>
+									<h2>Admin Tools</h2>
+									<p id="admin_controls">
+										{screenshotApproval ? (
+											<button
+												type="button"
+												onClick={actionAdminRemoveScreenshot}
+											>
+												Remove Screenshot
+											</button>
+										) : (
+											<>
+												<button
+													type="button"
+													onClick={actionAdminApproveScreenshot}
+												>
+													Approve
+												</button>
+												<button
+													type="button"
+													onClick={actionAdminRemoveScreenshot}
+												>
+													Deny
+												</button>
+											</>
+										)}
+										<p>{adminRemoveScreenshotText}</p>
+									</p>
+								</>
+							)}
 						</>
 					)}
 				</div>
