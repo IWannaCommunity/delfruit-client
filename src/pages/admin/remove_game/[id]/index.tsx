@@ -30,14 +30,12 @@ export default function RemoveGame(): AnyElem {
     };
   }
 
-	async function handleSubmit(e: React.FormEvent) {
-		e.preventDefault();
-
+	async function handleSubmit() {
 		if (!session.active || !session.admin || !session.token || !game) {
 			setError("You are not authorized to perform this action.");
 			return;
 		}
-		
+
 		try {
 			const g = sanitizeGameForPatch({
 				...game,
@@ -162,11 +160,17 @@ export default function RemoveGame(): AnyElem {
 				)}
 				<br />
 
-				<input
+				<button
+					id="remove"
 					type="submit"
-					value="Remove"
 					className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded"
-				/>
+					onClick={(evt) => {
+						evt.preventDefault();
+						handleSubmit();
+					}}
+				>
+					Remove
+				</button>
 
 				{error && !success && (
 					<span className="text-red-600 ml-2">
