@@ -42,8 +42,7 @@ function sanitizeGameForPatch(game: GameExt): Game {
 			: undefined,
 		adderId: game.adderId != null ? String(game.adderId) : undefined,
 		ownerId: game.ownerId != null ? String(game.ownerId) : undefined,
-		removed: Boolean(game.removed),
-		ownerBio: game.ownerBio ?? "",
+		removed: Boolean(game.removed)
 	};
 }
 
