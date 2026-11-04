@@ -83,6 +83,7 @@ export default function GameInfo({
 	const router = useRouter();
 
 	// Controlled input states
+	const [gameNameInput, setGameNameInput] = useState(game.name);
 	const [creatorInput, setCreatorInput] = useState(game.author.join(", "));
 	const [dlUrlInput, setDlUrlInput] = useState(game.url ?? "");
 	const [speedrunInput, setSpeedrunInput] = useState(game.urlSpdrn ?? "");
@@ -94,12 +95,14 @@ export default function GameInfo({
 	const [ownerInput, setOwnerInput] = useState("");
 
 	// Visibility toggles
+	const [hideAdminGameNameInput, setHideAdminGameNameInput] = useState(true);
 	const [hideAdminCreatorInput, setHideAdminCreatorInput] = useState(true);
 	const [hideAdminDLUrlInput, setHideAdminDLUrlInput] = useState(true);
 	const [hideAdminSpeedrunInput, setHideAdminSpeedrunInput] = useState(true);
 	const [hideAdminDateInput, setHideAdminDateInput] = useState(true);
 
 	// Alerts
+	const [adminGameNameAlertText, setAdminGameNameAlertText] = useState("");
 	const [adminCreatorAlertText, setAdminCreatorAlertText] = useState("");
 	const [adminDLUrlText, setAdminDLUrlText] = useState("");
 	const [adminSpeedrunAlertText, setAdminSpeedrunAlertText] = useState("");
@@ -131,6 +134,26 @@ export default function GameInfo({
 			mutateUserState({ type });
 		} catch (error) {
 			throw new Error("Failed to update state.");
+		}
+	}
+
+	async function actionAdminChangeGameName() {
+		try {
+			const g = sanitizeGameForPatch({
+				...game,
+				name: gameNameInput.trim(),
+			} as GameExt);
+
+			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
+
+			setHideAdminGameNameInput(true);
+			setAdminGameNameAlertText("Changes Saved.");
+
+			if (onGameUpdated) onGameUpdated();
+		} catch {
+			setAdminGameNameAlertText(
+				"Error: Rejected, game name was not accepted."
+			);
 		}
 	}
 
@@ -262,8 +285,60 @@ export default function GameInfo({
 
 	return (
 		<div className="w-[50%] float-left">
-			<h1 className="break-words">{game.name}</h1>
+			<div className="flex items-center gap-2">
 
+				{/* Game Title */}
+				<h1 className="break-words">{game.name}</h1>
+
+				{session.admin && (
+					<>
+						<button
+							id="admin-change-game-name"
+							type="button"
+							hidden={!hideAdminGameNameInput}
+							onClick={() => setHideAdminGameNameInput(false)}
+						>
+							Change Game Title
+						</button>
+
+						<input
+							id="admin-game-name-input"
+							type="text"
+							className="w-[95%]"
+							value={gameNameInput}
+							onChange={(e) => setGameNameInput(e.target.value)}
+							hidden={hideAdminGameNameInput}
+						/>
+
+						<button
+							id="admin-save-game-name"
+							type="button"
+							hidden={hideAdminGameNameInput}
+							onClick={actionAdminChangeGameName}
+						>
+							Save
+						</button>
+
+						<button
+							id="admin-discard-game-name"
+							type="button"
+							hidden={hideAdminGameNameInput}
+							onClick={() => {
+								setGameNameInput(game.name);
+								setHideAdminGameNameInput(true);
+							}}
+						>
+							Cancel
+						</button>
+
+						<span className="game_creator_update_alert ml-1">
+							{adminGameNameAlertText}
+						</span>
+					</>
+				)}
+			</div>
+
+			{/* Creators */}
 			<h2 id="creator-label" className="mb-[13px]">
 				<span>{game.author.length === 1 ? "Creator: " : "Creators: "}</span>
 				{game.author.length > 0 &&
@@ -310,7 +385,7 @@ export default function GameInfo({
 					</button>
 					<button
 						id="admin-discard-change-creator"
-						type="reset"
+						type="button"
 						hidden={hideAdminCreatorInput}
 						onClick={(evt) => {
 							evt.preventDefault();
@@ -399,7 +474,7 @@ export default function GameInfo({
 					</button>
 					<button
 						id="admin-discard-change-download"
-						type="reset"
+						type="button"
 						hidden={hideAdminDLUrlInput}
 						onClick={(evt) => {
 							evt.preventDefault();
@@ -599,7 +674,7 @@ export default function GameInfo({
 					</button>
 					<button
 						id="admin-discard-change-date"
-						type="reset"
+						type="button"
 						hidden={hideAdminDateInput}
 						onClick={(evt) => {
 							evt.preventDefault();
