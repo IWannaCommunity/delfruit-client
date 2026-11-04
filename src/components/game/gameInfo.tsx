@@ -231,7 +231,7 @@ export default function GameInfo({
 		try {
 			const g = sanitizeGameForPatch({
 				...game,
-				ownerId: null,
+				ownerId: ""
 			} as any);
 
 			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
