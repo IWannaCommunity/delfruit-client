@@ -17,7 +17,7 @@ function getReportTargetHref(
 	switch (type) {
 		case ReportTypeEnum.Review:
 		case ReportTypeEnum.ReviewReported:
-		case ReportTypeEnum.ReviewRemoved:
+		case ReportTypeEnum.ReviewRemove:
 		case ReportTypeEnum.ReviewRestore:
 			return `/review/${targetId}`;
 
@@ -34,10 +34,10 @@ function getReportTargetHref(
 
 		case ReportTypeEnum.Screenshot:
 		case ReportTypeEnum.ScreenshotReported:
-		case ReportTypeEnum.ScreenshotAdded:
+		case ReportTypeEnum.ScreenshotAdd:
 		case ReportTypeEnum.ScreenshotRemove:
-		case ReportTypeEnum.ScreenshotApproved:
-		case ReportTypeEnum.ScreenshotDenied:
+		case ReportTypeEnum.ScreenshotApprove:
+		case ReportTypeEnum.ScreenshotDeny:
 			return `/screenshot/${targetId}`;
 			
 		case ReportTypeEnum.User:
