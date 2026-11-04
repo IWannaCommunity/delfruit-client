@@ -40,6 +40,7 @@ export default function RemoveGame(): AnyElem {
 			const g = sanitizeGameForPatch({
 				...game,
 				removed: true,
+				url: ""
 			} as Game);
 
 			await API.games().patchGame(g, `Bearer ${session.token}`, game.id);
