@@ -298,7 +298,7 @@ export default function GameInfo({
 							hidden={!hideAdminGameNameInput}
 							onClick={() => setHideAdminGameNameInput(false)}
 						>
-							Change Game Title
+							Change Title
 						</button>
 
 						<input
@@ -738,12 +738,14 @@ export default function GameInfo({
 			)}
 
 			{/* Tags */}
-			<div className="mt-5">
-				<h2>Tags:</h2>
-				{game.tags.map((tag) => (
-					<Tag key={tag.id} id={tag.id} name={tag.name} count={tag.count} />
-				))}
-			</div>
+			{game.tags.length > 0 && (
+				<div className="mt-5">
+					<h2>Tags:</h2>
+					{game.tags.map((tag) => (
+						<Tag key={tag.id} id={tag.id} name={tag.name} count={tag.count} />
+					))}
+				</div>
+			)}
 		</div>
 	);
 }
