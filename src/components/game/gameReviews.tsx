@@ -32,9 +32,9 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 		async (requestedPage: number): Promise<ReviewT[]> => {
 			const res = await API.games().getGameReviews(
 				id, // id
-				undefined,
-				true,
-				true,
+				undefined, // user id
+				false, // include owner review
+				true, // text reviews first
 				requestedPage, // page number
 				5, // limit
 			);
@@ -61,25 +61,27 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	);
 
 	const loadMore = useCallback(async () => {
-		if (!router.isReady) return;
+		if (!router.isReady || isLoadingMore || !hasMore) return;
 
-		if (isLoadingMore) return;
 		setIsLoadingMore(true);
 
-		const nextPage = page + 1;
-		const moreReviews = await fetchReviews(nextPage);
+		try {
+			const nextPage = page + 1;
+			const moreReviews = await fetchReviews(nextPage);
 
-		if (moreReviews.length === 0) {
-			setHasMore(false);
+			setHasMore(moreReviews.length === 5);
+
+			if (moreReviews.length > 0) {
+				setReviews((prev) =>
+					dedupeArray([...prev, ...moreReviews], (r) => r.id)
+				);
+				setPage(nextPage);
+				setInitialized(true);
+			}
+		} finally {
 			setIsLoadingMore(false);
-			return;
 		}
-
-		setReviews((prev) => dedupeArray([...prev, ...moreReviews], (r) => r.id));
-		setPage(nextPage);
-		setIsLoadingMore(false);
-		setInitialized(true);
-	}, [fetchReviews, page, router.isReady, isLoadingMore]);
+	}, [fetchReviews, page, router.isReady, isLoadingMore, hasMore]);
 
 	const loaderRef = useInfiniteScroll<HTMLDivElement>(
 		() => { if (hasMore) loadMore(); },
