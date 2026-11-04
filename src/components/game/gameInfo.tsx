@@ -542,8 +542,9 @@ export default function GameInfo({
 								type="button"
 								hidden={hideAdminSpeedrunInput}
 								onClick={() => {
-									setAdminSpeedrunUrlInput(game.urlSpdrn ?? "");
+									setSpeedrunInput(game.urlSpdrn ?? "");
 									setHideAdminSpeedrunInput(true);
+									setAdminSpeedrunAlertText("");
 								}}
 							>
 								Cancel
