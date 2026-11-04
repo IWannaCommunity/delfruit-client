@@ -417,72 +417,70 @@ export default function GameInfo({
 			<br />
 
 			{/* Speedrun Leaderboard */}
-			{game.urlSpdrn && (
+			{(game.urlSpdrn || session.admin) && (
 				<>
-					<Link className="standalone" href={game.urlSpdrn}>
-						<Image
-							src="/images/stopwatch.png"
-							className="absolute ml-[2px]"
-							width={14}
-							height={14}
-							alt="stopwatch"
-						/>
-						<span>&nbsp;&nbsp;&nbsp;&nbsp; Speedrun Leaderboards</span>
-					</Link>
-					<br />
-				</>
-			)}
+					{game.urlSpdrn && (
+						<Link className="standalone" href={game.urlSpdrn}>
+							<Image
+								src="/images/stopwatch.png"
+								className="absolute ml-[2px]"
+								width={14}
+								height={14}
+								alt="stopwatch"
+							/>
+							<span>&nbsp;&nbsp;&nbsp;&nbsp; Speedrun Leaderboards</span>
+						</Link>
+					)}
 
-			{session.admin && (
-				<>
-					<input
-						id="admin-speedrun-input"
-						type="text"
-						className="w-[95%]"
-						value={speedrunInput}
-						onChange={(e) => setSpeedrunInput(e.target.value)}
-						hidden={hideAdminSpeedrunInput}
-					/>
+					{session.admin && (
+						<>
+							<button
+								id="admin-change-speedrun"
+								type="button"
+								className="ml-2"
+								hidden={!hideAdminSpeedrunInput}
+								onClick={() => setHideAdminSpeedrunInput(false)}
+							>
+								{game.urlSpdrn ? "Change Speedrun Link" : "Add Speedrun Link"}
+							</button>
 
-					<button
-						id="admin-change-speedrun"
-						type="button"
-						className="ml-1"
-						hidden={!hideAdminSpeedrunInput}
-						onClick={() => setHideAdminSpeedrunInput(false)}
-					>
-						{game.urlSpdrn ? "Change Speedrun Link" : "Add Speedrun Link"}
-					</button>
+							<input
+								id="admin-speedrun-input"
+								type="text"
+								className="w-[95%]"
+								value={speedrunInput}
+								onChange={(e) => setSpeedrunInput(e.target.value)}
+								hidden={hideAdminSpeedrunInput}
+							/>
 
-					<button
-						id="admin-save-change-speedrun"
-						type="submit"
-						hidden={hideAdminSpeedrunInput}
-						className="mr-1"
-						onClick={async (evt) => {
-							evt.preventDefault();
-							await actionAdminChangeSpeedrunUrl();
-						}}
-					>
-						Save
-					</button>
+							<button
+								id="admin-save-change-speedrun"
+								type="button"
+								hidden={hideAdminSpeedrunInput}
+								onClick={actionAdminChangeSpeedrunUrl}
+							>
+								Save
+							</button>
 
-					<button
-						id="admin-discard-change-speedrun"
-						type="reset"
-						hidden={hideAdminSpeedrunInput}
-						onClick={(evt) => {
-							evt.preventDefault();
-							setSpeedrunInput(game.urlSpdrn ?? "");
-							setHideAdminSpeedrunInput(true);
-						}}
-					>
-						Cancel
-					</button>
+							<button
+								id="admin-discard-change-speedrun"
+								type="button"
+								hidden={hideAdminSpeedrunInput}
+								onClick={() => {
+									setAdminSpeedrunUrlInput(game.urlSpdrn ?? "");
+									setHideAdminSpeedrunInput(true);
+								}}
+							>
+								Cancel
+							</button>
 
-					<span className="game_creator_update_alert ml-1">
-						{adminSpeedrunAlertText}
-					</span>
+							<span className="ml-1">
+								{adminSpeedrunAlertText}
+							</span>
+							<br />
+						</>
+					)}
+
 					<br />
 				</>
 			)}
