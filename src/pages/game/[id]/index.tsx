@@ -59,7 +59,7 @@ export default function Game(): AnyElem {
 				author: game.author,
 				collab: game.collab,
 				removed: game.removed,
-				owner_id: game.owner_id,
+				ownerId: game.ownerId,
 				dateCreated: game.dateCreated
 					? formatDate(new Date(game.dateCreated))
 					: null,
