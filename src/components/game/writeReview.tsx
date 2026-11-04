@@ -442,17 +442,17 @@ export default function WriteReview({
 						/>
 						
 						{suggestedTags.length > 0 && (
-							<ul className="absolute z-10 w-full bg-white border border-gray-300 rounded shadow-md max-h-48 overflow-y-auto">
+							<div className="absolute z-10 w-full bg-white border border-gray-300 rounded-b-md shadow-md max-h-48 overflow-y-auto">
 								{suggestedTags.map((tag) => (
-									<li
+									<div
 										key={tag.id}
 										onClick={() => handleSelectTag(tag.name)}
-										className="px-3 py-2 cursor-pointer hover:bg-gray-100"
+										className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-sm text-black"
 									>
 										{tag.name}
-									</li>
+									</div>
 								))}
-							</ul>
+							</div>
 						)}
 
 						{searchingTags && (
