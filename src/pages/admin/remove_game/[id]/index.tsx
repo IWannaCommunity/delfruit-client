@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import Captcha from "@/components/captcha";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { API } from "@/utils/api";
@@ -14,7 +13,6 @@ import { useSessionContext } from "@/utils/hooks";
 export default function RemoveGame(): AnyElem {
 	const [session] = useSessionContext();
 	const [game, setGame] = useState<Game | null>(null);
-	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -39,24 +37,7 @@ export default function RemoveGame(): AnyElem {
 			setError("You are not authorized to perform this action.");
 			return;
 		}
-
-		if (!captchaToken) {
-			setError("Please complete the CAPTCHA.");
-			setSuccess(false);
-			return;
-		}
-
-    const frmData = new FormData(
-			document.getElementById("captchaContainer") as HTMLFormElement,
-		);
-		const proof = frmData.get("cf-turnstile-response");
-
-		if (!proof) {
-			setError("Please complete the CAPTCHA.");
-			setSuccess(false);
-			return;
-		}
-
+		
 		try {
 			const g = sanitizeGameForPatch({
 				...game,
@@ -179,27 +160,19 @@ export default function RemoveGame(): AnyElem {
 						[Download Not Available]
 					</span>
 				)}
+				<br />
 
-				<form
-					id="captchaContainer"
-					className="mt-4"
-					onSubmit={handleSubmit}
-				>
-					<Captcha onSuccess={setCaptchaToken} />
-					<br />
+				<input
+					type="submit"
+					value="Remove"
+					className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded"
+				/>
 
-					<input
-						type="submit"
-						value="Remove"
-						className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded"
-					/>
-
-					{error && !success && (
-						<span className="text-red-600 ml-2">
-							{error}
-						</span>
-					)}
-				</form>
+				{error && !success && (
+					<span className="text-red-600 ml-2">
+						{error}
+					</span>
+				)}
 			</>
 		);
 	};
