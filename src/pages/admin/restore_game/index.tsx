@@ -17,7 +17,7 @@ export default function DeletedGameList(): JSX.Element {
 		setLoading(true);
 		const fetchData = async () => {
 			const results = await API.games().getGames(
-        undefined, // authorization
+				`Bearer ${session.token}`, // authorization
         undefined, // q
         undefined, // id
         true, // removed
