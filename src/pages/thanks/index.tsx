@@ -52,93 +52,93 @@ export default function Thanks(): AnyElem {
 						<ContribPortrait
 							name="Starz0r"
 							title="Main Developer"
-							avatarSrc="/images/avatars/starz0r.png"
+							avatarSrc="/images/avatars/starz0r.png?v=2"
 						/>
 						<ContribPortrait
 							name="TTBB"
 							title="Head Assistant"
-							avatarSrc="/images/avatars/ttbb.webp"
+							avatarSrc="/images/avatars/ttbb.webp?v=2"
 						/>
 					</div>
 					<h2>Moderation</h2>
 					<div className="flex flex-wrap">
 						<ContribPortrait
 							name="Canus"
-							avatarSrc="/images/avatars/canus.webp"
+							avatarSrc="/images/avatars/canus.webp?v=2"
 						/>
 						<ContribPortrait
 							name="GaspacoZanis"
-							avatarSrc="/images/avatars/gaspacozanis.webp"
+							avatarSrc="/images/avatars/gaspacozanis.webp?v=2"
 						/>
 						<ContribPortrait
-							name="Yolu Chance"
-							avatarSrc="/images/avatars/yoluchance.png"
+							name="YoluChance"
+							avatarSrc="/images/avatars/yoluchance.png?v=2"
 						/>
 						<ContribPortrait
 							name="PlasmaNapkin"
-							avatarSrc="/images/avatars/plasmanapkin.png"
+							avatarSrc="/images/avatars/plasmanapkin.png?v=2"
 						/>
 						<ContribPortrait
 							name="pieceofcheese87"
-							avatarSrc="/images/avatars/pieceofcheese.png"
+							avatarSrc="/images/avatars/pieceofcheese.png?v=2"
 						/>
 					</div>
 					<h2>Alumni</h2>
 					<div className="flex flex-wrap">
 						<ContribPortrait
 							name="Patrick"
-							avatarSrc="/images/avatars/patrick.webp"
+							avatarSrc="/images/avatars/patrick.webp?v=2"
 						/>
 						<ContribPortrait
 							name="Nader"
-							avatarSrc="/images/avatars/nader.png"
+							avatarSrc="/images/avatars/nader.png?v=2"
 						/>
 						<ContribPortrait
 							name="RandomErik"
-							avatarSrc="/images/avatars/randomerik.jpg"
+							avatarSrc="/images/avatars/randomerik.jpg?v=2"
 						/>
 						<ContribPortrait
 							name="Onynekyu"
-							avatarSrc="/images/avatars/onynekyu.jpg"
+							avatarSrc="/images/avatars/onynekyu.jpg?v=2"
 						/>
 						<ContribPortrait
 							name="ElZorgo"
-							avatarSrc="/images/avatars/el_zorgo.png"
+							avatarSrc="/images/avatars/el_zorgo.png?v=2"
 						/>
 						<ContribPortrait 
 							name="Lss" 
-							avatarSrc="/images/avatars/lss40.png" 
+							avatarSrc="/images/avatars/lss40.png?v=2" 
 						/>
 						<ContribPortrait
 							name="Dappermink"
-							avatarSrc="/images/avatars/quentinjanuel.png"
+							avatarSrc="/images/avatars/quentinjanuel.png?v=2"
 						/>
 						<ContribPortrait
 							name="Artardss"
-							avatarSrc="/images/avatars/artardss.jpg"
+							avatarSrc="/images/avatars/artardss.jpg?v=2"
 						/>
 						<ContribPortrait
 							name="Normal"
-							avatarSrc="/images/avatars/normal.png"
+							avatarSrc="/images/avatars/normal.png?v=2"
 						/>
 						<ContribPortrait
 							name="Shinobu"
-							avatarSrc="/images/avatars/shinobu.jpg"
+							avatarSrc="/images/avatars/shinobu.jpg?v=2"
 						/>
 						<ContribPortrait
 							name="Sudnep"
-							avatarSrc="/images/avatars/sudnep.png"
+							avatarSrc="/images/avatars/sudnep.png?v=2"
 						/>
 					</div>
 					<h2>Original Designers</h2>
 					<div className="flex">
 						<ContribPortrait
 							name="klazen0108"
-							avatarSrc="/images/avatars/klazen0108.png"
+							avatarSrc="/images/avatars/klazen0108.png?v=2"
 						/>
 						<ContribPortrait
 							name="tehjman1993"
-							avatarSrc="/images/avatars/tehjman1993.webp"
+							avatarSrc="/images/avatars/tehjman1993.webp?v=2"
 						/>
 					</div>
 				</div>
