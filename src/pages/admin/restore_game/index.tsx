@@ -106,8 +106,15 @@ export default function DeletedGameList(): JSX.Element {
 	};
 
 	return (
-		<div className="!mb-[1em]">
-			{renderContent()}
+		<div>
+			<Head>
+				<title>Removed Games - Delicious Fruit</title>
+			</Head>
+			<div id="container">
+				<Header />
+				<div id="content">{renderContent()}</div>
+				<Footer />
+			</div>
 		</div>
 	);
 }
