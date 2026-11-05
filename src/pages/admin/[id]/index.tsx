@@ -177,6 +177,9 @@ export default function AdminDashboard(): JSX.Element {
 					<p>
 						<Link href="/admin/write_news">Write news entry</Link>
 					</p>
+					<p>
+						<Link href="/admin/restore_game">Restore removed games</Link>
+					</p>
 				</div>
 
 				<h2>Reports</h2>
