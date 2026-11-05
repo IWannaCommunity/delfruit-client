@@ -186,7 +186,7 @@ export default function Game(): AnyElem {
 		} finally {
 			setLoading(false);
 		}
-	}, [gameId, session.token]);
+	}, [gameId, session.token, router, session.active, session.admin]);
 
 	useEffect(() => {
 		if (!router.isReady) return;

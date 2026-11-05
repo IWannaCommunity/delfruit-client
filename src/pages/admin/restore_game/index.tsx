@@ -66,7 +66,7 @@ export default function DeletedGameList(): JSX.Element {
 		};
 
 		fetchData();
-	}, []);
+	}, [session.token]);
 
 	const renderContent = () => {
 
