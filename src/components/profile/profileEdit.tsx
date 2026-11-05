@@ -69,9 +69,9 @@ export default function ProfileEdit(): AnyElem {
 
 		const body: any = {
 			bio: bio === "" ? "" : bio,
-			twitchLink: twitch ? `https://www.twitch.tv/${twitch}` : "",
-			youtubeLink: youtube ? `https://www.youtube.com/@${youtube}` : "",
-			twitterLink: twitter ? `https://www.twitter.com/${twitter}` : "",
+			twitchLink: twitch ? twitch : "",
+			youtubeLink: youtube ? youtube : "",
+			twitterLink: twitter ? twitter : "",
 		};
 
 		// Only include password fields if changing password
