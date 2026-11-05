@@ -145,6 +145,11 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 		<div>
 			<h2 className="clear-both">
 				{reviews.length} {reviews.length === 1 ? "Review" : "Reviews"}:
+				{hasMore && (
+					<span className="ml-1 font-normal text-base">
+						(scroll down for more)
+					</span>
+				)}
 			</h2>
 
 			{session.active && (

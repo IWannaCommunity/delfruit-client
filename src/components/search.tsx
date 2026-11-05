@@ -410,6 +410,11 @@ export default function Search(): JSX.Element {
 				<span className="ml-[1em]">
 					({games.length} {games.length === 1 ? "result" : "results"})
 				</span>
+				{hasMore && (
+					<span className="ml-1 font-normal">
+						(scroll down for more)
+					</span>
+				)}
 			</p>
 
 			<div className="overflow-x-auto">

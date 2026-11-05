@@ -115,7 +115,12 @@ export default function ProfileRatings({ user }: UserInfoProps): JSX.Element {
 
 	return(
 		<div className="px-[1.5em]">
-			<p className="text-[var(--color-background-tertiary)]">{ratings.length} Games</p>
+			<p className="text-[var(--color-background-tertiary)]">
+				{ratings.length} Games
+				{hasMore && (
+					<span className="ml-1">(scroll down for more)</span>
+				)}
+			</p>
 			<div className="overflow-x-auto">
 				<DataTable
 					data={ratings}
