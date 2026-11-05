@@ -1,3 +1,6 @@
+import Head from "next/head";
+import Footer from "@/components/footer";
+import Header from "@/components/header";
 import { useEffect, useState } from "react";
 import Game, { type GameProps } from "@/components/game";
 import { API } from "@/utils/api";
