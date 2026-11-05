@@ -285,7 +285,7 @@ export default function GameInfo({
 
 	return (
 		<div className="w-[50%] float-left">
-			<div className="flex flex-col items-start gap-2">
+			<div>
 
 				{/* Game Title */}
 				<h1 className="break-words">{game.name}</h1>
