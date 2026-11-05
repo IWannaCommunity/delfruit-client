@@ -38,7 +38,8 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 
 			// Reviews result
 			if (results[0].status === "fulfilled") {
-				const reviewProps: ReviewT[] = results[0].value.map((review) => ({
+				const resp = results[0].value;
+				const reviewProps: ReviewT[] = resp.data.map((review) => ({
 					id: review.id,
 					user_id: review.user_id,
 					game_id: review.game_id,
