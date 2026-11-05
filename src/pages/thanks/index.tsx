@@ -70,6 +70,18 @@ export default function Thanks(): AnyElem {
 							name="GaspacoZanis"
 							avatarSrc="/images/avatars/gaspacozanis.webp"
 						/>
+						<ContribPortrait
+							name="Yolu Chance"
+							avatarSrc="/images/avatars/yoluchance.png"
+						/>
+						<ContribPortrait
+							name="PlasmaNapkin"
+							avatarSrc="/images/avatars/plasmanapkin.png"
+						/>
+						<ContribPortrait
+							name="pieceofcheese87"
+							avatarSrc="/images/avatars/pieceofcheese.png"
+						/>
 					</div>
 					<h2>Alumni</h2>
 					<div className="flex flex-wrap">
@@ -108,7 +120,7 @@ export default function Thanks(): AnyElem {
 						/>
 						<ContribPortrait
 							name="Shinobu"
-							avatarSrc="/images/avatars/shinobu.png"
+							avatarSrc="/images/avatars/shinobu.jpg"
 						/>
 						<ContribPortrait
 							name="Sudnep"
