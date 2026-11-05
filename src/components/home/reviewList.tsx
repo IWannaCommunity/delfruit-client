@@ -11,7 +11,11 @@ type ReviewListProps = {
 
 export default function ReviewList(props: ReviewListProps): JSX.Element {
 	const [reviews, setReviews] = useState<ReviewT[]>([]);
+	const [count, setCount] = useState<number>(0);
+
 	const [loading, setLoading] = useState(false);
+	const [countLoading, setCountLoading] = useState(true);
+
 	const [error, setError] = useState<string | null>(null);
 
 	const fetchReviews = useCallback(async () => {
@@ -30,11 +34,17 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 
 	useEffect(() => {
 		setLoading(true);
+		setCountLoading(true);
 
 		(async () => {
-			try {
-				const newReviews = await fetchReviews();
-				const reviewProps: ReviewT[] = newReviews.map((review) => ({
+			const results = await Promise.allSettled([
+				fetchReviews(),
+				API.reviews().getReviewCount(),
+			]);
+
+			// Reviews result
+			if (results[0].status === "fulfilled") {
+				const reviewProps: ReviewT[] = results[0].value.map((review) => ({
 					id: review.id,
 					user_id: review.user_id,
 					game_id: review.game_id,
@@ -51,48 +61,59 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 					game_name: review.game_name,
 					like_count: review.like_count,
 					owner_review: review.owner_review === 1,
-					tags: review.tags
+					tags: review.tags,
 				}));
+
 				setReviews(reviewProps);
 				setError(null);
-			} catch (err: any) {
+			} else {
 				setError("Failed to load reviews.");
-			} finally {
-				setLoading(false);
 			}
+
+			// Count result
+			if (results[1].status === "fulfilled") {
+				setCount(results[1].value.data.count);
+			}
+
+			setLoading(false);
+			setCountLoading(false);
 		})();
 	}, [fetchReviews]);
 
 	return (
-		<>
+		<div>
+			<h2>Latest Reviews</h2>
+
+			{!countLoading && (
+				<p className="notes">
+					Showing {props.limit} of {count}
+				</p>
+			)}
+
 			{loading ? (
 				<span>Loading...</span>
 			) : error ? (
 				<span className="text-red-600">{error}</span>
 			) : (
-				<>
-					{reviews.map((review) => {
-						return (
-							<Review
-								key={review.id}
-								id={review.id}
-								user_id={review.user_id}
-								user_name={review.user_name}
-								comment={review.comment}
-								rating={review.rating}
-								difficulty={review.difficulty}
-								tags={review.tags}
-								date_created={review.date_created}
-								like_count={review.like_count}
-								game_name={review.game_name}
-								game_id={review.game_id}
-								owner_review={review.owner_review}
-								removed={review.removed}
-							/>
-						);
-					})}
-				</>
+				reviews.map((review) => (
+					<Review
+						key={review.id}
+						id={review.id}
+						user_id={review.user_id}
+						user_name={review.user_name}
+						comment={review.comment}
+						rating={review.rating}
+						difficulty={review.difficulty}
+						tags={review.tags}
+						date_created={review.date_created}
+						like_count={review.like_count}
+						game_name={review.game_name}
+						game_id={review.game_id}
+						owner_review={review.owner_review}
+						removed={review.removed}
+					/>
+				))
 			)}
-		</>
+		</div>
 	);
 }
