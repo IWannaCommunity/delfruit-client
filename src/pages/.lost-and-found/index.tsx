@@ -1,3 +1,4 @@
+
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
@@ -7,22 +8,32 @@ import type { AnyElem } from "@/utils/element";
 
 export default function LostAndFound(): AnyElem {
 	const router = useRouter();
-	const pathname = router.pathname;
-	const desiredPath = router.asPath;
 
 	useEffect(() => {
-		if (desiredPath.includes("/ratings/game_details.php?id=")) {
-			const gameId = desiredPath.split("/ratings/game_details.php?id=")[1];
-			return router.push(`/game/${gameId}`);
-		} else if (desiredPath.includes("/profile.php?u=")) {
-			const userId = desiredPath.split("/profile.php?u=")[1];
-			return router.push(`/profile/${userId}`);
-		} else if (desiredPath.includes("/news.php?id=")) {
-			const newsId = desiredPath.split("/news.php?id=")[1];
-			return router.push(`/news/${newsId}`);
-		}
-		router.push(`${desiredPath}`);
-	}, [router, desiredPath]);
+			if (!router.isReady) return;
+
+			const { asPath } = router;
+			const url = new URL(asPath, window.location.origin);
+			const pathname = url.pathname;
+			const params = url.searchParams;
+
+			let destination: string | null = null;
+
+			if (pathname === "/ratings/game_details.php") {
+				const gameId = params.get("id");
+				if (gameId) destination = `/game/${encodeURIComponent(gameId)}`;
+			} else if (pathname === "/profile.php") {
+				const userId = params.get("u");
+				if (userId) destination = `/profile/${encodeURIComponent(userId)}`;
+			} else if (pathname === "/news.php") {
+				const newsId = params.get("id");
+				if (newsId) destination = `/news/${encodeURIComponent(newsId)}`;
+			}
+
+			if (destination) {
+				void router.replace(destination);
+			}
+	}, [router.isReady, router.asPath, router]);
 
 	return (
 		<>
