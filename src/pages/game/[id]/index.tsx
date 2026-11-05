@@ -47,6 +47,11 @@ export default function Game(): AnyElem {
 			const resp = await API.composite().getGameCompositeAll(gameId);
 			const game = resp.data;
 
+			if (game?.removed && session.admin && session.active) {
+				router.replace(`/admin/restore_game/${gameId}`);
+				return;
+			}
+
 			if (!game || !game.id) {
 				setError(true);
 				return;
@@ -177,9 +182,7 @@ export default function Game(): AnyElem {
 			setImages(carouselProps);
 			setError(false);
 		} catch (err: any) {
-			if (err.response?.status === 404) {
-				setError(true);
-			}
+			setError(true);
 		} finally {
 			setLoading(false);
 		}
