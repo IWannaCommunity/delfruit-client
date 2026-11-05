@@ -1,7 +1,7 @@
 import Review from "@/components/review";
 import { Review as ReviewT } from "delfruit-swagger-cg-sdk";
 import { API } from "@/utils/api";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { formatDate } from "@/utils/formatDate";
 
 type ReviewListProps = {
@@ -15,30 +15,24 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 
 	const [loading, setLoading] = useState(false);
 	const [countLoading, setCountLoading] = useState(true);
-
 	const [error, setError] = useState<string | null>(null);
-
-	const fetchReviews = useCallback(async () => {
-		const resp = await API.reviews().getReviews(
-			undefined, // gameID
-			undefined, // userID
-			undefined, // ID
-			props.page, // page
-			props.limit, // limit
-			true, // textReviewsFirst
-			true, // includeOwnerReview
-			false, // removed
-		);
-		return resp.data;
-	}, [props.limit, props.page]);
 
 	useEffect(() => {
 		setLoading(true);
 		setCountLoading(true);
 
-		(async () => {
+		const fetchData = async () => {
 			const results = await Promise.allSettled([
-				fetchReviews(),
+				API.reviews().getReviews(
+					undefined, // gameID
+					undefined, // userID
+					undefined, // ID
+					props.page, // page
+					props.limit, // limit
+					true, // textReviewsFirst
+					true, // includeOwnerReview
+					false, // removed
+				),
 				API.reviews().getReviewCount(),
 			]);
 
@@ -65,6 +59,7 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 				}));
 
 				setReviews(reviewProps);
+				setLoading(false);
 				setError(null);
 			} else {
 				setError("Failed to load reviews.");
@@ -73,12 +68,11 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 			// Count result
 			if (results[1].status === "fulfilled") {
 				setCount(results[1].value.data.count);
+				setCountLoading(false);
 			}
-
-			setLoading(false);
-			setCountLoading(false);
-		})();
-	}, [fetchReviews]);
+		};
+		fetchData();
+	}, [props.limit, props.page]);
 
 	return (
 		<div>
