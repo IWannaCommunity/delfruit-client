@@ -61,7 +61,7 @@ export default function Thanks(): AnyElem {
 						/>
 					</div>
 					<h2>Moderation</h2>
-					<div className="flex">
+					<div className="flex flex-wrap">
 						<ContribPortrait
 							name="Canus"
 							avatarSrc="/images/avatars/canus.webp"
@@ -105,7 +105,10 @@ export default function Thanks(): AnyElem {
 							name="ElZorgo"
 							avatarSrc="/images/avatars/el_zorgo.png"
 						/>
-						<ContribPortrait name="Lss" avatarSrc="/images/avatars/lss40.png" />
+						<ContribPortrait 
+							name="Lss" 
+							avatarSrc="/images/avatars/lss40.png" 
+						/>
 						<ContribPortrait
 							name="Dappermink"
 							avatarSrc="/images/avatars/quentinjanuel.png"
