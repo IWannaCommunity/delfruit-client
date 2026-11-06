@@ -16,6 +16,8 @@ export default function Footer(): AnyElem {
 				Powered By <a href="https://expressjs.com">Express</a> &{" "}
 				<a href="https://react.dev">React</a> +{" "}
 				<a href="https://nextjs.org">Next.js</a>
+				<br />
+				Client: <span>{process.env.NEXT_PUBLIC_APP_VERSION}</span>
 			</p>
 		</div>
 	);
