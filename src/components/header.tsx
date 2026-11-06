@@ -108,7 +108,7 @@ export default function Header(): AnyElem {
 				>
 					Twitch Streams
 				</a>
-				<a className="navbutton2" href="https://www.fangam.es/intro">
+				<a className="navbutton2" href="https://cwpat.me/fangames-intro/">
 					Intro
 				</a>
 				<form className="!float-right">

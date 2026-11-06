@@ -9,31 +9,31 @@ export default function LostAndFound(): AnyElem {
 	const router = useRouter();
 
 	useEffect(() => {
-			if (!router.isReady) return;
+		if (!router.isReady) return;
 
-			const desiredPath = router.asPath;
-			const url = new URL(desiredPath, window.location.origin);
-			const pathname = url.pathname;
-			const params = url.searchParams;
+		const desiredPath = router.asPath;
+		const url = new URL(desiredPath, window.location.origin);
+		const pathname = url.pathname;
+		const params = url.searchParams;
 
-			let destination: string | null = null;
+		let destination: string | null = null;
 
-			if (pathname === "/ratings/game_details.php") {
-				const gameId = params.get("id");
-				if (gameId) destination = `/game/${encodeURIComponent(gameId)}`;
-			} else if (pathname === "/profile.php") {
-				const userId = params.get("u");
-				if (userId) destination = `/profile/${encodeURIComponent(userId)}`;
-			} else if (pathname === "/news.php") {
-				const newsId = params.get("id");
-				if (newsId) destination = `/news/${encodeURIComponent(newsId)}`;
-			}
+		if (pathname === "/ratings/game_details.php") {
+			const gameId = params.get("id");
+			if (gameId) destination = `/game/${encodeURIComponent(gameId)}`;
+		} else if (pathname === "/profile.php") {
+			const userId = params.get("u");
+			if (userId) destination = `/profile/${encodeURIComponent(userId)}`;
+		} else if (pathname === "/news.php") {
+			const newsId = params.get("id");
+			if (newsId) destination = `/news/${encodeURIComponent(newsId)}`;
+		}
 
-			if (destination) {
-				void router.replace(destination);
-			} else {
-				router.push(desiredPath);
-			}
+		if (destination) {
+			void router.replace(destination);
+		} else {
+			router.push(desiredPath);
+		}
 	}, [router.isReady, router.asPath, router]);
 
 	return (
