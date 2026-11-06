@@ -20,7 +20,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const [userReview, setUserReview] = useState<ReviewT | null>(null);
 	const [reviews, setReviews] = useState<ReviewT[]>(props.reviews);
 	const [page, setPage] = useState(0);
-	const [hasMore, setHasMore] = useState(true);
+	const [hasMore, setHasMore] = useState(props.reviews.length === 5);
 	const [initialized, setInitialized] = useState(props.reviews.length > 0);
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -159,7 +159,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 						const fresh = await fetchReviews(0);
 						setReviews(fresh);
 						setPage(0);
-						setHasMore(true);
+						setHasMore(fresh.length === 5);
 						setInitialized(true);
 
 						await fetchUserReview();
