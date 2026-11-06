@@ -31,6 +31,7 @@ export default function UploadScreenshot({
 	}
 
 	async function handleSubmit(e: React.FormEvent) {
+	/*
 		e.preventDefault();
 		setLoading(true);
 		setError(null);
@@ -72,6 +73,7 @@ export default function UploadScreenshot({
 		} finally {
 			setLoading(false);
 		}
+	*/
 	}
 
 	function validateImageFile(
