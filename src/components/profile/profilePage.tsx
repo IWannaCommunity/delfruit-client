@@ -42,6 +42,9 @@ export default function ProfilePage({
     const [user, setUser] = useState<UserExt>();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+		const [emailInput, setEmailInput] = useState("");
+		const [hideAdminEmailInput, setHideAdminEmailInput] = useState(true);
+		const [adminEmailAlertText, setAdminEmailAlertText] = useState("");
     const [session] = useSessionContext();
     const isOwnProfile = profileId === undefined;
     const targetId = isOwnProfile ? session?.user_id : profileId;
@@ -91,6 +94,10 @@ export default function ProfilePage({
 
 					const data = resp.data;
 
+					setEmailInput(data.email ?? "");
+					setHideAdminEmailInput(true);
+					setAdminEmailAlertText("");
+
 					const newData: UserExt = {
 						id: data.id,
 						name: data.name,
@@ -136,6 +143,21 @@ export default function ProfilePage({
 
 	}, [targetId, session?.token, isOwnProfile, session?.user_id]);
 
+	const actionAdminChangeUserEmail = async () => {
+		try {
+			await API.users().patchUserEmail(
+				{ newEmail: emailInput },
+				user.id,
+			);
+
+			setAdminEmailAlertText("Email updated successfully!");
+			setEmailInput("");
+			setHideAdminEmailInput(true);
+		} catch {
+			setAdminEmailAlertText("Failed to update email.");
+		}
+	};
+
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
 		if (error) {
@@ -147,7 +169,66 @@ export default function ProfilePage({
 		return (
 			<>
 				<h2>{`${user.name}'s Profile`}</h2>
-				<ProfileActions user={user} />
+				<div className="flex justify-between items-start">
+					<ProfileActions user={user} />
+
+					{session.admin && (
+						<div className="text-right">
+							<input
+								id="admin-email-input"
+								type="email"
+								className="w-[95%]"
+								value={emailInput}
+								onChange={(e) => setEmailInput(e.target.value)}
+								hidden={hideAdminEmailInput}
+							/>
+
+							<button
+								id="admin-change-email"
+								type="button"
+								hidden={!hideAdminEmailInput}
+								onClick={() => {
+									setEmailInput("");
+									setAdminEmailAlertText("");
+									setHideAdminEmailInput(false);
+								}}
+							>
+								Change Email
+							</button>
+
+							<button
+								id="admin-save-change-email"
+								type="submit"
+								hidden={hideAdminEmailInput}
+								className="mr-1 mb-1"
+								onClick={async (evt) => {
+									evt.preventDefault();
+									await actionAdminChangeUserEmail();
+								}}
+							>
+								Change
+							</button>
+
+							<button
+								id="admin-discard-change-email"
+								type="button"
+								hidden={hideAdminEmailInput}
+								onClick={(evt) => {
+									evt.preventDefault();
+									setEmailInput("");
+									setHideAdminEmailInput(true);
+									setAdminEmailAlertText("");
+								}}
+							>
+								Cancel
+							</button>
+
+							<span className="ml-1">
+								{adminEmailAlertText}
+							</span>
+						</div>
+					)}
+				</div>
 
 				<div className="border border-solid border-gray-400 rounded-md 
 					bg-[var(--color-profile-background)] text-[1.1em] font-verdana"

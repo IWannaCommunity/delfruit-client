@@ -276,9 +276,10 @@ export default function Game(): AnyElem {
 							style={{
 								pointerEvents: rerolling ? "none" : "auto",
 								opacity: rerolling ? 0.5 : 1,
+								marginLeft: "4px",
 							}}
 						>
-							{rerolling ? " Rerolling..." : " (Reroll)"}
+							{rerolling ? "Rerolling..." : "(Reroll)"}
 						</a>
 					</h2>
 				)}
