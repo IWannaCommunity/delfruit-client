@@ -280,7 +280,6 @@ export default function Game(): AnyElem {
 						<Review
 							id={details.ownerBio.id}
 							user_id={details.ownerBio.user_id}
-							game_id={details.ownerBio.game_id}
 							rating={
 								details.ownerBio.rating === null
 									? null
