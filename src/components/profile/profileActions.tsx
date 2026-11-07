@@ -52,7 +52,7 @@ export default function ProfileActions({ user }: UserInfoProps) {
 	}
 
 	return (
-		<>
+		<div className="!mb-0">
 			<Link href={`/messages/compose?to=${user.id}`}>
 				Send a PM
 			</Link>
@@ -66,6 +66,6 @@ export default function ProfileActions({ user }: UserInfoProps) {
 			<span> Follow this user! </span>
 			{alertMsg && <span className="follow_alert">{alertMsg}</span>}
 			<br />
-		</>
+		</div>
 	);
 }

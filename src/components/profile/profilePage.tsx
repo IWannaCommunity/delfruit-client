@@ -169,10 +169,8 @@ export default function ProfilePage({
 		return (
 			<>
 				<h2>{`${user.name}'s Profile`}</h2>
-				<div className="flex justify-between items-start w-full">
-					<div>
-						<ProfileActions user={user} />
-					</div>
+				<div className="flex justify-between items-start w-full !mb-0">
+					<ProfileActions user={user} />
 
 					{session.admin && (
 						<div className="text-right">
@@ -302,7 +300,7 @@ export default function ProfilePage({
 
 			<div id="container">
 				<Header />
-				<div id="content" className="mt-0">
+				<div id="content">
 					{
 						isOwnProfile && !session.active
 							? <span>You must login to view this page</span>
