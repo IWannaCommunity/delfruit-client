@@ -21,7 +21,7 @@ export default function UploadScreenshot({
 	const [session] = useSessionContext();
 	const [loading, setLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
-	const [error, setError] = useState<string | null>("Uploading screenshots is temporarily disabled!");
+	const [error, setError] = useState<string | null>("");
 	const [captchaToken, setCaptchaToken] = useState<string>("");
 	const [description, setDescription] = useState("");
 	const [file, setFile] = useState<File | null>(null);
@@ -31,7 +31,6 @@ export default function UploadScreenshot({
 	}
 
 	async function handleSubmit(e: React.FormEvent) {
-	/*
 		e.preventDefault();
 		setLoading(true);
 		setError(null);
@@ -73,7 +72,6 @@ export default function UploadScreenshot({
 		} finally {
 			setLoading(false);
 		}
-	*/
 	}
 
 	function validateImageFile(
@@ -189,7 +187,7 @@ export default function UploadScreenshot({
 						/>
 						<br />
 						<Captcha onSuccess={setCaptchaToken} />
-						<input type="submit" disabled="true" value={loading ? "Uploading..." : "Upload"} />
+						<input type="submit" value={loading ? "Uploading..." : "Upload"} />
 						{success && !error && (
 							<span className="text-green-600 ml-1">
 								Screenshot successfully uploaded!
