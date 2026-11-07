@@ -2,7 +2,7 @@ import type { GameExt } from "delfruit-swagger-cg-sdk";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import Footer from "@/components/footer";
 import Carousel from "@/components/game/carousel";
 import GameInfo from "@/components/game/gameInfo";
@@ -26,8 +26,12 @@ export default function Game(): AnyElem {
 	const [images, setImages] = useState<
 		Array<{ id: number; src: string; alt: string; user_name: string }>
 	>([]);
+
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
+
+	const [rerolling, setRerolling] = useState(false);
+	const rerollLock = useRef(false);
 
 	const router = useRouter();
 	const lucky = router.query.random === "1";
@@ -116,6 +120,7 @@ export default function Game(): AnyElem {
 					return false;
 				}
 			})();
+
 			const cleared = await (async () => {
 				try {
 					return Boolean(
@@ -130,6 +135,7 @@ export default function Game(): AnyElem {
 					return false;
 				}
 			})();
+
 			const bookmarked = await (async () => {
 				try {
 					return Boolean(
@@ -144,6 +150,7 @@ export default function Game(): AnyElem {
 					return false;
 				}
 			})();
+
 			setUserState({
 				favorited,
 				cleared,
@@ -188,6 +195,27 @@ export default function Game(): AnyElem {
 		}
 	}, [gameId, session.token, router, session.active, session.admin]);
 
+	const reroll = async () => {
+		if (rerollLock.current) return;
+
+		rerollLock.current = true;
+		setRerolling(true);
+
+		try {
+			const resp = await API.composite().getGameCompositeAll("random");
+			const randomGame = resp.data;
+
+			if (randomGame?.id) {
+				await router.push(`/game/${randomGame.id}?random=1`);
+			}
+		} catch {
+			// aborted
+		} finally {
+			rerollLock.current = false;
+			setRerolling(false);
+		}
+	};
+
 	useEffect(() => {
 		if (!router.isReady) return;
 
@@ -215,22 +243,16 @@ export default function Game(): AnyElem {
 					<p>
 						<a
 							href="#"
-							onClick={async (e) => {
+							onClick={(e) => {
 								e.preventDefault();
-								try {
-									const resp =
-										await API.composite().getGameCompositeAll("random");
-									const randomGame = resp.data;
-
-									if (randomGame?.id) {
-										router.push(`/game/${randomGame.id}?random=1`);
-									}
-								} catch {
-									// aborted
-								}
+								reroll();
+							}}
+							style={{
+								pointerEvents: rerolling ? "none" : "auto",
+								opacity: rerolling ? 0.5 : 1,
 							}}
 						>
-							Give me a random fangame!
+							{rerolling ? "Rolling..." : "Give me a fangame!"}
 						</a>
 					</p>
 					<p>
@@ -244,25 +266,19 @@ export default function Game(): AnyElem {
 			<>
 				{lucky && (
 					<h2>
-						You Randomed:{" "}
+						You Randomed:
 						<a
 							href="#"
-							onClick={async (e) => {
+							onClick={(e) => {
 								e.preventDefault();
-								try {
-									const resp =
-										await API.composite().getGameCompositeAll("random");
-									const randomGame = resp.data;
-
-									if (randomGame?.id) {
-										router.replace(`/game/${randomGame.id}?random=1`);
-									}
-								} catch {
-									// aborted
-								}
+								reroll();
+							}}
+							style={{
+								pointerEvents: rerolling ? "none" : "auto",
+								opacity: rerolling ? 0.5 : 1,
 							}}
 						>
-							(Reroll)
+							{rerolling ? " Rerolling..." : " (Reroll)"}
 						</a>
 					</h2>
 				)}
