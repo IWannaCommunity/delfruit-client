@@ -173,7 +173,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 			{/* Review List */}
 			<div id="reviews">
-				{userReview && (
+				{userReview && !userReview.owner_review && (
 					<Review
 						key={userReview.id}
 						id={userReview.id}
