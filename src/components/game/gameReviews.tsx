@@ -14,6 +14,7 @@ type GameReviewsProp = {
 	reviews: ReviewT[];
 	ownerId: number;
 	ownerBio: ReviewT | null;
+	onOwnerReviewUpdated: () => Promise<void>;
 };
 
 export default function GameReviews(props: GameReviewsProp): AnyElem {
@@ -31,19 +32,17 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 	const router = useRouter();
 	const id = Number(router.query.id);
-
-	const userId = session.user_id;
 	const isGameOwner = session.user_id === props.ownerId;
 
 	const fetchUserReview = useCallback(async () => {
-		if (!router.isReady || !session.active || !userId || isGameOwner) {
+		if (!router.isReady || !session.active || !session.user_id || isGameOwner) {
 			return;
 		}
 
     try {
         const res = await API.games().getGameReviews(
 					id, // id
-					userId, // user id
+					session.user_id, // user id
 					false, // include owner review
 					true, // text reviews first
 					0, // page number
@@ -75,7 +74,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
     } catch {
       setUserReview(null);
     }
-	}, [id, router.isReady, session.active, userId, isGameOwner]);
+	}, [id, router.isReady, session.active, session.user_id, isGameOwner]);
 
 	const fetchReviews = useCallback(
 		async (requestedPage: number): Promise<ReviewT[]> => {
@@ -145,6 +144,12 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
     fetchUserReview();
 	}, [fetchUserReview]);
 
+	useEffect(() => {
+		if (ownerBio && isGameOwner) {
+			setUserReview(ownerBio);
+		}
+	}, [session.user_id, isGameOwner]);
+
 	return (
 		<div>
 			<h2 className="clear-both">
@@ -160,6 +165,10 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 				<WriteReview
 					existingReview={userReview}
 					onReviewUpdated={async () => {
+						if (userReview?.owner_review) {
+							await onOwnerReviewUpdated();
+							return;
+						}
 						const fresh = await fetchReviews(0);
 						setReviews(fresh);
 						setPage(0);

@@ -322,6 +322,7 @@ export default function Game(): AnyElem {
 					reviews={details.reviews}
 					ownerId={details.ownerId}
 					ownerBio={details.ownerBio}
+					onOwnerReviewUpdated={fetchDetails}
 				/>
 			</>
 		);
