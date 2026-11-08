@@ -19,7 +19,11 @@ type GameReviewsProp = {
 
 export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const [session] = useSessionContext();
-	const [regularUserReview, setRegularUserReview] = useState<ReviewT | null>(null);
+	const [userReview, setUserReview] = useState<ReviewT | null>(
+		props.ownerBio && Number(props.ownerBio.user_id) === Number(session.user_id)
+			? props.ownerBio
+			: null
+	);
 	const [reviews, setReviews] = useState<ReviewT[]>(props.reviews);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(props.reviews.length === 5);
@@ -29,7 +33,6 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const router = useRouter();
 	const id = Number(router.query.id);
 	const isGameOwner = session.user_id === props.ownerId;
-	const userReview = isGameOwner ? props.ownerBio : regularUserReview;
 
 	const fetchUserReview = useCallback(async () => {
 		if (!router.isReady || !session.active || !session.user_id || isGameOwner) {
@@ -49,11 +52,11 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
         const r = res.data?.[0];
 
         if (!r) {
-					setRegularUserReview(null);
+					setUserReview(null);
 					return;
         }
 
-        setRegularUserReview({
+        setUserReview({
 					id: Number(r.id),
 					user_id: Number(r.user_id),
 					game_id: null,
@@ -69,7 +72,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 					tags: r.tags,
         });
     } catch {
-      setRegularUserReview(null);
+      setUserReview(null);
     }
 	}, [id, router.isReady, session.active, session.user_id, isGameOwner]);
 
@@ -140,6 +143,12 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	useEffect(() => {
     fetchUserReview();
 	}, [fetchUserReview]);
+
+	useEffect(() => {
+		if (props.ownerBio && isGameOwner) {
+			setUserReview(props.ownerBio);
+		}
+	}, [props.ownerBio, session.user_id, isGameOwner]);
 
 	return (
 		<div>

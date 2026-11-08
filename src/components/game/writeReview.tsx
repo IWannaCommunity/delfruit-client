@@ -152,7 +152,7 @@ export default function WriteReview({
 				);
 			}
 
-			await onReviewUpdated();
+			onReviewUpdated();
 			setShowWrite(false);
 		} catch (err: any) {
 			setError("Failed to submit review. Please try again.");
@@ -193,7 +193,7 @@ export default function WriteReview({
 				existingReview.id,
 			);
 
-			await onReviewUpdated();
+			onReviewUpdated();
 			setShowWrite(false);
 		} catch (err: any) {
 			setError("Failed to remove review. Please try again.");
