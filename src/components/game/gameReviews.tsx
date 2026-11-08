@@ -40,7 +40,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
         const res = await API.games().getGameReviews(
 					id, // id
 					userId, // user id
-					false, // include owner review
+					true, // include owner review
 					true, // text reviews first
 					0, // page number
 					1, // limit
@@ -169,7 +169,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 			{/* Review List */}
 			<div id="reviews">
-				{userReview && (
+				{userReview && !userReview.owner_review && (
 					<Review
 						key={userReview.id}
 						id={userReview.id}
