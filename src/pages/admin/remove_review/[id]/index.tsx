@@ -151,12 +151,16 @@ export default function RemoveReview(): AnyElem {
 		}
 
 		if (loading) return <span>Loading...</span>;
+
 		if (success) {
 			return (
 				<span className="font-semibold">Review successfully removed.</span>
 			);
 		}
-		if (!review) return null;
+		
+		if (!review) {
+			return <span>This review has been deleted.</span>;
+		}
 
 		return (
 			<>
