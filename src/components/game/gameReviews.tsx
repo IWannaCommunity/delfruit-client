@@ -145,10 +145,10 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 	}, [fetchUserReview]);
 
 	useEffect(() => {
-		if (ownerBio && isGameOwner) {
-			setUserReview(ownerBio);
+		if (props.ownerBio && isGameOwner) {
+			setUserReview(props.ownerBio);
 		}
-	}, [session.user_id, isGameOwner]);
+	}, [props.ownerBio, session.user_id, isGameOwner]);
 
 	return (
 		<div>
