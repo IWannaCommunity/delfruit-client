@@ -157,6 +157,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 					existingReview={userReview}
 					onReviewUpdated={async () => {
 						if (userReview?.owner_review) {
+							console.log("got here");
 							await props.onOwnerReviewUpdated();
 							return;
 						}
