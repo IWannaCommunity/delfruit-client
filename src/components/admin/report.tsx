@@ -19,7 +19,7 @@ function getReportTargetHref(
 		case ReportTypeEnum.ReviewReported:
 		case ReportTypeEnum.ReviewRemove:
 		case ReportTypeEnum.ReviewRestore:
-			return `/review/${targetId}`;
+			return `/admin/remove_review/${targetId}`;
 
 		case ReportTypeEnum.Game:
 		case ReportTypeEnum.GameReported:
