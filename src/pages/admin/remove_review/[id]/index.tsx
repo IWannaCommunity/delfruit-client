@@ -159,10 +159,10 @@ export default function RemoveReview(): AnyElem {
 				<span className="font-semibold">Review successfully removed.</span>
 			);
 		}
-		
-		if (!review) {
-			return <span>This review does not exist.</span>;
-		}
+
+    if (!review) {
+      return <span>{error ?? "This review does not exist."}</span>;
+    }
 
 		return (
 			<>
