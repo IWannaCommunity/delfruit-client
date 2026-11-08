@@ -13,11 +13,17 @@ import { useSessionContext } from "@/utils/hooks";
 type GameReviewsProp = {
 	reviews: ReviewT[];
 	ownerId: number;
+	ownerBio: ReviewT | null;
+	userId: number;
 };
 
 export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const [session] = useSessionContext();
-	const [userReview, setUserReview] = useState<ReviewT | null>(null);
+	const [userReview, setUserReview] = useState<ReviewT | null>(
+		props.ownerBio && Number(props.ownerBio.user_id) === Number(props.userId)
+			? props.ownerBio
+			: null
+	);
 	const [reviews, setReviews] = useState<ReviewT[]>(props.reviews);
 	const [page, setPage] = useState(0);
 	const [hasMore, setHasMore] = useState(props.reviews.length === 5);
@@ -32,7 +38,6 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 	const fetchUserReview = useCallback(async () => {
 		if (!router.isReady || !session.active || !userId || isGameOwner) {
-			setUserReview(null);
 			return;
 		}
 
@@ -40,7 +45,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
         const res = await API.games().getGameReviews(
 					id, // id
 					userId, // user id
-					true, // include owner review
+					false, // include owner review
 					true, // text reviews first
 					0, // page number
 					1, // limit
@@ -169,7 +174,7 @@ export default function GameReviews(props: GameReviewsProp): AnyElem {
 
 			{/* Review List */}
 			<div id="reviews">
-				{userReview && !userReview.owner_review && (
+				{userReview && (
 					<Review
 						key={userReview.id}
 						id={userReview.id}

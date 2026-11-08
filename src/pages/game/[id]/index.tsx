@@ -321,6 +321,7 @@ export default function Game(): AnyElem {
 				<GameReviews
 					reviews={details.reviews}
 					ownerId={details.ownerId}
+					ownerBio={details.ownerBio}
 				/>
 			</>
 		);
