@@ -116,6 +116,7 @@ export default function RemoveReview(): AnyElem {
 				const resp = await API.reviews().getReview(id);
 				if (!resp.data) {
 					setError("Review not found");
+					setReview(null);
 					return;
 				}
 				setReview({
@@ -139,6 +140,7 @@ export default function RemoveReview(): AnyElem {
 				});
 			} catch {
 				setError("Failed to load review");
+				setReview(null);
 			} finally {
 				setLoading(false);
 			}
@@ -159,7 +161,7 @@ export default function RemoveReview(): AnyElem {
 		}
 		
 		if (!review) {
-			return <span>This review has been deleted.</span>;
+			return <span>This review does not exist.</span>;
 		}
 
 		return (
