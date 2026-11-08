@@ -14,13 +14,12 @@ type GameReviewsProp = {
 	reviews: ReviewT[];
 	ownerId: number;
 	ownerBio: ReviewT | null;
-	userId: number;
 };
 
 export default function GameReviews(props: GameReviewsProp): AnyElem {
 	const [session] = useSessionContext();
 	const [userReview, setUserReview] = useState<ReviewT | null>(
-		props.ownerBio && Number(props.ownerBio.user_id) === Number(props.userId)
+		props.ownerBio && Number(props.ownerBio.user_id) === Number(session.user_id)
 			? props.ownerBio
 			: null
 	);
