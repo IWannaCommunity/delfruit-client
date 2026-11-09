@@ -14,6 +14,7 @@ import ProfileGames from "@/components/profile/profileGames";
 import ProfileMain from "@/components/profile/profileMain";
 import ProfileRatings from "@/components/profile/profileRatings";
 import ProfileReviews from "@/components/profile/profileReviews";
+import ProfileLists from "@/components/profile/profileLists";
 import { API } from "@/utils/api";
 import type { AnyElem } from "@/utils/element";
 import { formatDate } from "@/utils/formatDate";
@@ -24,6 +25,7 @@ export type ProfileTabValue =
   | "ratings"
   | "reviews"
   | "games"
+	| "lists"
   | "favorites"
   | "clearList"
   | "bookmarks"
@@ -54,6 +56,7 @@ export default function ProfilePage({
       { label: "Ratings", value: "ratings" },
       { label: "Reviews", value: "reviews" },
       { label: "Games", value: "games" },
+			{ label: "Lists", value: "lists" },
       { label: "Favorites List", value: "favorites" },
       { label: "Clear List", value: "clearList" },
 			...(isOwnProfile
@@ -255,6 +258,10 @@ export default function ProfilePage({
 						{/* User Games */}
 						<div hidden={activeTab !== "games"}>
 							<ProfileGames user={user} />
+						</div>
+						{/* Lists */}
+						<div hidden={activeTab !== "lists"}>
+							<ProfileLists user={user} isOwnProfile={isOwnProfile} />
 						</div>
 						{/* Favorites */}
 						<div hidden={activeTab !== "favorites"}>
