@@ -119,7 +119,7 @@ export default function ListDropdown({
 								onCreateList?.();
 							}}
 						>
-							+ Create new list
+							+ Coming Soon
 						</button>
 					</div>
 				</div>
