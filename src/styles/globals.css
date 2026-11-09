@@ -683,3 +683,10 @@ table.tablesorter tbody td {
 	background: #e8e8e8;
 	text-decoration: underline;
 }
+
+.list-update-error {
+	display: block;
+	margin-top: 4px;
+	color: #a00000;
+	font-size: smaller;
+}

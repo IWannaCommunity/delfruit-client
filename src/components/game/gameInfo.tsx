@@ -2,9 +2,10 @@ import type { Game, GameExt } from "delfruit-swagger-cg-sdk";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useReducer, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import AverageBox, { getColor } from "@/components/game/averageBox";
 import Tag from "@/components/game/tag";
+import ListDropdown from "@/components/game/listDropdown";
 import { API } from "@/utils/api";
 import type { AnyElem } from "@/utils/element";
 import { useSessionContext } from "@/utils/hooks";
@@ -12,14 +13,6 @@ import {
 	getDifficultyDescription,
 	getRatingDescription,
 } from "@/utils/ratingHelpers";
-
-type UserAction =
-	| { type: "favoriting" }
-	| { type: "unfavorite" }
-	| { type: "clearing" }
-	| { type: "unclear" }
-	| { type: "bookmarking" }
-	| { type: "unbookmark" };
 
 interface GameInfoProps {
 	readonly game: GameExt;
@@ -44,34 +37,6 @@ function sanitizeGameForPatch(game: GameExt): Game {
 		ownerId: game.ownerId != null ? String(game.ownerId) : null,
 		removed: Boolean(game.removed)
 	};
-}
-
-function userStateReducer(
-	state: UserState,
-	action: UserAction,
-): UserState {
-	switch (action.type) {
-		case "favoriting":
-			return { ...state, favorited: true };
-
-		case "unfavorite":
-			return { ...state, favorited: false };
-
-		case "clearing":
-			return { ...state, cleared: true };
-
-		case "unclear":
-			return { ...state, cleared: false };
-
-		case "bookmarking":
-			return { ...state, bookmarked: true };
-
-		case "unbookmark":
-			return { ...state, bookmarked: false };
-
-		default:
-			return state;
-	}
 }
 
 export default function GameInfo({
@@ -109,33 +74,114 @@ export default function GameInfo({
 	const [adminDateText, setAdminDateText] = useState("");
 	const [adminOwnerText, setAdminOwnerText] = useState("");
 
-	const [userstate, mutateUserState] = useReducer(userStateReducer,initialUserState);
+	const [selectedLists, setSelectedLists] = useState<string[]>(() => [
+		...(initialUserState.favorited ? ["favorites"] : []),
+		...(initialUserState.cleared ? ["cleared"] : []),
+		...(initialUserState.bookmarked ? ["bookmarks"] : []),
+	]);
 
-	async function handleCheckboxes(
-    type: UserAction["type"],
-	) {
-		const actions = {
-			favoriting: () =>
-				API.lists().putFavoriteGame(`Bearer ${session.token}`, game.id),
-			unfavorite: () =>
-				API.lists().deleteFavoritedGame(`Bearer ${session.token}`, game.id),
-			clearing: () =>
-				API.lists().putClearGame(`Bearer ${session.token}`, game.id),
-			unclear: () =>
-				API.lists().deleteClearedGame(`Bearer ${session.token}`, game.id),
-			bookmarking: () =>
-				API.lists().putBookmarkGame(`Bearer ${session.token}`, game.id),
-			unbookmark: () =>
-				API.lists().deleteBookmarkedGame(`Bearer ${session.token}`, game.id),
+	const [pendingLists, setPendingLists] = useState<string[]>([]);
+	const [listUpdateError, setListUpdateError] = useState("");
+	const pendingListRequests = useRef(new Set<string>());
+
+	const handleListToggle = useCallback(
+		async (listId: string, selected: boolean) => {
+		if (pendingListRequests.current.has(listId)) return;
+		pendingListRequests.current.add(listId);
+		setPendingLists((previous) => [...previous, listId]);
+
+		const apiActions: Record<
+			string,
+			{ add: () => Promise<unknown>; remove: () => Promise<unknown> }
+		> = {
+			favorites: {
+				add: () =>
+					API.lists().putFavoriteGame(
+						`Bearer ${session.token}`,
+						game.id
+					),
+				remove: () =>
+					API.lists().deleteFavoritedGame(
+						`Bearer ${session.token}`,
+						game.id
+					),
+			},
+			cleared: {
+				add: () =>
+					API.lists().putClearGame(
+						`Bearer ${session.token}`,
+						game.id
+					),
+				remove: () =>
+					API.lists().deleteClearedGame(
+						`Bearer ${session.token}`,
+						game.id
+					),
+			},
+			bookmarks: {
+				add: () =>
+					API.lists().putBookmarkGame(
+						`Bearer ${session.token}`,
+						game.id
+					),
+				remove: () =>
+					API.lists().deleteBookmarkedGame(
+						`Bearer ${session.token}`,
+						game.id
+					),
+			},
 		};
 
-		try {
-			await actions[type]();
-			mutateUserState({ type });
-		} catch (error) {
-			throw new Error("Failed to update state.");
+		const action = apiActions[listId];
+
+		if (!action) {
+			setListUpdateError("This list cannot be updated yet.");
+			return;
 		}
-	}
+
+		const wasSelected = selectedLists.includes(listId);
+
+		if (wasSelected === selected) return;
+
+		setListUpdateError("");
+
+		setSelectedLists((previous) => {
+			if (selected) {
+				return [...previous, listId];
+			}
+
+			return previous.filter((id) => id !== listId);
+		});
+
+		setPendingLists((previous) => [...previous, listId]);
+
+		try {
+			if (selected) {
+				await action.add();
+			} else {
+				await action.remove();
+			}
+		} catch {
+			setSelectedLists((previous) => {
+				if (wasSelected) {
+					if (previous.includes(listId)) {
+						return previous;
+					}
+
+					return [...previous, listId];
+				}
+
+				return previous.filter((id) => id !== listId);
+			});
+
+			setListUpdateError("Failed to update. Please try again.");
+		} finally {
+			pendingListRequests.current.delete(listId);
+			setPendingLists((previous) =>
+				previous.filter((id) => id !== listId)
+			);
+		}
+	}, [session.token, game.id, selectedLists]);
 
 	async function actionAdminChangeGameName() {
 		try {
@@ -151,9 +197,7 @@ export default function GameInfo({
 
 			if (onGameUpdated) onGameUpdated();
 		} catch {
-			setAdminGameNameAlertText(
-				"Error: Rejected, game name was not accepted."
-			);
+			setAdminGameNameAlertText("Error: Rejected, game name was not accepted.");
 		}
 	}
 
@@ -585,53 +629,18 @@ export default function GameInfo({
 					</Link>
 					<br />
 
-					{/* Checkboxes */}
-					<input
-						type="checkbox"
-						id="chk_favorite"
-						checked={userstate.favorited}
-						onChange={(e) =>
-							handleCheckboxes(
-								e.target.checked ? "favoriting" : "unfavorite"
-							)
-						}
+					{/* Game Lists */}
+					<ListDropdown
+						selectedLists={selectedLists}
+						pendingLists={pendingLists}
+						onToggleList={handleListToggle}
 					/>
-					<span> Favorite </span>
-					<span className="favorite_alert">
-						{userstate.favorited ? "Favorited!" : ""}
-					</span>
-					<br />
 
-					<input
-						type="checkbox"
-						id="chk_clear"
-						checked={userstate.cleared}
-						onChange={(e) =>
-							handleCheckboxes(
-								e.target.checked ? "clearing" : "unclear"
-							)
-						}
-					/>
-					<span> Cleared </span>
-					<span className="clear_alert">
-						{userstate.cleared ? "Cleared!" : ""}
-					</span>
-					<br />
-
-					<input
-						type="checkbox"
-						id="chk_bookmark"
-						checked={userstate.bookmarked}
-						onChange={(e) =>
-							handleCheckboxes(
-								e.target.checked ? "bookmarking" : "unbookmark"
-							)
-						}
-					/>
-					<span> Bookmark </span>
-					<span className="bookmark_alert">
-						{userstate.bookmarked ? "Bookmarked!" : ""}
-					</span>
+					{listUpdateError && (
+						<span className="list-update-error">
+							{listUpdateError}
+						</span>
+					)}
 					<br />
 				</>
 			)}
