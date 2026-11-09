@@ -6,9 +6,6 @@ import Header from "@/components/header";
 import TabBar from "@/components/helpers/tabBar";
 import ProfileActions from "@/components/profile/profileActions";
 import ProfileAdminActions from "@/components/profile/profileAdminActions";
-import ProfileBookmarks from "@/components/profile/profileBookmarks";
-import ProfileClears from "@/components/profile/profileClears";
-import ProfileFavorites from "@/components/profile/profileFavorites";
 import ProfileFollowing from "@/components/profile/profileFollowing";
 import ProfileGames from "@/components/profile/profileGames";
 import ProfileMain from "@/components/profile/profileMain";
@@ -26,9 +23,6 @@ export type ProfileTabValue =
   | "reviews"
   | "games"
 	| "lists"
-  | "favorites"
-  | "clearList"
-  | "bookmarks"
   | "following"
   | "admin";
 
@@ -51,23 +45,20 @@ export default function ProfilePage({
     const isOwnProfile = profileId === undefined;
     const targetId = isOwnProfile ? session?.user_id : profileId;
 
-    const tabs = [
-      { label: "User Profile", value: "profile" },
-      { label: "Ratings", value: "ratings" },
-      { label: "Reviews", value: "reviews" },
-      { label: "Games", value: "games" },
+		const tabs = [
+			{ label: "User Profile", value: "profile" },
+			{ label: "Ratings", value: "ratings" },
+			{ label: "Reviews", value: "reviews" },
+			{ label: "Games", value: "games" },
 			{ label: "Lists", value: "lists" },
-      { label: "Favorites List", value: "favorites" },
-      { label: "Clear List", value: "clearList" },
 			...(isOwnProfile
-        ? [
-            { label: "Bookmarks", value: "bookmarks" },
-            { label: "Following", value: "following" },
-          ]
-        : []),
-      ...(session.admin
-        ? [{ label: "Admin", value: "admin" }]
-        : []),
+				? [
+						{ label: "Following", value: "following" },
+					]
+				: []),
+			...(session.admin
+				? [{ label: "Admin", value: "admin" }]
+				: []),
 		] satisfies { label: string; value: ProfileTabValue }[];
 
     useEffect(() => {
@@ -263,25 +254,11 @@ export default function ProfilePage({
 						<div hidden={activeTab !== "lists"}>
 							<ProfileLists user={user} isOwnProfile={isOwnProfile} />
 						</div>
-						{/* Favorites */}
-						<div hidden={activeTab !== "favorites"}>
-							<ProfileFavorites user={user} />
-						</div>
-						{/* Clears */}
-						<div hidden={activeTab !== "clearList"}>
-							<ProfileClears user={user} />
-						</div>
-						{/* Owned Profile (Bookmarks/Following) */}
+						{/* Following */}
 						{isOwnProfile && (
-							<>
-								<div hidden={activeTab !== "bookmarks"}>
-									<ProfileBookmarks />
-								</div>
-
-								<div hidden={activeTab !== "following"}>
-									<ProfileFollowing user={user} />
-								</div>
-							</>
+							<div hidden={activeTab !== "following"}>
+								<ProfileFollowing user={user} />
+							</div>
 						)}
 						{/* Admin */}
 						<div hidden={activeTab !== "admin"}>
