@@ -61,17 +61,19 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 				}));
 
 				setReviews(reviewProps);
-				setLoading(false);
 				setError(null);
 			} else {
 				setError("Failed to load reviews.");
 			}
 
+			setLoading(false);
+
 			// Count result
 			if (results[1].status === "fulfilled") {
 				setCount(results[1].value.data.count);
-				setCountLoading(false);
 			}
+
+			setCountLoading(false);
 		};
 		fetchData();
 	}, [props.limit, props.page]);
