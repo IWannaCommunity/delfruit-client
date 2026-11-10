@@ -8,6 +8,7 @@ import Pagination from "@/components/helpers/pagination";
 import { API } from "@/utils/api";
 
 export default function Reviews(): JSX.Element {
+	const [count, setCount] = useState<number>(0);
 	const [page, setPage] = useState<number>(0);
 	const [totalPage, setTotalPage] = useState<number>(0);
 	const [error, setError] = useState(false);
@@ -31,7 +32,8 @@ export default function Reviews(): JSX.Element {
 			(async () => {
 				try {
 					const resp = await API.reviews().getReviewCount();
-					const total = Math.ceil(resp.data.count/limit);
+					setCount(resp.data.count);
+					const total = Math.ceil(resp.data.count / limit);
 					setTotalPage(total);
 					setError(false);
 				} catch (err: any) {
@@ -55,7 +57,7 @@ export default function Reviews(): JSX.Element {
 					{!loading && !error && (
 						<>
 							<Pagination page={page} totalPages={totalPage} basePath="/reviews/[id]"/>
-							<ReviewList page={page} limit={limit} />
+							<ReviewList page={page} limit={limit} count={count} />
 							<Pagination page={page} totalPages={totalPage} basePath="/reviews/[id]"/>
 						</>
 					)}
