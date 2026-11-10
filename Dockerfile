@@ -1,7 +1,7 @@
 ### STAGE 1: Build ###
 
 # We label our stage as ‘builder’
-FROM node:18.17.0-alpine3.17 as builder
+FROM node:20.5.0-alpine3.18 as builder
 
 #ENV CI=1 \
 #	NODE_ENV=production
