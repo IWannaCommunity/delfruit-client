@@ -5,10 +5,9 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import ReviewList from "@/components/home/reviewList";
 import Pagination from "@/components/helpers/pagination";
-import { API } from "@/utils/api";
+import { getCachedReviewCount } from "@/utils/reviewCache";
 
 export default function Reviews(): JSX.Element {
-	const [count, setCount] = useState<number>(0);
 	const [page, setPage] = useState<number>(0);
 	const [totalPage, setTotalPage] = useState<number>(0);
 	const [error, setError] = useState(false);
@@ -31,9 +30,8 @@ export default function Reviews(): JSX.Element {
 
 			(async () => {
 				try {
-					const resp = await API.reviews().getReviewCount();
-					setCount(resp.data.count);
-					const total = Math.ceil(resp.data.count / limit);
+					const count = await getCachedReviewCount();
+					const total = Math.ceil(count / limit);
 					setTotalPage(total);
 					setError(false);
 				} catch (err: any) {
@@ -57,7 +55,7 @@ export default function Reviews(): JSX.Element {
 					{!loading && !error && (
 						<>
 							<Pagination page={page} totalPages={totalPage} basePath="/reviews/[id]"/>
-							<ReviewList page={page} limit={limit} count={count} />
+							<ReviewList page={page} limit={limit} />
 							<Pagination page={page} totalPages={totalPage} basePath="/reviews/[id]"/>
 						</>
 					)}
