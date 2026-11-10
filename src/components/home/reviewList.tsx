@@ -70,7 +70,7 @@ export default function ReviewList(props: ReviewListProps): JSX.Element {
 
 			// Count result
 			if (results[1].status === "fulfilled") {
-				setCount(results[1].value.data.count);
+				setCount(results[1].value);
 			}
 
 			setCountLoading(false);
