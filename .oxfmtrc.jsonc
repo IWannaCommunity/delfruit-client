@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/refs/tags/oxfmt_v0.78.0/npm/oxfmt/configuration_schema.json",
+  "semi": true,
+  "printWidth": 120,
+  "useTabs": true,
+  "tabWidth": 4,
+  "singleQuote": false,
+  "trailingComma": "all",
+  "arrowParens": "always",
+  "sortPackageJson": false,
+  "ignorePatterns": []
+}
