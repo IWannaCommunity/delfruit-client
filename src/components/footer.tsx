@@ -1,23 +1,23 @@
 import Link from "next/link";
+import React from "react";
 import type { AnyElem } from "@/utils/element";
 
 export default function Footer(): AnyElem {
 	return (
 		<div id="footer">
 			<p>
-				<span>
-					Delicious-Fruit - Site Design © Klazen 2015-2021, IWC Labs 2020-2026{" "}
-				</span>
-				<Link href="/contactus">Contact Us</Link> |{" "}
-				<Link href="/guidelines">Guidelines</Link>
+				<span>Delicious-Fruit - Site Design © Klazen 2015-2021, IWC Labs 2020-2026 </span>
+				<Link href="/contactus">Contact Us</Link> | <Link href="/guidelines">Guidelines</Link>
 				<br />
 				<Link href="/thanks">Staff &amp; Notable Mentions</Link>
 				<br />
-				Powered By <a href="https://expressjs.com">Express</a> &{" "}
-				<a href="https://react.dev">React</a> +{" "}
+				Powered By <a href="https://expressjs.com">Express</a> & <a href="https://react.dev">React</a> +{" "}
 				<a href="https://nextjs.org">Next.js</a>
 				<br />
-				Client: <span>{process.env.NEXT_PUBLIC_APP_VERSION}</span>
+				Client:{" "}
+				<span>
+					<b>{process.env.NEXT_PUBLIC_APP_NAME}</b>, {process.env.NEXT_PUBLIC_APP_VERSION}
+				</span>
 			</p>
 		</div>
 	);
