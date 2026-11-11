@@ -1,0 +1,89 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/refs/tags/oxlint_v1.93.0/npm/oxlint/configuration_schema.json",
+  "plugins": [
+    "import",
+    "react",
+    "nextjs",
+    "typescript",
+    "jsx-a11y"
+  ],
+  "categories": {
+    "correctness": "off"
+  },
+  "options": {
+    "typeAware": true
+  },
+  "env": {
+    "builtin": true,
+    "amd": true,
+    "browser": true,
+    "webextensions": true
+  },
+  "globals": {
+    "JSX": "writable",
+    "expect": "readonly"
+  },
+  "rules": {
+    "import/extensions": "warn",
+    "no-void": "warn",
+    "react/display-name": "warn",
+    "react/self-closing-comp": "warn",
+    "react/no-unescaped-entities": "warn",
+    "react/jsx-filename-extension": [
+      "warn",
+      {
+        "extensions": [
+          ".jsx",
+          ".tsx"
+        ]
+      }
+    ],
+    "no-redeclare": "warn",
+    "react/react-in-jsx-scope": "warn",
+    "no-unused-vars": "warn",
+    "no-shadow": "warn",
+    "prefer-destructuring": "warn",
+    "jsx-a11y/label-has-associated-control": "warn",
+    "react/jsx-props-no-spreading": "warn",
+    "no-useless-return": "warn",
+    "react/jsx-no-constructed-context-values": "warn",
+    "import/prefer-default-export": "warn",
+    "import/no-duplicates": "warn",
+    "no-use-before-define": "warn",
+    "prefer-const": "warn",
+    "react/jsx-curly-brace-presence": "warn",
+    "import/newline-after-import": "warn",
+    "no-nested-ternary": "warn",
+    "react/jsx-no-useless-fragment": "warn",
+    "arrow-body-style": "warn",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "prefer-template": "warn",
+    "jsx-a11y/interactive-supports-focus": "warn",
+    "jsx-a11y/no-noninteractive-tabindex": "warn",
+    "react/no-array-index-key": "warn",
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/no-noninteractive-element-interactions": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "jsx-a11y/anchor-has-content": "warn",
+    "no-bitwise": "warn",
+    "react/button-has-type": "warn",
+    "radix": "warn",
+    "no-restricted-globals": "warn",
+    "no-import-assign": "warn",
+    "no-unused-expressions": "warn",
+    "no-unsafe-optional-chaining": "warn",
+    "react/jsx-boolean-value": "warn",
+    "no-else-return": "warn",
+    "curly": "warn",
+    "no-empty-function": "warn",
+    "nextjs/no-img-element": "warn",
+    "react/rules-of-hooks": "warn",
+    "react/exhaustive-deps": "warn",
+    "typescript/consistent-return": "warn",
+    "typescript/no-explicit-any": "warn",
+    "typescript/dot-notation": "warn",
+    "typescript/no-var-requires": "warn",
+    "typescript/ban-types": "warn",
+	"no-undef": "warn"
+  }
+}
