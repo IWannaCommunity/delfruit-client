@@ -1,4 +1,4 @@
-@import "~purecss/pure-min";
+@import "~purecss/build/pure-min";
 @import "../../node_modules/jquery-ui/themes/base/all.css";
 @import "./themes.css";
 
