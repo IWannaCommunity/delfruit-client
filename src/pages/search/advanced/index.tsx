@@ -14,7 +14,9 @@ import { useDebouncedCallback } from "use-debounce";
 import Header from "@/components/header";
 import Whitespace from "@/components/whitespace";
 import type { AnyElem } from "@/utils/element";
-import { useSessionContext } from "@/utils/hooks";
+import { useSessionContext, useTimer } from "@/utils/hooks";
+import { Game } from "delfruit-swagger-cg-sdk";
+import { API } from "@/utils/api";
 
 export default function AdvancedSearch(): AnyElem {
     const router = useRouter();
@@ -164,6 +166,82 @@ export default function AdvancedSearch(): AnyElem {
             tags,
         ],
     );
+
+    const [feelinLuckyState, setFeelinLuckyState] = useState<string>("none");
+    const [feelinLuckySearchPage, setFeelinLuckySearchPage] = useState<number>(0);
+    const [feelinLuckyBuffer, setFeelinLuckyBuffer] = useState<Array<number>>(new Array());
+
+    const feelinLuckySearch = useCallback(async () => {
+        if (feelinLuckyState === "done") { router.push(`/game/${Number(feelinLuckyBuffer[Math.round(Math.random() * feelinLuckyBuffer.length)])}`) }
+        if (feelinLuckyState !== "searching") { return }
+        if (feelinLuckyBuffer.length >= 1000) {
+            setFeelinLuckyState("done");
+            return
+        }
+
+        // HACK: useTimer will just re-run, even if the promise has not resolved, so pause until we're finished
+        feelinLuckyTimer.pause();
+
+        try {
+            const games = (await API.games().getGames(session.active ? `Bearer ${session.token}` : undefined, title, void 0, false, void 0, void 0, void 0, tags, author, void 0, requireDL, createdFrom, createdTo, void 0, void 0, ratingRange[0], ratingRange[1], difficultyRange[0], difficultyRange[1], feelinLuckySearchPage, 5, void 0, void 0)).data;
+
+            if (games.length < 5) {
+                setFeelinLuckyState("done");
+            } else {
+                setFeelinLuckySearchPage(feelinLuckySearchPage + 1);
+            }
+
+            if (feelinLuckySearchPage === 0 && games.length === 0) {
+                setFeelinLuckyState("error2");
+                return
+            }
+
+            const buf = new Array(games.length);
+            for (const g of games) {
+                buf.pop(); // HACK: node is too stupid to just replace the undefined values
+                buf.unshift(g.id);
+            }
+            setFeelinLuckyBuffer([...feelinLuckyBuffer, ...buf]);
+            // HACK: continue timer execution
+            feelinLuckyTimer.start();
+
+        } catch (e) {
+            console.error("search api failure");
+            console.error(e);
+            setFeelinLuckyState("error");
+            feelinLuckyTimer.pause();
+            return;
+        }
+    }
+        , [feelinLuckyState, feelinLuckyBuffer, feelinLuckySearchPage, requireDL, createdFrom, createdTo, ratingRange, difficultyRange, tags, session, title, author])
+
+    const feelinLuckyTimer = useTimer({ initialTime: 150, interval: 20, endTime: 0, autostart: false, countdown: true, autoreset: true, onEnd: feelinLuckySearch });
+
+    const feelinLuckyStartSearch = useCallback(() => {
+        switch (feelinLuckyState) {
+            case "none":
+                console.log("starting");
+                setFeelinLuckyState("searching");
+                feelinLuckyTimer.start();
+                break;
+        }
+    }, [feelinLuckyTimer, feelinLuckyState]);
+
+    const feelinLuckyButton = useCallback(() => {
+        switch (feelinLuckyState) {
+            case "none":
+                return (<input type="button" id="lucky" value="I'm feeling lucky!" onClick={feelinLuckyStartSearch} />)
+            case "searching":
+                return (<><input type="button" id="lucky" value="I'm feeling lucky!" disabled={true} /><progress value="indeterminate" /></>)
+            case "error":
+                return (<input type="button" id="lucky" value="Search is overloaded! Please try again later." disabled={true} />)
+            case "error2":
+                return (<input type="button" id="lucky" value="Range is too narrow. Refresh and increase your parameters." disabled={true} />)
+            default: return (<></>)
+        }
+    }, [feelinLuckyState, feelinLuckyStartSearch])
+
+
 
     return (
         <div>
@@ -442,7 +520,7 @@ export default function AdvancedSearch(): AnyElem {
                                 <div>
                                     <button type="submit">Search</button>
                                     <Whitespace />
-                                    <input type="button" id="lucky" value="I'm feeling lucky!" />
+                                    {feelinLuckyButton()}
                                     <input type="hidden" name="advanced" value="1" />
                                 </div>
                             </div>
