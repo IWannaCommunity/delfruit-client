@@ -1,6 +1,6 @@
 {
   "name": "Weeping Higan",
-  "version": "2027.0.0-rc.0",
+  "version": "2027.0.0-rc.1",
   "private": true,
   "scripts": {
     "postinstall": "patch-package",
