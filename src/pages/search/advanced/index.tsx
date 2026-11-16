@@ -29,19 +29,17 @@ export default function AdvancedSearch(): AnyElem {
     const [ratingRange, setRatingRange] = useState<[number, number]>([0, 100]);
     const [specifiedDifficulty, toggleSpecifiedDifficulty] =
         useState<boolean>(false);
-    const [difficultyRange, setDifficultyRange] = useState<[number, number]>([
-        0, 100,
-    ]);
+    const [difficultyRange, setDifficultyRange] = useState<[number, number]>([0, 100]);
 
     const [tags, setTags] = useState<string>("");
     const [hasCleared, setHasCleared] = useState<boolean | undefined>(undefined);
     const [hasReviewed, setHasReviewed] = useState<boolean | undefined>(undefined);
 
-    const [requireDL, setRequireDL] = useState<number | 0 | 1 | -1 | undefined>(
-        undefined,
-    );
+    const [requireDL, setRequireDL] = useState<number | 0 | 1 | -1 | undefined>(undefined);
     const [createdFrom, setCreatedFrom] = useState<string | undefined>(undefined);
     const [createdTo, setCreatedTo] = useState<string | undefined>(undefined);
+
+    const [loadedSaveFile, setLoadedSaveFile] = useState<boolean>(false);
 
     const uiSetRatingRange = useDebouncedCallback((value) => {
         setRatingRange(value);
@@ -126,6 +124,56 @@ export default function AdvancedSearch(): AnyElem {
         uiSetCreatedFrom,
         uiSetCreatedTo,
     ]);
+
+    useEffect(() => {
+        if ((!router.isReady) || (loadedSaveFile)) {
+            return
+        }
+
+        // DANGER: STUPID, BUT I DON'T KNOW OF ANY OTHER WAY
+        document.getElementById("title").value = router.query.name?.toString() ?? "";
+        setTitle(router.query.name?.toString() ?? "")
+        document.getElementById("author").value = router.query.author?.toString() ?? "";
+        setAuthor(router.query.author?.toString() ?? "")
+        setRatingRange([Number(router.query.ratingFrom ?? 0), Number(router.query.ratingTo ?? 100)]);
+        if (Number(router.query.ratingFrom ?? 0) !== 0 || Number(router.query.ratingTo ?? 100) !== 100) {
+            document.getElementById("dorate").checked = true;
+            toggleSpecifiedRating(true);
+        }
+        setDifficultyRange([Number(router.query.difficultyFrom ?? 0), Number(router.query.difficultyTo ?? 100)]);
+        if (Number(router.query.difficultyFrom ?? 0) !== 0 || Number(router.query.difficultyTo ?? 100) !== 100) {
+            document.getElementById("dodiff").checked = true;
+            toggleSpecifiedDifficulty(true);
+        }
+        document.getElementById("tags").value = router.query.tags?.toString() ?? "";
+        setTags(router.query.tags?.toString() ?? "")
+        setHasCleared(router.query.cleared ?? undefined)
+        if (router.query.cleared === undefined) {
+            document.getElementById("clear-any").checked = true;
+        } else if (router.query.cleared === true) {
+            document.getElementById("clear-cleared").checked = true;
+        } else {
+            document.getElementById("clear-uncleared").checked = true;
+        }
+        setHasReviewed(router.query.reviewed ?? undefined)
+        if (router.query.reviewed === undefined) {
+            document.getElementById("review-any").checked = true;
+        } else if (router.query.reviewed === true) {
+            document.getElementById("review-no").checked = true;
+        } else {
+            document.getElementById("review-yes").checked = true;
+        }
+        setRequireDL(router.query.hasDownload);
+        document.getElementById("from").value = router.query.createdFrom?.toString() ?? "";
+        setCreatedFrom(router.query.createdFrom?.toString() ?? "")
+        document.getElementById("to").value = router.query.createdTo?.toString() ?? "";
+        setCreatedTo(router.query.createdTo?.toString() ?? "")
+
+
+
+        setLoadedSaveFile(true);
+    }, [router, loadedSaveFile])
+
 
     const startSearch = useCallback(
         async (evt: React.FormEvent<HTMLFormElement>): Promise<void> => {
@@ -262,7 +310,7 @@ export default function AdvancedSearch(): AnyElem {
                                     type="text"
                                     placeholder="I wanna be the Guy Remastered"
                                     name="title"
-                                    defaultValue=""
+                                    defaultValue={title}
                                     onChange={async (evt) => {
                                         setTitle(evt.currentTarget.value);
                                     }}
