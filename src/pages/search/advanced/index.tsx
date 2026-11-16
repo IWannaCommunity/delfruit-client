@@ -32,8 +32,8 @@ export default function AdvancedSearch(): AnyElem {
     ]);
 
     const [tags, setTags] = useState<string>("");
-    const [hasCleared, setHasCleared] = useState<boolean | null>(null);
-    const [hasReviewed, setHasReviewed] = useState<boolean | null>(null);
+    const [hasCleared, setHasCleared] = useState<boolean | undefined>(undefined);
+    const [hasReviewed, setHasReviewed] = useState<boolean | undefined>(undefined);
 
     const [requireDL, setRequireDL] = useState<number | 0 | 1 | -1 | undefined>(
         undefined,
