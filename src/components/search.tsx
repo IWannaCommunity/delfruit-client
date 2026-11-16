@@ -2,51 +2,67 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import {
-	type Column,
-	DataTable,
-	type SortConfig,
+    type Column,
+    DataTable,
+    type SortConfig,
 } from "@/components/helpers/dataTable";
 import { API } from "@/utils/api";
 import { dedupeArray } from "@/utils/dedupeArray";
 import { formatDate } from "@/utils/formatDate";
 import { useSessionContext } from "@/utils/hooks";
 import { useInfiniteScroll } from "@/utils/infiniteScroll";
+import Whitespace from "./whitespace";
+import { ParsedUrlQuery } from "querystring";
 
 // #region Types
 type Game = {
-	id: number;
-	name: string;
-	sortname: string;
-	date_created: Date | null;
-	difficulty: number | string;
-	rating: number | string;
-	rating_count: number;
+    id: number;
+    name: string;
+    sortname: string;
+    date_created: Date | null;
+    difficulty: number | string;
+    rating: number | string;
+    rating_count: number;
 };
 
 const gameColumns: Column<Game>[] = [
-	{
-		key: "name",
-		label: "Name",
-		render: (value, row) => (
-			<Link href="/game/[id]" as={`/game/${row.id}`}>
-				{value}
-			</Link>
-		),
-	},
-	{
-		key: "date_created",
-		label: "Release Date",
-		render: (value) => (value ? formatDate(value as Date) : "Unknown"),
-	},
-	{
-		key: "difficulty",
-		label: "Difficulty",
-		render: (value) => value,
-	},
-	{ key: "rating", label: "Rating", render: (value) => value },
-	{ key: "rating_count", label: "# of Ratings" },
+    {
+        key: "name",
+        label: "Name",
+        render: (value, row) => (
+            <Link href="/game/[id]" as={`/game/${row.id}`}>
+                {value}
+            </Link>
+        ),
+    },
+    {
+        key: "date_created",
+        label: "Release Date",
+        render: (value) => (value ? formatDate(value as Date) : "Unknown"),
+    },
+    {
+        key: "difficulty",
+        label: "Difficulty",
+        render: (value) => value,
+    },
+    { key: "rating", label: "Rating", render: (value) => value },
+    { key: "rating_count", label: "# of Ratings" },
 ];
 // #endregion
+
+function queryToSearchParams(query: ParsedUrlQuery): URLSearchParams {
+  const params = new URLSearchParams();
+
+  Object.entries(query).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((v) => params.append(key, v));
+    } else if (value !== undefined) {
+      params.append(key, value);
+    }
+  });
+
+  return params;
+}
 
 // #region Component
 /*
@@ -55,396 +71,396 @@ const gameColumns: Column<Game>[] = [
  * @returns JSX.Element
  */
 export default function Search(): JSX.Element {
-	const [games, setGames] = useState<Game[]>([]);
-	const [sortConfig, setSortConfig] = useState<SortConfig<Game> | null>(null);
-	const [page, setPage] = useState(0);
-	const [hasMore, setHasMore] = useState(true);
-	const [initialized, setInitialized] = useState(false);
-	const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [games, setGames] = useState<Game[]>([]);
+    const [sortConfig, setSortConfig] = useState<SortConfig<Game> | null>(null);
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [initialized, setInitialized] = useState(false);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-	const [session] = useSessionContext();
+    const [session] = useSessionContext();
 
-	const router = useRouter();
+    const router = useRouter();
 
-	const searchQuery = (router.query.q as string) ?? "";
-	const activeLetter = router.isReady
-		? ((router.query.l as string) ?? "")
-		: undefined;
-	const searchName = (router.query.name as string) ?? "";
-	const searchAuthor = (router.query.author as string) ?? "";
-	const searchHasDownload = (router.query.hasDownload as string) ?? "";
-	const searchCreatedFrom = (router.query.createdFrom as string) ?? "";
-	const searchCreatedTo = (router.query.createdTo as string) ?? "";
-	const searchRatingFrom = (router.query.ratingFrom as string) ?? "";
-	const searchRatingTo = (router.query.ratingTo as string) ?? "";
-	const searchDifficultyFrom = (router.query.difficultyFrom as string) ?? "";
-	const searchDifficultyTo = (router.query.difficultyTo as string) ?? "";
-	const searchTags = (router.query.tags as string) ?? "";
-	const searchCleared = (router.query.cleared as string) ?? "";
-	const searchReviewed = (router.query.reviewed as string) ?? "";
+    const searchQuery = (router.query.q as string) ?? "";
+    const activeLetter = router.isReady
+        ? ((router.query.l as string) ?? "")
+        : undefined;
+    const searchName = (router.query.name as string) ?? "";
+    const searchAuthor = (router.query.author as string) ?? "";
+    const searchHasDownload = (router.query.hasDownload as string) ?? "";
+    const searchCreatedFrom = (router.query.createdFrom as string) ?? "";
+    const searchCreatedTo = (router.query.createdTo as string) ?? "";
+    const searchRatingFrom = (router.query.ratingFrom as string) ?? "";
+    const searchRatingTo = (router.query.ratingTo as string) ?? "";
+    const searchDifficultyFrom = (router.query.difficultyFrom as string) ?? "";
+    const searchDifficultyTo = (router.query.difficultyTo as string) ?? "";
+    const searchTags = (router.query.tags as string) ?? "";
+    const searchCleared = (router.query.cleared as string) ?? "";
+    const searchReviewed = (router.query.reviewed as string) ?? "";
 
-	const handleLetterNavigation = (letter: string) => {
-		const query: Record<string, string> = {};
-		if (searchQuery.trim()) query.q = searchQuery.trim();
-		if (searchName.trim()) query.name = searchName.trim();
-		if (searchAuthor.trim()) query.author = searchAuthor.trim();
-		if (searchHasDownload.trim()) query.hasDownload = searchHasDownload.trim();
-		if (searchCreatedFrom.trim()) query.createdFrom = searchCreatedFrom.trim();
-		if (searchCreatedTo.trim()) query.createdTo = searchCreatedTo.trim();
-		if (searchRatingFrom.trim()) query.ratingFrom = searchRatingFrom.trim();
-		if (searchRatingTo.trim()) query.ratingTo = searchRatingTo.trim();
-		if (searchDifficultyFrom.trim()) {
-			query.difficultyFrom = searchDifficultyFrom.trim();
-		}
-		if (searchDifficultyTo.trim()) {
-			query.difficultyTo = searchDifficultyTo.trim();
-		}
-		if (searchTags.trim()) query.tags = searchTags.trim();
-		if (searchCleared.trim()) query.cleared = searchCleared.trim();
-		if (searchReviewed.trim()) query.reviewed = searchReviewed.trim();
+    const handleLetterNavigation = (letter: string) => {
+        const query: Record<string, string> = {};
+        if (searchQuery.trim()) query.q = searchQuery.trim();
+        if (searchName.trim()) query.name = searchName.trim();
+        if (searchAuthor.trim()) query.author = searchAuthor.trim();
+        if (searchHasDownload.trim()) query.hasDownload = searchHasDownload.trim();
+        if (searchCreatedFrom.trim()) query.createdFrom = searchCreatedFrom.trim();
+        if (searchCreatedTo.trim()) query.createdTo = searchCreatedTo.trim();
+        if (searchRatingFrom.trim()) query.ratingFrom = searchRatingFrom.trim();
+        if (searchRatingTo.trim()) query.ratingTo = searchRatingTo.trim();
+        if (searchDifficultyFrom.trim()) {
+            query.difficultyFrom = searchDifficultyFrom.trim();
+        }
+        if (searchDifficultyTo.trim()) {
+            query.difficultyTo = searchDifficultyTo.trim();
+        }
+        if (searchTags.trim()) query.tags = searchTags.trim();
+        if (searchCleared.trim()) query.cleared = searchCleared.trim();
+        if (searchReviewed.trim()) query.reviewed = searchReviewed.trim();
 
-		query.l = letter === "ALL" ? "ALL" : letter;
-		router.push({ pathname: "/search", query });
-	};
+        query.l = letter === "ALL" ? "ALL" : letter;
+        router.push({ pathname: "/search", query });
+    };
 
-	const clearSearch = () => {
-		router.push({ pathname: "/search" });
-	};
+    const clearSearch = () => {
+        router.push({ pathname: "/search" });
+    };
 
-	const fetchGames = useCallback(
-		async (
-			requestedPage: number,
-			sort: SortConfig<Game> | null,
-		): Promise<Game[]> => {
-			try {
-				const res = await API.games().getGames(
-					undefined, // authorization
-					searchQuery === "" ? undefined : searchQuery, // query
-					undefined, // id
-					undefined, // removed
-					searchName === "" ? undefined : searchName, // name
-					activeLetter === "ALL" || !activeLetter ? undefined : activeLetter, // nameStartsWith,
-					undefined, // nameExp
-					searchTags === "" ? undefined : searchTags.replaceAll(" ", ","), // tags
-					searchAuthor === "" ? undefined : searchAuthor, // author
-					undefined, // ownerUserID
-					searchHasDownload === "" ? undefined : Boolean(searchHasDownload), // hasDownload
-					searchCreatedFrom === "" ? undefined : new Date(searchCreatedFrom), // createdFrom
-					searchCreatedTo === "" ? undefined : new Date(searchCreatedTo), // createdTo
-					(() => {
-						if (searchCleared) {
-							if (session.active) {
-								return session.user_id;
-							}
-						}
-						return undefined;
-					})(), // clearedByUserID
-					(() => {
-						if (searchReviewed) {
-							if (session.active) {
-								return session.user_id;
-							}
-						}
-						return undefined;
-					})(), // reviewedByUserID
-					searchRatingFrom === "" ? undefined : Number(searchRatingFrom), // ratingFrom
-					searchRatingTo === "" ? undefined : Number(searchRatingTo), // ratingTo
-					searchDifficultyFrom === ""
-						? undefined
-						: Number(searchDifficultyFrom), // difficultyFrom
-					searchDifficultyTo === "" ? undefined : Number(searchDifficultyTo), // difficultyTo
-					requestedPage, // page number
-					50, // limit
-					sort?.column === "name" ? "sortname" : sort?.column, // orderCol
-					sort?.direction, // orderDir
-				);
+    const fetchGames = useCallback(
+        async (
+            requestedPage: number,
+            sort: SortConfig<Game> | null,
+        ): Promise<Game[]> => {
+            try {
+                const res = await API.games().getGames(
+                    undefined, // authorization
+                    searchQuery === "" ? undefined : searchQuery, // query
+                    undefined, // id
+                    undefined, // removed
+                    searchName === "" ? undefined : searchName, // name
+                    activeLetter === "ALL" || !activeLetter ? undefined : activeLetter, // nameStartsWith,
+                    undefined, // nameExp
+                    searchTags === "" ? undefined : searchTags.replaceAll(" ", ","), // tags
+                    searchAuthor === "" ? undefined : searchAuthor, // author
+                    undefined, // ownerUserID
+                    searchHasDownload === "" ? undefined : Boolean(searchHasDownload), // hasDownload
+                    searchCreatedFrom === "" ? undefined : new Date(searchCreatedFrom), // createdFrom
+                    searchCreatedTo === "" ? undefined : new Date(searchCreatedTo), // createdTo
+                    (() => {
+                        if (searchCleared) {
+                            if (session.active) {
+                                return session.user_id;
+                            }
+                        }
+                        return undefined;
+                    })(), // clearedByUserID
+                    (() => {
+                        if (searchReviewed) {
+                            if (session.active) {
+                                return session.user_id;
+                            }
+                        }
+                        return undefined;
+                    })(), // reviewedByUserID
+                    searchRatingFrom === "" ? undefined : Number(searchRatingFrom), // ratingFrom
+                    searchRatingTo === "" ? undefined : Number(searchRatingTo), // ratingTo
+                    searchDifficultyFrom === ""
+                        ? undefined
+                        : Number(searchDifficultyFrom), // difficultyFrom
+                    searchDifficultyTo === "" ? undefined : Number(searchDifficultyTo), // difficultyTo
+                    requestedPage, // page number
+                    50, // limit
+                    sort?.column === "name" ? "sortname" : sort?.column, // orderCol
+                    sort?.direction, // orderDir
+                );
 
-				const newData: Game[] = (res.data ?? []).map((g: any) => ({
-					id: Number(g.id),
-					name: g.name,
-					sortname: g.sortname,
-					date_created: g.date_created ? new Date(g.date_created) : null,
-					difficulty:
-						g.difficulty === null ? "N/A" : Number(g.difficulty).toFixed(1),
-					rating: g.rating === null ? "N/A" : Number(g.rating / 10).toFixed(1),
-					rating_count: Number(g.rating_count),
-				}));
+                const newData: Game[] = (res.data ?? []).map((g: any) => ({
+                    id: Number(g.id),
+                    name: g.name,
+                    sortname: g.sortname,
+                    date_created: g.date_created ? new Date(g.date_created) : null,
+                    difficulty:
+                        g.difficulty === null ? "N/A" : Number(g.difficulty).toFixed(1),
+                    rating: g.rating === null ? "N/A" : Number(g.rating / 10).toFixed(1),
+                    rating_count: Number(g.rating_count),
+                }));
 
-				return newData;
-			} catch (error) {
-				return [];
-			}
-		},
-		[
-			searchQuery,
-			searchName,
-			activeLetter,
-			searchAuthor,
-			searchHasDownload,
-			searchCreatedFrom,
-			searchCreatedTo,
-			searchRatingFrom,
-			searchRatingTo,
-			searchDifficultyFrom,
-			searchDifficultyTo,
-			searchTags,
-			searchCleared,
-			searchReviewed,
-			session,
-		],
-	);
+                return newData;
+            } catch (error) {
+                return [];
+            }
+        },
+        [
+            searchQuery,
+            searchName,
+            activeLetter,
+            searchAuthor,
+            searchHasDownload,
+            searchCreatedFrom,
+            searchCreatedTo,
+            searchRatingFrom,
+            searchRatingTo,
+            searchDifficultyFrom,
+            searchDifficultyTo,
+            searchTags,
+            searchCleared,
+            searchReviewed,
+            session,
+        ],
+    );
 
-	useEffect(() => {
-		if (!router.isReady) return;
+    useEffect(() => {
+        if (!router.isReady) return;
 
-		const hasFilters = [
-			searchQuery,
-			searchName,
-			activeLetter,
-			searchAuthor,
-			searchTags,
-			searchHasDownload,
-			searchCreatedFrom,
-			searchCreatedTo,
-			searchRatingFrom,
-			searchRatingTo,
-			searchDifficultyFrom,
-			searchDifficultyTo,
-			searchCleared,
-			searchReviewed,
-		].some((value) => value.trim() !== "");
+        const hasFilters = [
+            searchQuery,
+            searchName,
+            activeLetter,
+            searchAuthor,
+            searchTags,
+            searchHasDownload,
+            searchCreatedFrom,
+            searchCreatedTo,
+            searchRatingFrom,
+            searchRatingTo,
+            searchDifficultyFrom,
+            searchDifficultyTo,
+            searchCleared,
+            searchReviewed,
+        ].some((value) => value.trim() !== "");
 
-		if (!hasFilters) {
-			setGames([]);
-			setHasMore(false);
-			return;
-		}
+        if (!hasFilters) {
+            setGames([]);
+            setHasMore(false);
+            return;
+        }
 
-		let isCancelled = false;
-		setInitialized(false);
+        let isCancelled = false;
+        setInitialized(false);
 
-		const fetchAndSet = async () => {
-			const firstPage = await fetchGames(0, sortConfig);
-			if (!isCancelled) {
-				setGames(firstPage);
-				setPage(0);
-				setHasMore(firstPage.length === 50);
-				setInitialized(true);
-			}
-		};
+        const fetchAndSet = async () => {
+            const firstPage = await fetchGames(0, sortConfig);
+            if (!isCancelled) {
+                setGames(firstPage);
+                setPage(0);
+                setHasMore(firstPage.length === 50);
+                setInitialized(true);
+            }
+        };
 
-		fetchAndSet();
+        fetchAndSet();
 
-		return () => {
-			isCancelled = true; // cleanup useEffect
-		};
-	}, [
-		searchQuery,
-		searchName,
-		activeLetter,
-		searchAuthor,
-		searchTags,
-		searchHasDownload,
-		searchCreatedFrom,
-		searchCreatedTo,
-		searchRatingFrom,
-		searchRatingTo,
-		searchDifficultyFrom,
-		searchDifficultyTo,
-		searchCleared,
-		searchReviewed,
-		sortConfig,
-		router.isReady,
-		fetchGames,
-	]);
+        return () => {
+            isCancelled = true; // cleanup useEffect
+        };
+    }, [
+        searchQuery,
+        searchName,
+        activeLetter,
+        searchAuthor,
+        searchTags,
+        searchHasDownload,
+        searchCreatedFrom,
+        searchCreatedTo,
+        searchRatingFrom,
+        searchRatingTo,
+        searchDifficultyFrom,
+        searchDifficultyTo,
+        searchCleared,
+        searchReviewed,
+        sortConfig,
+        router.isReady,
+        fetchGames,
+    ]);
 
-	const loadMore = async () => {
-		if (isLoadingMore) return;
-		setIsLoadingMore(true);
+    const loadMore = async () => {
+        if (isLoadingMore) return;
+        setIsLoadingMore(true);
 
-		const nextPage = page + 1;
-		const moreGames = await fetchGames(nextPage, sortConfig);
+        const nextPage = page + 1;
+        const moreGames = await fetchGames(nextPage, sortConfig);
 
-		if (moreGames.length === 0) {
-			setHasMore(false);
-			setIsLoadingMore(false);
-			return;
-		}
+        if (moreGames.length === 0) {
+            setHasMore(false);
+            setIsLoadingMore(false);
+            return;
+        }
 
-		setGames((prev) => dedupeArray([...prev, ...moreGames], (g) => g.id));
-		setPage(nextPage);
-		setIsLoadingMore(false);
-	};
+        setGames((prev) => dedupeArray([...prev, ...moreGames], (g) => g.id));
+        setPage(nextPage);
+        setIsLoadingMore(false);
+    };
 
-	const loaderRef = useInfiniteScroll<HTMLDivElement>(
-		() => {
-			if (hasMore) loadMore();
-		},
-		{ enabled: initialized },
-	);
+    const loaderRef = useInfiniteScroll<HTMLDivElement>(
+        () => {
+            if (hasMore) loadMore();
+        },
+        { enabled: initialized },
+    );
 
-	return (
-		<div
-			id="content"
-			className="px-4 sm:px-6 lg:px-8 min-h-screen scrollbar-gutter-stable"
-		>
-			<h2>Full Fangame List</h2>
+    return (
+        <div
+            id="content"
+            className="px-4 sm:px-6 lg:px-8 min-h-screen scrollbar-gutter-stable"
+        >
+            <h2>Full Fangame List</h2>
 
-			{/* Letter Navigation */}
-			<p>Choose a letter to get fangames starting with that letter:</p>
-			<p className="flex flex-wrap gap-1">
-				{"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
-					<span
-						role="button"
-						key={letter}
-						onClick={() => handleLetterNavigation(letter)}
-						className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${
-							activeLetter === letter ? "font-bold" : ""
-						}`}
-					>
-						{letter}
-					</span>
-				))}
-				<span
-					role="button"
-					onClick={() => handleLetterNavigation("ALL")}
-					className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${
-						!activeLetter ? "font-bold" : ""
-					}`}
-				>
-					ALL
-				</span>
-				<button
-					type="button"
-					onClick={() => clearSearch()}
-					className="font-bold cursor-pointer ml-auto"
-				>
-					CLEAR
-				</button>
-			</p>
+            {/* Letter Navigation */}
+            <p>Choose a letter to get fangames starting with that letter:</p>
+            <p className="flex flex-wrap gap-1">
+                {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter) => (
+                    <span
+                        role="button"
+                        key={letter}
+                        onClick={() => handleLetterNavigation(letter)}
+                        className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${activeLetter === letter ? "font-bold" : ""
+                            }`}
+                    >
+                        {letter}
+                    </span>
+                ))}
+                <span
+                    role="button"
+                    onClick={() => handleLetterNavigation("ALL")}
+                    className={`text-[#483D8B] underline hover:text-[#1E90FF] cursor-pointer ${!activeLetter ? "font-bold" : ""
+                        }`}
+                >
+                    ALL
+                </span>
+                <button
+                    type="button"
+                    onClick={() => clearSearch()}
+                    className="font-bold cursor-pointer ml-auto"
+                >
+                    CLEAR
+                </button>
+            </p>
 
-			<p className="!font-bold mb-2">
-				Showing results...
-				<br />
-				{activeLetter && (
-					<>
-						<span className="ml-[1em]">Starting with: "{activeLetter}"</span>
-						<br />
-					</>
-				)}
-				{searchQuery && (
-					<>
-						<span className="ml-[1em]">Containing: "{searchQuery}"</span>
-						<br />
-					</>
-				)}
-				{searchName && (
-					<>
-						<span className="ml-[1em]">With Title: "{searchName}"</span>
-						<br />
-					</>
-				)}
-				{searchAuthor && (
-					<>
-						<span className="ml-[1em]">By: "{searchAuthor}"</span>
-						<br />
-					</>
-				)}
-				{(searchCreatedFrom || searchCreatedTo) && (
-					<>
-						<span className="ml-[1em]">
-							Created between:{" "}
-							{searchCreatedFrom === "" ? "any" : searchCreatedFrom}
-						</span>
-						<span> - </span>
-						<span className="ml-1">
-							{searchCreatedTo === "" ? "any" : searchCreatedTo}
-						</span>
-						<br />
-					</>
-				)}
-				{(searchRatingFrom || searchRatingTo) && (
-					<>
-						<span className="ml-[1em]">
-							Rating: [
-							{searchRatingFrom === "" ? "any" : Number(searchRatingFrom) / 10}
-						</span>
-						<span> - </span>
-						<span className="ml-1">
-							{searchRatingTo === "" ? "any" : Number(searchRatingTo) / 10}]
-						</span>
-						<br />
-					</>
-				)}
-				{(searchDifficultyFrom || searchDifficultyTo) && (
-					<>
-						<span className="ml-[1em]">
-							Difficulty: [
-							{searchDifficultyFrom === "" ? "any" : searchDifficultyFrom}
-						</span>
-						<span> - </span>
-						<span className="ml-1">
-							{searchDifficultyTo === "" ? "any" : searchDifficultyTo}]
-						</span>
-						<br />
-					</>
-				)}
-				{searchTags && (
-					<>
-						<span className="ml-[1em]">Tagged as: "{searchTags}"</span>
-						<br />
-					</>
-				)}
-				{searchCleared === true && (
-					<>
-						<span className="ml-[1em]">Cleared by YOU</span>
-						<br />
-					</>
-				)}
-				{searchReviewed === true && (
-					<>
-						<span className="ml-[1em]">Reviewed by YOU</span>
-						<br />
-					</>
-				)}
-				<span className="ml-[1em]">
-					({games.length} {games.length === 1 ? "result" : "results"})
-				</span>
-				{hasMore && (
-					<span className="ml-1 font-normal">
-						(scroll down for more)
-					</span>
-				)}
-			</p>
+            {(Object.keys(router.query).length > 0 && !router.query.q && !router.query.l) ? <><input type="button" value="REFINE" onClick={async () => { router.push(`/search/advanced?${queryToSearchParams(router.query)}`) }} /><br /><div></div></> : undefined}
 
-			<div className="overflow-x-auto">
-				<DataTable
-					data={games}
-					columns={gameColumns}
-					sortConfig={sortConfig}
-					onSortChange={setSortConfig}
-				/>
-				{/* Infinite scroll trigger */}
-				{hasMore ? (
-					<div
-						ref={loaderRef}
-						className="flex justify-center items-center h-16"
-					>
-						{isLoadingMore && (
-							<div className="animate-pulse text-blue-500">Loading...</div>
-						)}
-					</div>
-				) : (
-					<div
-						ref={loaderRef}
-						className="flex justify-center items-center h-16"
-					>
-						<span>No more results.</span>
-					</div>
-				)}
-			</div>
-		</div>
-	);
+            <p className="!font-bold mb-2">
+                Showing results...
+                <br />
+                {activeLetter && (
+                    <>
+                        <span className="ml-[1em]">Starting with: "{activeLetter}"</span>
+                        <br />
+                    </>
+                )}
+                {searchQuery && (
+                    <>
+                        <span className="ml-[1em]">Containing: "{searchQuery}"</span>
+                        <br />
+                    </>
+                )}
+                {searchName && (
+                    <>
+                        <span className="ml-[1em]">With Title: "{searchName}"</span>
+                        <br />
+                    </>
+                )}
+                {searchAuthor && (
+                    <>
+                        <span className="ml-[1em]">By: "{searchAuthor}"</span>
+                        <br />
+                    </>
+                )}
+                {(searchCreatedFrom || searchCreatedTo) && (
+                    <>
+                        <span className="ml-[1em]">
+                            Created between:{" "}
+                            {searchCreatedFrom === "" ? "any" : searchCreatedFrom}
+                        </span>
+                        <span> - </span>
+                        <span className="ml-1">
+                            {searchCreatedTo === "" ? "any" : searchCreatedTo}
+                        </span>
+                        <br />
+                    </>
+                )}
+                {(searchRatingFrom || searchRatingTo) && (
+                    <>
+                        <span className="ml-[1em]">
+                            Rating: [
+                            {searchRatingFrom === "" ? "any" : Number(searchRatingFrom) / 10}
+                        </span>
+                        <span> - </span>
+                        <span className="ml-1">
+                            {searchRatingTo === "" ? "any" : Number(searchRatingTo) / 10}]
+                        </span>
+                        <br />
+                    </>
+                )}
+                {(searchDifficultyFrom || searchDifficultyTo) && (
+                    <>
+                        <span className="ml-[1em]">
+                            Difficulty: [
+                            {searchDifficultyFrom === "" ? "any" : searchDifficultyFrom}
+                        </span>
+                        <span> - </span>
+                        <span className="ml-1">
+                            {searchDifficultyTo === "" ? "any" : searchDifficultyTo}]
+                        </span>
+                        <br />
+                    </>
+                )}
+                {searchTags && (
+                    <>
+                        <span className="ml-[1em]">Tagged as: "{searchTags}"</span>
+                        <br />
+                    </>
+                )}
+                {searchCleared === true && (
+                    <>
+                        <span className="ml-[1em]">Cleared by YOU</span>
+                        <br />
+                    </>
+                )}
+                {searchReviewed === true && (
+                    <>
+                        <span className="ml-[1em]">Reviewed by YOU</span>
+                        <br />
+                    </>
+                )}
+                <span className="ml-[1em]">
+                    ({games.length} {games.length === 1 ? "result" : "results"})
+                </span>
+                {hasMore && (
+                    <span className="ml-1 font-normal">
+                        (scroll down for more)
+                    </span>
+                )}
+            </p>
+
+            <div className="overflow-x-auto">
+                <DataTable
+                    data={games}
+                    columns={gameColumns}
+                    sortConfig={sortConfig}
+                    onSortChange={setSortConfig}
+                />
+                {/* Infinite scroll trigger */}
+                {hasMore ? (
+                    <div
+                        ref={loaderRef}
+                        className="flex justify-center items-center h-16"
+                    >
+                        {isLoadingMore && (
+                            <div className="animate-pulse text-blue-500">Loading...</div>
+                        )}
+                    </div>
+                ) : (
+                    <div
+                        ref={loaderRef}
+                        className="flex justify-center items-center h-16"
+                    >
+                        <span>No more results.</span>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }
 // #endregion
 
