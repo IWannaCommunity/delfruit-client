@@ -148,21 +148,25 @@ export default function AdvancedSearch(): AnyElem {
         document.getElementById("tags").value = router.query.tags?.toString() ?? "";
         setTags(router.query.tags?.toString() ?? "")
         setHasCleared(router.query.cleared ?? undefined)
-        if (router.query.cleared === undefined) {
-            document.getElementById("clear-any").checked = true;
-        } else if (router.query.cleared === true) {
-            document.getElementById("clear-cleared").checked = true;
-        } else {
-            document.getElementById("clear-uncleared").checked = true;
-        }
+		if (document.getElementById("clear-any") && typeof document.getElementById("clear-any") === "object") {
+			if (router.query.cleared === undefined) {
+				document.getElementById("clear-any").checked = true;
+			} else if (router.query.cleared === true) {
+				document.getElementById("clear-cleared").checked = true;
+			} else {
+				document.getElementById("clear-uncleared").checked = true;
+			}
+		}
         setHasReviewed(router.query.reviewed ?? undefined)
-        if (router.query.reviewed === undefined) {
-            document.getElementById("review-any").checked = true;
-        } else if (router.query.reviewed === true) {
-            document.getElementById("review-no").checked = true;
-        } else {
-            document.getElementById("review-yes").checked = true;
-        }
+		if (document.getElementById("review-any") && typeof document.getElementById("review-any") === "object") {
+			if (router.query.reviewed === undefined) {
+				document.getElementById("review-any").checked = true;
+			} else if (router.query.reviewed === true) {
+				document.getElementById("review-no").checked = true;
+			} else {
+				document.getElementById("review-yes").checked = true;
+			}
+		}
         setRequireDL(router.query.hasDownload);
         document.getElementById("from").value = router.query.createdFrom?.toString() ?? "";
         setCreatedFrom(router.query.createdFrom?.toString() ?? "")
