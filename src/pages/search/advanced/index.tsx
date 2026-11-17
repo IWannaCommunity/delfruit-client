@@ -235,7 +235,7 @@ export default function AdvancedSearch(): AnyElem {
         feelinLuckyTimer.pause();
 
         try {
-            const games = (await API.games().getGames(session.active ? `Bearer ${session.token}` : undefined, title, void 0, false, void 0, void 0, void 0, tags, author, void 0, requireDL, createdFrom, createdTo, void 0, void 0, ratingRange[0], ratingRange[1], difficultyRange[0], difficultyRange[1], feelinLuckySearchPage, 5, void 0, void 0)).data;
+            const games = (await API.games().getGames(session.active ? `Bearer ${session.token}` : undefined, title, undefined, false, undefined, undefined, undefined, tags === "" ? undefined : tags, author === "" ? undefined : author, undefined, Boolean(requireDL), createdFrom == "" || createdFrom == new Date(0) ? undefined : createdFrom, createdTo == "" || createdTo == new Date(0) ? undefined : createdTo, undefined, undefined, ratingRange[0], ratingRange[1], difficultyRange[0], difficultyRange[1], feelinLuckySearchPage, 5, void 0, void 0)).data;
 
             if (games.length < 5) {
                 setFeelinLuckyState("done");
