@@ -53,6 +53,8 @@ img.stream-preview {
 
 html,
 body {
+	scrollbar-gutter: stable;
+	
 	margin: 0 !important;
 	padding: 0 !important;
 	height: 100% !important;
