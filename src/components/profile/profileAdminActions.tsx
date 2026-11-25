@@ -29,7 +29,7 @@ export default function ProfileAdminActions({ user }: UserInfoProps) {
 			}
 
 			try {
-				const resp = await API.users().getUserCompositeAll(targetId, token);
+				const resp = await API.users().getUser(user.id, `Bearer ${session.token}`);
 
 				setEmailInput(resp.data.email ?? "");
 				setHideAdminEmailInput(true);
