@@ -8,149 +8,97 @@ import ProfileActions from "@/components/profile/profileActions";
 import ProfileAdminActions from "@/components/profile/profileAdminActions";
 import ProfileFollowing from "@/components/profile/profileFollowing";
 import ProfileGames from "@/components/profile/profileGames";
+import ProfileLists from "@/components/profile/profileLists";
 import ProfileMain from "@/components/profile/profileMain";
 import ProfileRatings from "@/components/profile/profileRatings";
 import ProfileReviews from "@/components/profile/profileReviews";
-import ProfileLists from "@/components/profile/profileLists";
 import { API } from "@/utils/api";
 import type { AnyElem } from "@/utils/element";
 import { formatDate } from "@/utils/formatDate";
 import { useSessionContext } from "@/utils/hooks";
 
-export type ProfileTabValue =
-  | "profile"
-  | "ratings"
-  | "reviews"
-  | "games"
-	| "lists"
-  | "following"
-  | "admin";
+export type ProfileTabValue = "profile" | "ratings" | "reviews" | "games" | "lists" | "following" | "admin";
 
 type ProfilePageProps = {
-  profileId?: number;
+	profileId?: number;
 };
 
-export default function ProfilePage({
-  profileId,
-}: ProfilePageProps): AnyElem {
-    const [activeTab, setActiveTab] =
-      useState<ProfileTabValue>("profile");
-    const [user, setUser] = useState<UserExt>();
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-		const [emailInput, setEmailInput] = useState("");
-		const [hideAdminEmailInput, setHideAdminEmailInput] = useState(true);
-		const [adminEmailAlertText, setAdminEmailAlertText] = useState("");
-    const [session] = useSessionContext();
-    const isOwnProfile = profileId === undefined;
-    const targetId = isOwnProfile ? session?.user_id : profileId;
+export default function ProfilePage({ profileId }: ProfilePageProps): AnyElem {
+	const [activeTab, setActiveTab] = useState<ProfileTabValue>("profile");
+	const [user, setUser] = useState<UserExt>();
+	const [error, setError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [session] = useSessionContext();
+	const isOwnProfile = profileId === undefined;
+	const targetId = isOwnProfile ? session?.user_id : profileId;
 
-		const tabs = [
-			{ label: "User Profile", value: "profile" },
-			{ label: "Ratings", value: "ratings" },
-			{ label: "Reviews", value: "reviews" },
-			{ label: "Games", value: "games" },
-			{ label: "Lists", value: "lists" },
-			...(isOwnProfile
-				? [
-						{ label: "Following", value: "following" },
-					]
-				: []),
-			...(session.admin
-				? [{ label: "Admin", value: "admin" }]
-				: []),
-		] satisfies { label: string; value: ProfileTabValue }[];
+	const tabs = [
+		{ label: "User Profile", value: "profile" },
+		{ label: "Ratings", value: "ratings" },
+		{ label: "Reviews", value: "reviews" },
+		{ label: "Games", value: "games" },
+		{ label: "Lists", value: "lists" },
+		...(isOwnProfile ? [{ label: "Following", value: "following" }] : []),
+		...(session.admin ? [{ label: "Admin", value: "admin" }] : []),
+	] satisfies { label: string; value: ProfileTabValue }[];
 
-    useEffect(() => {
-      if (!targetId) {
-        if (isOwnProfile && !session?.user_id) {
-          setLoading(false);
-        }
-        return;
-      }
+	useEffect(() => {
+		if (!targetId) {
+			if (isOwnProfile && !session?.user_id) {
+				setLoading(false);
+			}
+			return;
+		}
 
-			let cancelled = false;
+		let cancelled = false;
 
-			setLoading(true);
-			setError(null);
-			setUser(undefined);
+		setLoading(true);
+		setError(null);
+		setUser(undefined);
 
-			(async () => {
-				try {
-					const token = session?.token
-						? `Bearer ${session.token}`
-						: undefined;
+		(async () => {
+			try {
+				const token = session?.token ? `Bearer ${session.token}` : undefined;
 
-					const resp = await API.users().getUserCompositeAll(
-						targetId,
-						token,
-					);
+				const resp = await API.users().getUserCompositeAll(targetId, token);
 
-					const data = resp.data;
+				const data = resp.data;
 
-					setEmailInput(data.email ?? "");
-					setHideAdminEmailInput(true);
-					setAdminEmailAlertText("");
+				const newData: UserExt = {
+					id: data.id,
+					name: data.name,
+					dateCreated: data.dateCreated ? formatDate(new Date(data.dateCreated)) : null,
+					twitchLink: data.twitchLink,
+					youtubeLink: data.youtubeLink,
+					twitterLink: data.twitterLink,
+					bio: data.bio,
+					token: data.token,
+					reviewCount: data.reviewCount,
+					ratingsCount: data.ratingsCount,
+					screenshotCount: data.screenshotCount,
+					isFollowing: data.isFollowing,
+				};
 
-					const newData: UserExt = {
-						id: data.id,
-						name: data.name,
-						dateCreated: data.dateCreated
-							? formatDate(new Date(data.dateCreated))
-							: null,
-						twitchLink: data.twitchLink,
-						youtubeLink: data.youtubeLink,
-						twitterLink: data.twitterLink,
-						bio: data.bio,
-						token: data.token,
-						reviewCount: data.reviewCount,
-						ratingsCount: data.ratingsCount,
-						screenshotCount: data.screenshotCount,
-						isFollowing: data.isFollowing,
-					};
-
-					if (!cancelled) {
-						setUser(newData);
-					}
-				} catch (err: unknown) {
-						if (cancelled) return;
-
-						const status = (
-							err as { response?: { status?: number } }
-						).response?.status;
-
-						setError(
-							status === 404
-								? "Invalid page"
-								: "Something went wrong",
-						);
-				} finally {
-					if (!cancelled) {
-						setLoading(false);
-					}
+				if (!cancelled) {
+					setUser(newData);
 				}
+			} catch (err: unknown) {
+				if (cancelled) return;
+
+				const status = (err as { response?: { status?: number } }).response?.status;
+
+				setError(status === 404 ? "Invalid page" : "Something went wrong");
+			} finally {
+				if (!cancelled) {
+					setLoading(false);
+				}
+			}
 		})();
 
 		return () => {
 			cancelled = true;
 		};
-
 	}, [targetId, session?.token, isOwnProfile, session?.user_id]);
-
-	const actionAdminChangeUserEmail = async () => {
-		try {
-			await API.users().patchUserEmail(
-				{ newEmail: emailInput },
-				user.id,
-			);
-
-			setAdminEmailAlertText("Email updated successfully!");
-			setEmailInput("");
-			setHideAdminEmailInput(true);
-		} catch {
-			setAdminEmailAlertText("Failed to update email.");
-		}
-	};
 
 	const renderContent = () => {
 		if (loading) return <span>Loading...</span>;
@@ -165,75 +113,15 @@ export default function ProfilePage({
 				<h2>{`${user.name}'s Profile`}</h2>
 				<div className="flex justify-between items-start w-full !mb-0">
 					<ProfileActions user={user} />
-
-					{session.admin && (
-						<div className="text-right">
-							<input
-								id="admin-email-input"
-								type="email"
-								className="w-[95%]"
-								value={emailInput}
-								onChange={(e) => setEmailInput(e.target.value)}
-								hidden={hideAdminEmailInput}
-							/>
-
-							<button
-								id="admin-change-email"
-								type="button"
-								hidden={!hideAdminEmailInput}
-								onClick={() => {
-									setEmailInput("");
-									setAdminEmailAlertText("");
-									setHideAdminEmailInput(false);
-								}}
-							>
-								Change Email
-							</button>
-
-							<button
-								id="admin-save-change-email"
-								type="submit"
-								hidden={hideAdminEmailInput}
-								className="mr-1 mb-1"
-								onClick={async (evt) => {
-									evt.preventDefault();
-									await actionAdminChangeUserEmail();
-								}}
-							>
-								Change
-							</button>
-
-							<button
-								id="admin-discard-change-email"
-								type="button"
-								hidden={hideAdminEmailInput}
-								onClick={(evt) => {
-									evt.preventDefault();
-									setEmailInput("");
-									setHideAdminEmailInput(true);
-									setAdminEmailAlertText("");
-								}}
-							>
-								Cancel
-							</button>
-
-							<span className="ml-1">
-								{adminEmailAlertText}
-							</span>
-						</div>
-					)}
 				</div>
 
-				<div className="border border-solid border-gray-400 rounded-md 
+				<div
+					className="border border-solid border-gray-400 rounded-md 
 					bg-[var(--color-profile-background)] text-[1.1em] font-verdana"
 				>
 					<div className="border border-gray-400 rounded-md p-[0.25em]">
 						{/* Tabs */}
-						<TabBar<ProfileTabValue>
-							tabs={tabs}
-							activeTab={activeTab}
-							onTabChange={setActiveTab}
-						/>
+						<TabBar<ProfileTabValue> tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 						{/* Profile */}
 						<div hidden={activeTab !== "profile"}>
 							<ProfileMain user={user} />
@@ -261,11 +149,7 @@ export default function ProfilePage({
 							</div>
 						)}
 						{/* Admin */}
-						<div hidden={activeTab !== "admin"}>
-							{session.admin && (
-								<ProfileAdminActions user={user} />
-							)}
-						</div>
+						<div hidden={activeTab !== "admin"}>{session.admin && <ProfileAdminActions user={user} />}</div>
 					</div>
 				</div>
 			</>
@@ -275,21 +159,13 @@ export default function ProfilePage({
 	return (
 		<div>
 			<Head>
-				<title>
-					{user?.name
-						? `${user.name}'s profile - Delicious Fruit`
-						: "Profile - Delicious Fruit"}
-				</title>
+				<title>{user?.name ? `${user.name}'s profile - Delicious Fruit` : "Profile - Delicious Fruit"}</title>
 			</Head>
 
 			<div id="container">
 				<Header />
 				<div id="content">
-					{
-						isOwnProfile && !session.active
-							? <span>You must login to view this page</span>
-							: renderContent()
-					}
+					{isOwnProfile && !session.active ? <span>You must login to view this page</span> : renderContent()}
 				</div>
 				<Footer />
 			</div>
