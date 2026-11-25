@@ -38,7 +38,7 @@ export default function ProfileAdminActions({ user }: UserInfoProps) {
 				setError("Some user data was not loaded.");
 			}
 		})();
-	}, [session.active, session.admin, user, user?.id]);
+	}, [session.active, session.admin, user, user?.id, session.token]);
 
 	const actionAdminChangeUserEmail = useCallback(async () => {
 		try {
@@ -51,6 +51,16 @@ export default function ProfileAdminActions({ user }: UserInfoProps) {
 			setAdminEmailAlertText("Failed to update email.");
 		}
 	}, [user?.id, emailInput]);
+
+	const actionResendVerificationEmail = useCallback(async () => {
+		try {
+			await API.users().postUserResendRegistrationEmail(user.id, {
+				headers: { Authorization: `Bearer ${session.token}` },
+			});
+		} catch {
+			setError("Verification email could not be resent.");
+		}
+	}, [user, session]);
 
 	const togglePermission = async (e: React.ChangeEvent<HTMLInputElement>, key: keyof PartialUserCan_) => {
 		if (!user || !session.active || !session.token || !can) return;
@@ -169,6 +179,17 @@ export default function ProfileAdminActions({ user }: UserInfoProps) {
 				</button>
 
 				<span className="ml-1">{adminEmailAlertText}</span>
+
+				<button
+					id="admin-resend-verification-email"
+					type="submit"
+					onClick={(evt) => {
+						evt.preventDefault();
+						actionResendVerificationEmail();
+					}}
+				>
+					Resend Verification Email
+				</button>
 			</div>
 		</>
 	);
