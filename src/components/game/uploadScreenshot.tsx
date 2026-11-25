@@ -64,6 +64,10 @@ export default function UploadScreenshot({
 			setError(null);
 			setFile(null);
 			setDescription("");
+
+			setTimeout(() => {
+				window.location.reload();
+			}, 1500);
 		} catch (err: any) {
 			if (err.response?.status === 401) {
 				setError("You do not have permission to upload screenshots.");
@@ -190,7 +194,7 @@ export default function UploadScreenshot({
 						<input type="submit" value={loading ? "Uploading..." : "Upload"} />
 						{success && !error && (
 							<span className="text-green-600 ml-1">
-								Screenshot successfully uploaded!
+								Screenshot successfully uploaded! The page will now refresh.
 							</span>
 						)}
 						<br />
