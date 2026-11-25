@@ -179,6 +179,7 @@ export default function ProfileAdminActions({ user }: UserInfoProps) {
 				</button>
 
 				<span className="ml-1">{adminEmailAlertText}</span>
+				<br />
 
 				<button
 					id="admin-resend-verification-email"
